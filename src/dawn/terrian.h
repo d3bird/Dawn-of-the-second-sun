@@ -18,6 +18,7 @@ public:
 	terrian();
 
 	void draw();
+	void update(float delta_time);
 
 	void space_init();
 	void cubes_init();
@@ -32,6 +33,18 @@ private:
 
 	void draw_space();
 	void draw_cubes();
+
+	void update_cubes(float delta_time);
+
+	void inline updateBuffer_ter() {
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices[0], GL_STATIC_DRAW);
+	}
+
+	void inline updateBuffer_space() {
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+	}
 
 	bool update_projection;
 	bool update_cam;

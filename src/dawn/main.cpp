@@ -34,12 +34,13 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-int main(){
+int main() {
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    //glfwWindowHint(GLFW_SAMPLES, 4);
 
 #ifdef __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
@@ -67,6 +68,9 @@ int main(){
     }
 
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
+    glCullFace(GL_BACK);
+    //glEnable(GL_MULTISAMPLE);
 
 
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
@@ -75,7 +79,10 @@ int main(){
     terrian* map = new terrian();
     map->set_projection(projection);
     map->cubes_init();
-   
+
+    double lastTime = glfwGetTime();
+    int nbFrames = 0;
+
     while (!glfwWindowShouldClose(window))
     {
 
@@ -83,22 +90,29 @@ int main(){
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
+        nbFrames++;
+        if (currentFrame - lastTime >= 1.0) {
+            printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
+            nbFrames = 0;
+            lastTime += 1.0;
+        }
 
         processInput(window);
 
-       
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 
-       view = camera.GetViewMatrix();
-       
+        view = camera.GetViewMatrix();
+
         map->set_cam(view);
         map->draw();
 
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
-        // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
+
+        map->update(deltaTime);
+
         glfwPollEvents();
     }
 

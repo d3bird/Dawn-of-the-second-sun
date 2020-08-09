@@ -26,9 +26,51 @@ void terrian::draw() {
     }
 }
 
+void terrian::update(float delta_time) {
+    switch (draw_mode)
+    {
+
+    case 1:
+        update_cubes( delta_time);
+        break;
+    default:
+        std::cout << "no update for this type type init" << std::endl;
+        break;
+    }
+}
+
+void terrian::update_cubes(float delta_time) {
+    static float pasted_time = 0;
+    static float y = 0;
+    pasted_time += delta_time;
+
+    if (pasted_time >= (3.14159 * 15)) {
+         y = 0;
+         pasted_time = 0;
+    }
+    else {
+        y += delta_time;
+    }
+    float x = 0;
+    float z = 0;
+
+    for (unsigned int i = 0; i < cube_amount; i++) {
+        glm::mat4 model = glm::mat4(1.0f);
+        // model = glm::translate(model, glm::vec3(x, sin((x+ pasted_time)), z));
+       // model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x)), z));
+        model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x) - (pasted_time / z)), z));
+        cube_matrices[i] = model;
+        x += cube_offset;
+
+        if (x == (cube_offset * x_width)) {
+            z += cube_offset;
+            x = 0;
+        }
+    }
+}
 
 void terrian::draw_cubes() {
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    updateBuffer_ter();
 
     cube_shader->use();
     cube_shader->setMat4("projection", projection);
