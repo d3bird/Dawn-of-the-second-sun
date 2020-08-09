@@ -12,6 +12,14 @@
 #include "model.h"
 #include "shader.h"
 
+struct map_tile{
+	unsigned int x;
+	unsigned int y;
+	unsigned int z;
+	unsigned int buffer_loc;
+	int type;
+};
+
 class terrian{
 public:
 
@@ -35,6 +43,8 @@ private:
 	void draw_cubes();
 
 	void update_cubes(float delta_time);
+
+	void print_map();
 
 	void inline updateBuffer_ter() {
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -63,6 +73,7 @@ private:
 	unsigned int x_width;
 	unsigned int z_width;
 	float cube_offset;
+	map_tile** map;
 
 	//space terrian vars
 	Model *rock;

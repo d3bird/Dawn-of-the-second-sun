@@ -87,7 +87,6 @@ void terrian::draw_cubes() {
 
 }
 
-
 void terrian::draw_space() {
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
@@ -119,7 +118,6 @@ void terrian::draw_space() {
 
 }
 
-
 void terrian::cubes_init() {
     std::cout << "creating the terrian class (cubes)" << std::endl;
     draw_mode = 1;
@@ -135,24 +133,43 @@ void terrian::cubes_init() {
 
     cube_matrices = new glm::mat4[cube_amount];
 
+    map = new map_tile * [x_width];
+    for (int i = 0; i < x_width; i++) {
+        map[i] = new map_tile[z_width];
+    }
+
     float x = 0;
     float y = 0;
     float z = 0;
 
     bool first = true;
 
+    unsigned int xloc = 0;
+    unsigned int zloc = 0;
+
     for (unsigned int i = 0; i < cube_amount; i++) {
+        map_tile temp;
+        temp.x = x;
+        temp.y = y;
+        temp.z = z;
+        temp.buffer_loc = i;
+        temp.type = 1;
+        map[xloc][zloc] = temp;
         glm::mat4 model = glm::mat4(1.0f);
         model = glm::translate(model, glm::vec3(x, y, z));
         cube_matrices[i] = model;
         x += cube_offset;
-
+        xloc++;
         if (x == (cube_offset * x_width)) {
             z += cube_offset;
+            zloc++;
             x = 0;
+            xloc = 0;
         }
 
     }
+
+    print_map();
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -254,4 +271,31 @@ void terrian::space_init() {
 
 
 	std::cout << "finished creating" << std::endl;
+}
+
+void terrian::print_map() {
+    if (map != NULL) {
+        std::cout << "printing out internal map representation" << std::endl;
+        for (int x = 0; x < x_width; x++) {
+            for (int z = 0; z < z_width; z++) {
+                switch (map[x][z].type)
+                {
+                case 1:
+                    std::cout << " * ";
+                    break;
+                case 2:
+                    std::cout << " "<< map[x][z].buffer_loc;
+                    break;
+                default:
+                    std::cout <<x<<" "<<z<<" not defined proporly"<< std::endl;
+                    break;
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
+    else {
+        std::cout << "the map data structure was never created" << std::endl;
+    }
+
 }

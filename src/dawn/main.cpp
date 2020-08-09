@@ -111,7 +111,7 @@ int main() {
 
         glfwSwapBuffers(window);
 
-        map->update(deltaTime);
+       // map->update(deltaTime);
 
         glfwPollEvents();
     }
