@@ -36,6 +36,7 @@ public:
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
 	int get_draw_mode() { return draw_mode; }
+	map_tile** get_map() { return map; }
 
 private:
 

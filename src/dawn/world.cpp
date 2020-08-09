@@ -1,0 +1,22 @@
+#include "world.h"
+
+world::world() {
+	update_projection = false;
+	update_cam = false;
+}
+
+void world::draw() {
+	Terrian->set_cam(view);
+	Terrian->draw();
+}
+
+void world::update(float deltaTime) {
+	Terrian->update(deltaTime);
+}
+
+void world::init() {
+	Terrian = new terrian();
+	Terrian->set_projection(projection);
+	Terrian->set_cam(view);
+	Terrian->cubes_init();
+}

@@ -10,7 +10,7 @@
 #include "camera.h"
 #include "model.h"
 
-#include "terrian.h"
+#include "world.h"
 
 #include <iostream>
 
@@ -76,9 +76,9 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
-    terrian* map = new terrian();
+    world* map = new world();
     map->set_projection(projection);
-    map->cubes_init();
+    map->init();
 
     double lastTime = glfwGetTime();
     int nbFrames = 0;
@@ -111,7 +111,7 @@ int main() {
 
         glfwSwapBuffers(window);
 
-       // map->update(deltaTime);
+        map->update(deltaTime);
 
         glfwPollEvents();
     }
