@@ -8,6 +8,7 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include "terrian.h"
+#include "beast_manager.h"
 
 class world{
 public:
@@ -30,5 +31,6 @@ private:
 	bool update_cam;
 
 	terrian* Terrian;
+	beast_manager* BM;
 };
 
