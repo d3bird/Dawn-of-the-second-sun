@@ -8,16 +8,27 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <iostream>
+#include <stack>
+#include <vector>
+#include <map>
+#include <set>
 
 #include "model.h"
 #include "shader.h"
 
-struct map_tile{
+using namespace std;
+typedef pair<int, int> Pair;
+typedef pair<double, pair<int, int>> pPair;
+
+
+struct map_tile {
 	unsigned int x;
 	unsigned int y;
 	unsigned int z;
 	unsigned int buffer_loc;
 	int type;
+	bool blocked;
+	int g_cost;//move cost to move to this square
 };
 
 class terrian{
@@ -31,13 +42,15 @@ public:
 	void space_init();
 	void cubes_init();
 
+	std::vector<glm::vec3*> find_path(int x1, int z1, int x2,int z2);
+
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
 	int get_draw_mode() { return draw_mode; }
 
-	map_tile** get_map() { return map; }
+	map_tile** get_map() { return terrian_map; }
 	unsigned int get_x_width() { return x_width; }
 	unsigned int get_z_width() { return z_width; }
 
@@ -49,6 +62,7 @@ private:
 	void update_cubes(float delta_time);
 
 	void print_map();
+	void print_map_blocked();
 
 	void inline updateBuffer_ter() {
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -74,10 +88,10 @@ private:
 	glm::mat4* cube_matrices;
 	Shader* cube_shader;
 	unsigned int cube_amount;
-	unsigned int x_width;
-	unsigned int z_width;
+	unsigned int x_width;//rows
+	unsigned int z_width;//collums
 	float cube_offset;
-	map_tile** map;
+	map_tile** terrian_map;
 
 	//space terrian vars
 	Model *rock;
@@ -87,6 +101,19 @@ private:
 	unsigned int amount = 100000;
 	glm::mat4* modelMatrices;
 
+	//path finding functions/vars
+	struct cell {
+		int parent_i, parent_j;
+		// f = g + h 
+		double f, g, h;
+	};
+
+	bool isValid(int row, int col);
+	bool isUnBlocked(int row, int col);
+	bool isDestination(int row, int col, Pair dest);
+	double calculateHValue(int row, int col, Pair dest);
+	void tracePath(cell** cellDetails, Pair dest);
+	void aStarSearch(Pair src, Pair dest);
 
 };
 

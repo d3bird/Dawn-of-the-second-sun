@@ -128,7 +128,7 @@ void beast_manager::init() {
     beast_matrices = new glm::mat4[amount];
 
     float x = 0;
-    float y = 5;
+    float y = 3;
     float z = 0;
 
     for (unsigned int i = 0; i < amount; i++){
