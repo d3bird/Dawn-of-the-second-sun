@@ -88,6 +88,7 @@ private:
 	glm::mat4* cube_matrices;
 	Shader* cube_shader;
 	unsigned int cube_amount;
+	unsigned int cube_buffer_size;//amount of spaces in the buffer
 	unsigned int x_width;//rows
 	unsigned int z_width;//collums
 	float cube_offset;

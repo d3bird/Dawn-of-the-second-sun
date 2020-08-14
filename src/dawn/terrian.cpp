@@ -125,15 +125,12 @@ void terrian::cubes_init() {
     cube_shader = new Shader("asteroids.vs", "asteroids.fs");
 
     cube = new Model("resources/objects/cube/cube.obj");
-	x_width = 9;
+	
+	x_width = 10;
 	z_width = 10;
 
-
-    cube_amount = x_width* z_width;
     cube_offset = 2.0f;
-
-    cube_matrices = new glm::mat4[cube_amount];
-
+	
     terrian_map = new map_tile * [x_width];
     for (int i = 0; i < x_width; i++) {
         terrian_map[i] = new map_tile[z_width];
@@ -142,7 +139,7 @@ void terrian::cubes_init() {
 	/* testing the path finding by setting up a test grid
 	1-- > The cell is not blocked
 	0-- > The cell is blocked */
-	int grid[9][10] = {
+	int grid[10][10] = {
 		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
 		{ 1, 1, 1, 0, 1, 1, 1, 0, 1, 1 },
 		{ 1, 1, 1, 0, 1, 1, 0, 1, 0, 1 },
@@ -151,43 +148,56 @@ void terrian::cubes_init() {
 		{ 1, 0, 1, 1, 1, 1, 0, 1, 0, 0 },
 		{ 1, 0, 0, 0, 0, 1, 0, 0, 0, 1 },
 		{ 1, 0, 1, 1, 1, 1, 0, 1, 1, 1 },
-		{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 1 }
+		{ 1, 1, 1, 0, 0, 0, 1, 0, 0, 1 },
+		{ 1, 1, 1, 0, 1, 0, 1, 0, 0, 1 }
 	};
 
+	float x = 0;
+	float y = 0;
+	float z = 0;
 
-    float x = 0;
-    float y = 0;
-    float z = 0;
+	//generate the extra cubes 
+	unsigned int amount_extra = 0;
+
+	//finding out the amount of extra cubes
+	for (int xi = 0; xi < x_width; xi++) {
+		for (int zi = 0; zi < z_width; zi++) {
+			if (grid[xi][zi] == 0) {
+				amount_extra++;
+			}
+		}
+	}
+
+	amount_extra++;//one more for good mesure
+	cube_buffer_size = (x_width * z_width) + amount_extra;
+	cube_amount = (x_width * z_width);
+	cube_matrices = new glm::mat4[cube_buffer_size];
 
     bool first = true;
 
     unsigned int xloc = 0;
     unsigned int zloc = 0;
 
+	//creates the plain of cubes
     for (unsigned int i = 0; i < cube_amount; i++) {
         map_tile temp;
         temp.x = x;
         temp.y = y;
         temp.z = z;
         temp.g_cost = 1;
-        //temp.blocked = false;
-		
-		switch (grid[xloc][zloc])
-		{
-		case 0:
-			temp.blocked = true;
-			break;
-		case 1:
-			temp.blocked = false;
-			break;
-		default:
-			break;
-		}
-
+        temp.blocked = false;
         temp.buffer_loc = i;
         temp.type = 1;
         terrian_map[xloc][zloc] = temp;
         glm::mat4 model = glm::mat4(1.0f);
+		if (x == 0 && z == 0) {
+			y = 2 * cube_offset;
+		}else if (x == (cube_offset * (x_width-1)) && z == 0){
+			y = 2 * cube_offset;
+		}
+		else {
+			y = 0;
+		}
         model = glm::translate(model, glm::vec3(x, y, z));
         cube_matrices[i] = model;
         x += cube_offset;
@@ -200,6 +210,37 @@ void terrian::cubes_init() {
         }
 
     }
+
+	x = 0;
+	y = 0;
+	z = 0;
+	y += cube_offset;
+
+	vector<glm::mat4> additional_cubes;
+	for (int xi = 0; xi < x_width; xi++) {
+		for (int zi = 0; zi < z_width; zi++) {
+
+			if (grid[xi][zi] == 0) {
+				glm::mat4 blocked_cube = glm::mat4(1.0f);
+				//the coridents need to be inverted
+				z = xi * cube_offset;
+				x = zi * cube_offset;
+				terrian_map[xi][zi].blocked = true;
+				blocked_cube = glm::translate(blocked_cube, glm::vec3(x, y, z));
+				blocked_cube = glm::rotate(blocked_cube, 3.14f, glm::vec3(1.0, 0.0, 0.0));
+				additional_cubes.push_back(blocked_cube);
+			}
+		}
+	}
+
+	std::cout << "creating " << cube_amount << " of total " << cube_buffer_size << " spots" << std::endl;
+	std::cout << "need to add " << additional_cubes.size() << " more cubes" << std::endl;
+
+	for (size_t i = 0; i < additional_cubes.size(); i++)
+	{
+		cube_matrices[cube_amount] = additional_cubes[i];
+		cube_amount++;
+	}
 
     print_map_blocked();
 
