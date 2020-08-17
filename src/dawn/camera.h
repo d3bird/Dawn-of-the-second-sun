@@ -6,6 +6,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include <vector>
+#include <iostream>
 
 // Defines several possible options for camera movement. Used as abstraction to stay away from window-system specific input methods
 enum Camera_Movement {
@@ -59,6 +60,15 @@ public:
         Pitch = pitch;
         updateCameraVectors();
     }
+
+    void print_stats() {
+        std::cout << "pos: " << Position.x<<" "<< Position.y<<" "<< Position.z << std::endl;
+        std::cout << "front: " << Front.x << " " << Front.y << " " << Front.z << std::endl;
+        std::cout << "yaw: " << Yaw << std::endl;
+        std::cout << "pitch: " << Pitch << std::endl;
+    }
+
+    void set_front(glm::vec3 i) { Front = i; }
 
     // returns the view matrix calculated using Euler Angles and the LookAt Matrix
     glm::mat4 GetViewMatrix()
