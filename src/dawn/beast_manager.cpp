@@ -46,7 +46,7 @@ bool beast_manager::determin_direction(float start, float end) {
 }
 
 void beast_manager::update(float deltaTime) {
-	float speed = deltaTime * 4;
+	float speed = deltaTime * 8;
     
     glm::mat4 trans = glm::mat4(1.0f);
     glm::vec3* nav_point;
@@ -61,7 +61,7 @@ void beast_manager::update(float deltaTime) {
         if (nav_point != NULL) {
 
             current_loc = wandering[i]->get_loc();
-            trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+            trans = glm::scale(trans, glm::vec3(0.25, 0.25, 0.25));
 
             bool reached_x = false;
             bool reached_z = false;
@@ -123,7 +123,8 @@ void beast_manager::init() {
 
     beast_shader = new Shader("asteroids.vs", "asteroids.fs");
 
-    beast = new Model("resources/objects/cube/cube.obj");
+    //beast = new Model("resources/objects/cube/cube.obj");
+    beast = new Model("resources/objects/planet/planet.obj");
 
     beast_matrices = new glm::mat4[amount];
 
@@ -135,21 +136,21 @@ void beast_manager::init() {
 
     for (unsigned int i = 0; i < amount; i++){
         creature* temp = new creature();
-        x = nav_points[0]->x * 2;
-        z = nav_points[0]->z * 2;
+        x = nav_points[0]->x * 4;
+        z = nav_points[0]->z * 4;
         glm::vec3* start_loc = new glm::vec3(x, y, z);
         temp->set_loc(start_loc);
         temp->set_buffer_loc(i);
         glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+        trans = glm::scale(trans, glm::vec3(0.25, 0.25, 0.25));
         trans = glm::translate(trans, glm::vec3(x, y, z));
         beast_matrices[i] = trans;
 
         for (size_t i = 0; i < nav_points.size(); i++)
         {
             glm::vec3* temp2 = nav_points[i];
-            temp2->x *= 2;// compensate for the cubes scale
-            temp2->z *= 2;
+            temp2->x *= 4;// compensate for the cubes scale
+            temp2->z *= 4;
             temp->add_nav_point(nav_points[i]);
         }
 
@@ -158,8 +159,18 @@ void beast_manager::init() {
         for (size_t i = 0; i < nav_points.size(); i++)
         {
             glm::vec3* temp2 = nav_points[i];
-            temp2->x *= 2;// compensate for the cubes scale
-            temp2->z *= 2;
+            temp2->x *= 4;// compensate for the cubes scale
+            temp2->z *= 4;
+            temp->add_nav_point(nav_points[i]);
+        }
+
+        nav_points = map->find_path(9, 0, 4, 6, 3);
+
+        for (size_t i = 0; i < nav_points.size(); i++)
+        {
+            glm::vec3* temp2 = nav_points[i];
+            temp2->x *= 4;// compensate for the cubes scale
+            temp2->z *= 4;
             temp->add_nav_point(nav_points[i]);
         }
 
