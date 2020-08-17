@@ -22,11 +22,11 @@ public:
 
 	void init();
 
-	void set_map(map_tile** i) { map = i; }
 	void set_map_size(unsigned int x, unsigned int z) { x_width = x; z_width = z; }
 	
 	void set_projection(glm::mat4 i) { projection = i; }
 	void set_cam(glm::mat4 i) { view = i;  }
+	void set_terrian(terrian* i) { map = i; }
 
 private:
 
@@ -48,7 +48,7 @@ private:
 	std::vector<creature*> wandering;
 	std::vector<creature*> moving;
 
-	map_tile** map;
+	terrian* map;
 	Model* beast;
 	glm::mat4* beast_matrices;
 	Shader* beast_shader;

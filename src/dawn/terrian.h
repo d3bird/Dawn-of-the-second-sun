@@ -19,7 +19,11 @@
 using namespace std;
 typedef pair<int, int> Pair;
 typedef pair<double, pair<int, int>> pPair;
-
+struct cell {
+	int parent_i, parent_j;
+	// f = g + h 
+	double f, g, h;
+};
 
 struct map_tile {
 	unsigned int x;
@@ -42,7 +46,7 @@ public:
 	void space_init();
 	void cubes_init();
 
-	std::vector<glm::vec3*> find_path(int x1, int z1, int x2,int z2);
+	std::vector<glm::vec3*> find_path(int x1, int z1, int x2,int z2, float height);
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -103,18 +107,14 @@ private:
 	glm::mat4* modelMatrices;
 
 	//path finding functions/vars
-	struct cell {
-		int parent_i, parent_j;
-		// f = g + h 
-		double f, g, h;
-	};
+
 
 	bool isValid(int row, int col);
 	bool isUnBlocked(int row, int col);
 	bool isDestination(int row, int col, Pair dest);
 	double calculateHValue(int row, int col, Pair dest);
 	void tracePath(cell** cellDetails, Pair dest);
-	void aStarSearch(Pair src, Pair dest);
+	cell** aStarSearch(Pair src, Pair dest);
 
 };
 

@@ -1,7 +1,7 @@
 #include "beast_manager.h"
 
 beast_manager::beast_manager(){
-	amount = 4;
+	amount = 1;
 }
 
 beast_manager::~beast_manager(){
@@ -61,7 +61,7 @@ void beast_manager::update(float deltaTime) {
         if (nav_point != NULL) {
 
             current_loc = wandering[i]->get_loc();
-            trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+            //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
             bool reached_x = false;
             bool reached_z = false;
@@ -131,19 +131,26 @@ void beast_manager::init() {
     float y = 3;
     float z = 0;
 
+    std::vector<glm::vec3*> nav_points= map->find_path(8, 0, 0, 0, 3);
+
     for (unsigned int i = 0; i < amount; i++){
         creature* temp = new creature();
+        x = nav_points[0]->x;
+        z = nav_points[0]->z;
         glm::vec3* start_loc = new glm::vec3(x, y, z);
-        glm::vec3* nav_point = new glm::vec3(x+6, y, z+6);
         temp->set_loc(start_loc);
         temp->set_buffer_loc(i);
         glm::mat4 trans = glm::mat4(1.0f);
-        trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+        //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
         trans = glm::translate(trans, glm::vec3(x, y, z));
         beast_matrices[i] = trans;
-        temp->add_nav_point(nav_point);
-        nav_point = new glm::vec3(x -8, y, z + 6);
-        temp->add_nav_point(nav_point);
+
+        for (size_t i = 1; i < nav_points.size(); i++)
+        {
+            //glm::vec3* temp2 = nav_points[i];
+            temp->add_nav_point(nav_points[i]);
+        }
+
         wandering.push_back(temp);
         
         x += 4;

@@ -28,7 +28,7 @@ void world::init() {
 	BM = new beast_manager();
 	BM->set_projection(projection);
 	BM->set_cam(view);
-	BM->set_map(Terrian->get_map());
+	BM->set_terrian(Terrian);
 	BM->set_map_size(Terrian->get_x_width(), Terrian->get_z_width());
 	BM->init();
 }

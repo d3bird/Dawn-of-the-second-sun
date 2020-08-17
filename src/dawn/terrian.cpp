@@ -248,7 +248,8 @@ void terrian::cubes_init() {
 	// Destination is the left-most top-most corner 
 	Pair dest = make_pair(0, 0);
 
-	aStarSearch(src, dest);
+	//find_path(8, 0, 0, 0, 3);//conversion to a more accepted type
+	//aStarSearch(src, dest);//private function 
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -401,8 +402,47 @@ void terrian::print_map_blocked() {
 
 //path finding functions
 
-std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2) {
+std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float height) {
     vector<glm::vec3*> output;
+
+	Pair src = make_pair(x1, z1);
+	Pair dest = make_pair(x2, z2);
+
+	cell** cellDetails = aStarSearch(src, dest);
+
+	printf("\nThe Path is ");
+	int row = dest.first;
+	int col = dest.second;
+
+	stack<Pair> Path;
+
+	while (!(cellDetails[row][col].parent_i == row
+		&& cellDetails[row][col].parent_j == col))
+	{
+		Path.push(make_pair(row, col));
+		int temp_row = cellDetails[row][col].parent_i;
+		int temp_col = cellDetails[row][col].parent_j;
+		row = temp_row;
+		col = temp_col;
+	}
+
+	glm::vec3* temp;
+	Path.push(make_pair(row, col));
+	while (!Path.empty())
+	{
+		pair<int, int> p = Path.top();
+		Path.pop();
+		float x = p.first * cube_offset;
+		float z = p.second * cube_offset;
+		printf("-> (%f,%f) ",x, z);
+		temp = new glm::vec3(z, height, x);
+		output.push_back(temp);
+	}
+
+	//std::cout << "current path" << std::endl;
+	//for (int i = 0; i < output.size(); i++) {
+	//	std::cout << "x: " << output[i]->x << " y: " << output[i]->y << " z: " << output[i]->z << std::endl;
+	//}
 
     return output;
 }
@@ -470,20 +510,20 @@ void terrian::tracePath(cell** cellDetails, Pair dest)
 }
 
 
-void terrian::aStarSearch(Pair src, Pair dest)
+cell** terrian::aStarSearch(Pair src, Pair dest)
 {
 
 	if (isValid(src.first, src.second) == false)
 	{
 		printf("Source is invalid\n");
-		return;
+		return NULL;
 	}
 
 
 	if (isValid(dest.first, dest.second) == false)
 	{
 		printf("Destination is invalid\n");
-		return;
+		return NULL;
 	}
 
 
@@ -491,14 +531,14 @@ void terrian::aStarSearch(Pair src, Pair dest)
 		isUnBlocked(dest.first, dest.second) == false)
 	{
 		printf("Source or the destination is blocked\n");
-		return;
+		return NULL;
 	}
 
 
 	if (isDestination(src.first, src.second, dest) == true)
 	{
 		printf("We are already at the destination\n");
-		return;
+		return NULL;
 	}
 
 
@@ -625,7 +665,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 			// If the successor is already on the closed 
 			// list or if it is blocked, then ignore it. 
@@ -669,7 +709,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 			// If the successor is already on the closed 
 			// list or if it is blocked, then ignore it. 
@@ -711,7 +751,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -756,7 +796,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -801,7 +841,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -846,7 +886,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -889,7 +929,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -934,7 +974,7 @@ void terrian::aStarSearch(Pair src, Pair dest)
 				printf("The destination cell is found\n");
 				tracePath(cellDetails, dest);
 				foundDest = true;
-				return;
+				return cellDetails;
 			}
 
 			// If the successor is already on the closed 
@@ -972,5 +1012,5 @@ void terrian::aStarSearch(Pair src, Pair dest)
 	if (foundDest == false)
 		printf("Failed to find the Destination Cell\n");
 
-	return;
+	return NULL;
 }
