@@ -833,7 +833,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 		{
 			// If the destination cell is the same as the 
 			// current successor 
-			if (isDestination(i - 1, j + 1, dest) == true)
+			if (isDestination(i - 1, j + 1, dest) == true && isUnBlocked(i, j + 1) == true && isUnBlocked(i - 1, j) == true)
 			{
 				// Set the Parent of the destination cell 
 				cellDetails[i - 1][j + 1].parent_i = i;
@@ -878,7 +878,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 		{
 			// If the destination cell is the same as the 
 			// current successor 
-			if (isDestination(i - 1, j - 1, dest) == true)
+			if (isDestination(i - 1, j - 1, dest) == true && isUnBlocked(i, j - 1) == true && isUnBlocked(i - 1, j) == true)
 			{
 				// Set the Parent of the destination cell 
 				cellDetails[i - 1][j - 1].parent_i = i;
@@ -921,7 +921,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 		{
 			// If the destination cell is the same as the 
 			// current successor 
-			if (isDestination(i + 1, j + 1, dest) == true)
+			if (isDestination(i + 1, j + 1, dest) == true && isUnBlocked(i, j + 1) == true && isUnBlocked(i + 1, j) == true)
 			{
 				// Set the Parent of the destination cell 
 				cellDetails[i + 1][j + 1].parent_i = i;
@@ -966,7 +966,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 		{
 			// If the destination cell is the same as the 
 			// current successor 
-			if (isDestination(i + 1, j - 1, dest) == true)
+			if (isDestination(i + 1, j - 1, dest) == true && isUnBlocked(i, j - 1) == true && isUnBlocked(i + 1, j) == true)
 			{
 				// Set the Parent of the destination cell 
 				cellDetails[i + 1][j - 1].parent_i = i;
