@@ -638,16 +638,16 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 			S.E--> South-East (i+1, j+1)
 			S.W--> South-West (i+1, j-1)*/
 
-	// If it isn’t on the open list, add it to 
-	// the open list. Make the current square 
-	// the parent of this square. Record the 
-	// f, g, and h costs of the square cell 
-	//			 OR 
-	// If it is on the open list already, check 
-	// to see if this path to that square is better, 
-	// using 'f' cost as the measure. 
+			// If it isn’t on the open list, add it to 
+			// the open list. Make the current square 
+			// the parent of this square. Record the 
+			// f, g, and h costs of the square cell 
+			//			 OR 
+			// If it is on the open list already, check 
+			// to see if this path to that square is better, 
+			// using 'f' cost as the measure. 
 
-			// To store the 'g', 'h' and 'f' of the 8 successors 
+					// To store the 'g', 'h' and 'f' of the 8 successors 
 		double gNew, hNew, fNew;
 
 		//----------- 1st Successor (North) ------------ 
@@ -848,7 +848,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 			// list or if it is blocked, then ignore it. 
 			// Else do the following 
 			else if (closedList[i - 1][j + 1] == false &&
-				isUnBlocked(i - 1, j + 1) == true)
+				(isUnBlocked(i - 1, j + 1) && isUnBlocked(i, j + 1) == true && isUnBlocked(i - 1, j) == true))//prevent cornner cutting
 			{
 				gNew = cellDetails[i][j].g + 1.414;
 				hNew = calculateHValue(i - 1, j + 1, dest);
@@ -893,7 +893,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 			// list or if it is blocked, then ignore it. 
 			// Else do the following 
 			else if (closedList[i - 1][j - 1] == false &&
-				isUnBlocked(i - 1, j - 1) == true)
+				(isUnBlocked(i - 1, j - 1) == true && isUnBlocked(i, j - 1) == true && isUnBlocked(i - 1, j) == true))
 			{
 				gNew = cellDetails[i][j].g + 1.414;
 				hNew = calculateHValue(i - 1, j - 1, dest);
@@ -936,7 +936,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 			// list or if it is blocked, then ignore it. 
 			// Else do the following 
 			else if (closedList[i + 1][j + 1] == false &&
-				isUnBlocked(i + 1, j + 1) == true)
+				(isUnBlocked(i + 1, j + 1) == true && isUnBlocked(i, j + 1) == true && isUnBlocked(i + 1, j) == true))
 			{
 				gNew = cellDetails[i][j].g + 1.414;
 				hNew = calculateHValue(i + 1, j + 1, dest);
@@ -981,7 +981,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 			// list or if it is blocked, then ignore it. 
 			// Else do the following 
 			else if (closedList[i + 1][j - 1] == false &&
-				isUnBlocked(i + 1, j - 1) == true)
+				(isUnBlocked(i + 1, j - 1) == true && isUnBlocked(i, j - 1) == true && isUnBlocked(i + 1, j) == true))
 			{
 				gNew = cellDetails[i][j].g + 1.414;
 				hNew = calculateHValue(i + 1, j - 1, dest);
