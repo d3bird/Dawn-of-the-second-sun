@@ -46,17 +46,17 @@ bool beast_manager::determin_direction(float start, float end) {
 }
 
 void beast_manager::update(float deltaTime) {
-	float speed = deltaTime * 8;
-    
+    float speed = deltaTime * 8;
+
     glm::mat4 trans = glm::mat4(1.0f);
     glm::vec3* nav_point;
     glm::vec3* current_loc;
 
     //procces the wandering beasts
     for (unsigned int i = 0; i < wandering.size(); i++) {
-       trans = glm::mat4(1.0f);
-      nav_point = wandering[i]->get_next_nav_point();
-      
+        trans = glm::mat4(1.0f);
+        nav_point = wandering[i]->get_next_nav_point();
+
 
         if (nav_point != NULL) {
 
@@ -109,12 +109,11 @@ void beast_manager::update(float deltaTime) {
                 wandering[i]->pop_nav_point();
             }
         }
-        /* else {//for debuggin only
-             std::cout << "no nav point" << std::endl;
-         }*/
+        else {//for debuggin only
+          //  std::cout << "no nav point" << std::endl;
+        }
 
     }
-
 
 }
 

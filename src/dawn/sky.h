@@ -1,26 +1,30 @@
 #pragma once
 
-#include <iostream>
-#include <string>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "terrian.h"
-#include "beast_manager.h"
-#include "sky.h"
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <map>
+#include <set>
 
-class world{
+#include "model.h"
+#include "shader.h"
+
+class sky{
 public:
-	world();
+	sky();
+	~sky();
 
 	void draw();
 	void update(float deltaTime);
-
 	void init();
 
-	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
@@ -31,8 +35,5 @@ private:
 	bool update_projection;
 	bool update_cam;
 
-	terrian* Terrian;
-	beast_manager* BM;
-	sky* Sky;
 };
 

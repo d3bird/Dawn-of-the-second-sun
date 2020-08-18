@@ -93,7 +93,7 @@ int main() {
 
         nbFrames++;
         if (currentFrame - lastTime >= 1.0) {
-           // printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
+            printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
             nbFrames = 0;
             lastTime += 1.0;
         }
