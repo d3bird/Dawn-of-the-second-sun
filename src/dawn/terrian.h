@@ -56,6 +56,7 @@ public:
 
 	map_tile** get_map() { return terrian_map; }
 	unsigned int get_x_width() { return x_width; }
+	unsigned int get_y_width() { return y_width; }
 	unsigned int get_z_width() { return z_width; }
 
 private:
@@ -95,6 +96,7 @@ private:
 	unsigned int cube_buffer_size;//amount of spaces in the buffer
 	unsigned int x_width;//rows
 	unsigned int z_width;//collums
+	unsigned int y_width;
 	float cube_offset;
 	map_tile** terrian_map;
 

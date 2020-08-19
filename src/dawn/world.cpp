@@ -6,17 +6,24 @@ world::world() {
 }
 
 void world::draw() {
+
+	Sky->set_cam(view);
+	Sky->draw();
+
 	Terrian->set_cam(view);
 	Terrian->draw();
 	
 	BM->set_cam(view);
 	BM->draw();
+
+	
 }
 
 void world::update(float deltaTime) {
 	//Terrian->update(deltaTime);
-
+	Sky->update(deltaTime);
 	BM->update(deltaTime);
+
 }
 
 void world::init() {
@@ -31,4 +38,10 @@ void world::init() {
 	BM->set_terrian(Terrian);
 	BM->set_map_size(Terrian->get_x_width(), Terrian->get_z_width());
 	BM->init();
+
+	Sky = new sky();
+	Sky->set_projection(projection);
+	Sky->set_cam(view);
+	Sky->set_width(Terrian->get_x_width(), Terrian->get_y_width(), Terrian->get_z_width());
+	Sky->init();
 }
