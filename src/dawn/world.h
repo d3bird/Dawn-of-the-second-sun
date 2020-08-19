@@ -31,13 +31,20 @@ private:
 	bool update_projection;
 	bool update_cam;
 
+	terrian* Terrian;
+	beast_manager* BM;
+	sky* Sky;
 
+	//lighting test
 	Model* moon;
 	Model* cube;
 	Shader* lighting;
 	Shader* def;
-	terrian* Terrian;
-	beast_manager* BM;
-	sky* Sky;
+	//light possitions 
+	float x;
+	float y;
+	float z;
+	float angle;
+	float angle_incr = 0.3;
 };
 

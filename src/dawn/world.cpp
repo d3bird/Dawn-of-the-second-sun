@@ -3,6 +3,12 @@
 world::world() {
 	update_projection = false;
 	update_cam = false;
+
+	//lighting test
+	x = 20.0f;
+	y = -3.0f;
+	z = 0.0f;
+	angle = 0;
 }
 
 void world::draw() {
@@ -17,7 +23,7 @@ void world::draw() {
 	BM->draw();*/
 	glm::mat4 model = glm::mat4(1.0f);
 	//the light source
-	model = glm::translate(model, glm::vec3(20.0f, -3.0f, 0.0f));
+	model = glm::translate(model, glm::vec3(x, y, z));
 	def->use();
 	def->setMat4("model", model);
 	def->setMat4("projection", projection);
@@ -33,16 +39,25 @@ void world::draw() {
 	lighting->setMat4("projection", projection);
 	lighting->setMat4("view", view);
 	lighting->setVec3("objectColor", 1.0f, 0.5f, 0.31f);
-	lighting->setVec3("lightPos", glm::vec3(20.0f, -3.0f, 0.0f));
-	lighting->setVec3("lightColor", 0.0f, 1.0f, 1.0f);
+	lighting->setVec3("lightPos", glm::vec3(x, y, z));
+	//lighting->setVec3("lightColor", 0.0f, 1.0f, 1.0f);
+	lighting->setVec3("lightColor", 1.0f, 1.0f, 1.0f);
 	moon->Draw(lighting);
 
 }
 
 void world::update(float deltaTime) {
 	//Terrian->update(deltaTime);
-	Sky->update(deltaTime);
-	BM->update(deltaTime);
+	//Sky->update(deltaTime);
+	//BM->update(deltaTime);
+
+	x = 0 + 30 * cos(angle);
+	y = -3 + 30 * sin(angle);
+
+	angle += (angle_incr * deltaTime);
+	if (angle >= 360) {
+		angle = 0;
+	}
 
 }
 
