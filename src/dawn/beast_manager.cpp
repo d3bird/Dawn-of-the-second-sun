@@ -2,6 +2,7 @@
 
 beast_manager::beast_manager(){
 	amount = 1;
+    beast_shader = NULL;
 }
 
 beast_manager::~beast_manager(){
@@ -119,9 +120,13 @@ void beast_manager::update(float deltaTime) {
 
 void beast_manager::init() {
     std::cout << "creating the beast_manger class" << std::endl;
-
-    beast_shader = new Shader("asteroids.vs", "asteroids.fs");
-
+    
+    if (beast_shader == NULL) {
+        beast_shader = new Shader("asteroids.vs", "asteroids.fs");
+    }
+    else {
+        std::cout << "using a premade shader for the beast_master object" << std::endl;
+    }
     //beast = new Model("resources/objects/cube/cube.obj");
     beast = new Model("resources/objects/planet/planet.obj");
 

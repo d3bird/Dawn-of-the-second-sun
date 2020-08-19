@@ -28,6 +28,8 @@ public:
 	void set_cam(glm::mat4 i) { view = i;  }
 	void set_terrian(terrian* i) { map = i; }
 
+	void set_def_shader(Shader* i) { beast_shader = i; }
+
 private:
 
 	float diff_btwn_pnt(float start, float end);

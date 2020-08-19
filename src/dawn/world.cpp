@@ -52,6 +52,7 @@ void world::init() {
 	BM->set_cam(view);
 	BM->set_terrian(Terrian);
 	BM->set_map_size(Terrian->get_x_width(), Terrian->get_z_width());
+	BM->set_def_shader(lighting_in);
 	BM->init();
 
 	Sky = new sky();
