@@ -59,6 +59,8 @@ public:
 	unsigned int get_y_width() { return y_width; }
 	unsigned int get_z_width() { return z_width; }
 
+	void set_cube_shader(Shader* i) { cube_shader = i; }
+
 private:
 
 	void draw_space();

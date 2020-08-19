@@ -8,7 +8,7 @@ terrian::terrian() {
 	projection = glm::mat4(1.0f);
     view = glm::mat4(1.0f);
     draw_mode = -1;
-
+	cube_shader = NULL;
 }
 
 void terrian::draw() {
@@ -122,8 +122,12 @@ void terrian::cubes_init() {
     std::cout << "creating the terrian class (cubes)" << std::endl;
     draw_mode = 1;
 
-    cube_shader = new Shader("asteroids.vs", "asteroids.fs");
-
+	if (cube_shader == NULL) {
+		cube_shader = new Shader("asteroids.vs", "asteroids.fs");
+	}
+	else {
+		std::cout << "using premade shader for the cubes" << std::endl;
+	}
     cube = new Model("resources/objects/cube/cube.obj");
 	
 	x_width = 20;

@@ -26,6 +26,10 @@ public:
 
 private:
 
+	void init_lighting_test();
+	void draw_lighitng_test();
+	void update_lighting_test(float deltaTime);
+
 	glm::mat4 view;
 	glm::mat4 projection;
 	bool update_projection;
@@ -38,8 +42,10 @@ private:
 	//lighting test
 	Model* moon;
 	Model* cube;
-	Shader* lighting;
-	Shader* def;
+	Shader* lighting;//for one object
+	Shader* def;//no lighting
+	Shader* lighting_in;//lighting for instanced objects
+
 	//light possitions 
 	float x;
 	float y;
