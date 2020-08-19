@@ -27,6 +27,8 @@ public:
 
 	void set_width(unsigned int x, unsigned int y, unsigned int z) { x_width = x; center_y = y; z_width = z; }
 
+	glm::vec3 get_light_loc() { return glm::vec3(x, y, z); }
+
 private:
 
 	glm::mat4 view;
@@ -40,7 +42,7 @@ private:
 	float angle;
 	float radius;
 	float decrease;
-	float angle_incr = 0.5;
+	float angle_incr = 0.05;
 	float x;
 	float z;
 	float y;

@@ -31,6 +31,11 @@ private:
 	bool update_projection;
 	bool update_cam;
 
+
+	Model* moon;
+	Model* cube;
+	Shader* lighting;
+	Shader* def;
 	terrian* Terrian;
 	beast_manager* BM;
 	sky* Sky;

@@ -32,7 +32,7 @@ void sky::update(float deltaTime) {
 	if (angle >= 360) {
 		angle = 0;
 	}
-	std::cout << angle << std::endl;
+	
 }
 
 void sky::init() {

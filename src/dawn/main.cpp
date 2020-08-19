@@ -25,7 +25,8 @@ const unsigned int SCR_HEIGHT = 600;
 // camera
 //Camera camera(glm::vec3(0.0f, 6.0f, 5.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
-Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);
+Camera camera(glm::vec3(0.0f, 0.0f, 60.0f));//LIGHTING test
+//Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole map
 
 
 float lastX = (float)SCR_WIDTH / 2.0;
