@@ -47,8 +47,10 @@ public:
 	terrian();
 
 	void draw();
-	int draw_selection(Shader* shade);
+	void draw_selection(Shader* shade);
 	void update(float delta_time);
+
+	void select(unsigned char PixelColor[3]);
 
 	void space_init();
 	void cubes_init();
@@ -83,6 +85,11 @@ private:
 		glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices[0], GL_STATIC_DRAW);
 	}
 
+	void inline updateBuffer_ter_selected() {
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices_selected[0], GL_STATIC_DRAW);
+	}
+
 	void inline updateBuffer_space() {
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
@@ -94,12 +101,16 @@ private:
 
 	//common vars
 	unsigned int buffer;
+	unsigned int buffer_slected;
 	glm::mat4 view;
 	glm::mat4 projection;
 
 	//cube terrian vars
 	Model* cube;
-	glm::mat4* cube_matrices;
+	glm::mat4* cube_matrices;//contains all the cubes
+	glm::mat4* cube_matrices_selected;//only the selected cubes
+	bool draw_selected;
+	unsigned int cube_amount_selected;
 	Shader* cube_shader;
 	unsigned int cube_amount;
 	unsigned int cube_buffer_size;//amount of spaces in the buffer
@@ -119,8 +130,6 @@ private:
 	glm::mat4* modelMatrices;
 
 	//path finding functions/vars
-
-
 	bool isValid(int row, int col);
 	bool isUnBlocked(int row, int col);
 	bool isDestination(int row, int col, Pair dest);
@@ -129,4 +138,3 @@ private:
 	cell** aStarSearch(Pair src, Pair dest);
 
 };
-

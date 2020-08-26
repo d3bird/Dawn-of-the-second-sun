@@ -43,6 +43,17 @@ void world::update(float deltaTime) {
 	BM->update(deltaTime);
 }
 
+void world::process_mouse_action(float m_x, float m_y) {
+
+
+	glFlush();
+	glReadBuffer(GL_BACK);
+	unsigned char PixelColor[3];
+	glReadPixels(m_x, m_y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &PixelColor);
+	std::cout << int(PixelColor[0]) << " "<< int(PixelColor[1]) << " "	<< int(PixelColor[2]) << std::endl;
+	Terrian->select(PixelColor);
+}
+
 void world::init() {
 
 	//the lighting shader for instanced objects

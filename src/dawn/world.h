@@ -17,8 +17,9 @@ public:
 
 	void draw();
 	void draw_selection();
-	void update(float deltaTime);
 
+	void update(float deltaTime);
+	void process_mouse_action(float m_x, float m_y);
 	void init();
 
 	//settersand getters

@@ -27,16 +27,22 @@ const unsigned int SCR_HEIGHT = 600;
 //Camera camera(glm::vec3(0.0f, 6.0f, 5.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 60.0f));//LIGHTING test
-Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole map
+Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole World
 
 
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
+
+float current_mouse_x = lastX;
+float current_mouse_y = lastY;
+
 bool firstMouse = true;
 
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+world* World;
 
 int main() {
 
@@ -80,9 +86,9 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
-    world* map = new world();
-    map->set_projection(projection);
-    map->init();
+    World = new world();
+    World->set_projection(projection);
+    World->init();
 
     double lastTime = glfwGetTime();
     int nbFrames = 0;
@@ -96,7 +102,7 @@ int main() {
 
         nbFrames++;
         if (currentFrame - lastTime >= 1.0) {
-            printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
+           // printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
             nbFrames = 0;
             lastTime += 1.0;
         }
@@ -109,13 +115,13 @@ int main() {
 
         view = camera.GetViewMatrix();
 
-        map->set_cam(view);
-       // map->draw();
-        map->draw_selection();
+        World->set_cam(view);
+       // World->draw();
+        World->draw_selection();
 
         glfwSwapBuffers(window);
 
-        map->update(deltaTime);
+        World->update(deltaTime);
 
         glfwPollEvents();
     }
@@ -181,8 +187,12 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 // ----------------------------------------------------------------------
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
-    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
-
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        std::cout << "clicked left button" << std::endl;
+        World->process_mouse_action(current_mouse_x, current_mouse_y);
+    }
+    else {
+        //std::cout << "clicked " << button<< std::endl;
     }
        
 }

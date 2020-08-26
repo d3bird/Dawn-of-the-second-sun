@@ -9,6 +9,7 @@ terrian::terrian() {
     view = glm::mat4(1.0f);
     draw_mode = -1;
 	cube_shader = NULL;
+	draw_selected = false;
 }
 
 void terrian::draw() {
@@ -26,7 +27,7 @@ void terrian::draw() {
     }
 }
 
-int terrian::draw_selection(Shader* shade) {
+void terrian::draw_selection(Shader* shade) {
 	updateBuffer_ter();
 	
 	shade->use();
@@ -78,7 +79,6 @@ int terrian::draw_selection(Shader* shade) {
 		//std::cout << "out of loop" << std::endl;
 	
 	}
-	return -1;
 }
 
 void terrian::update(float delta_time) {
@@ -176,6 +176,7 @@ void terrian::draw_space() {
 void terrian::cubes_init() {
     std::cout << "creating the terrian class (cubes)" << std::endl;
     draw_mode = 1;
+	cube_amount_selected = 0;
 
 	if (cube_shader == NULL) {
 		cube_shader = new Shader("asteroids.vs", "asteroids.fs");
@@ -240,7 +241,8 @@ void terrian::cubes_init() {
 	amount_extra++;//one more for good mesure
 	cube_buffer_size = (x_width * z_width) + amount_extra;
 	cube_amount = (x_width * z_width);
-	cube_matrices = new glm::mat4[cube_buffer_size];
+	cube_matrices = new glm::mat4[cube_buffer_size];// the main buffer
+	cube_matrices_selected = new glm::mat4[cube_buffer_size];// the buffer for the selected cubes
 
     bool first = true;
 
@@ -319,6 +321,11 @@ void terrian::cubes_init() {
 
 	//find_path(8, 0, 0, 0, 3);//conversion to a more accepted type
 	//aStarSearch(src, dest);//private function 
+	
+
+	glGenBuffers(1, &buffer_slected);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
+	glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices_selected[0], GL_STATIC_DRAW);
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -349,6 +356,27 @@ void terrian::cubes_init() {
 
 
     std::cout << "finished creating" << std::endl;
+}
+
+void terrian::select(unsigned char PixelColor[3]) {
+	bool color1 = false;
+	bool color2 = false;
+	bool color3 = false;
+	int offset = 0;
+	//0 - 254 range for each number
+	int buffer_loc = int(PixelColor[0]);
+
+	if (int(PixelColor[1]) != 0) {
+		color2 = true;
+		offset = 255;
+	}
+	if (int(PixelColor[2]) != 0) {
+		color2 = true;
+	}
+	//gl_InstanceID%255;
+	//float(id)/colors_amount
+	buffer_loc += offset;
+	std::cout << "cube located at " << buffer_loc<< std::endl;
 }
 
 void terrian::space_init() {
