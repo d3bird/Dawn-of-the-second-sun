@@ -16,6 +16,7 @@ public:
 	world();
 
 	void draw();
+	void draw_selection();
 	void update(float deltaTime);
 
 	void init();
@@ -52,5 +53,8 @@ private:
 	float z;
 	float angle;
 	float angle_incr = 0.3;
+
+	//selection shader
+	Shader* selection;
 };
 

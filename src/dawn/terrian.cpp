@@ -26,6 +26,61 @@ void terrian::draw() {
     }
 }
 
+int terrian::draw_selection(Shader* shade) {
+	updateBuffer_ter();
+	
+	shade->use();
+	shade->setMat4("projection", projection);
+	shade->setMat4("view", view);
+	shade->setInt("texture_diffuse1", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, cube->textures_loaded[0].id);
+	shade->setBool("u_color1", true);
+	shade->setBool("u_color2", false);
+	shade->setBool("u_color2", false);
+	if (cube_amount - 255 <= 0) {
+		for (unsigned int i = 0; i < cube->meshes.size(); i++)
+		{
+			glBindVertexArray(cube->meshes[i].VAO);
+			glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, cube_amount);
+			glBindVertexArray(0);
+		}
+	}
+	else {
+		int start = 0;
+		int render = 255;
+		int total = 255;
+		int increment = total;
+		int remaining = cube_amount;
+
+
+		while (remaining > 0) {
+
+			glBindBuffer(GL_ARRAY_BUFFER, buffer);
+			glBufferData(GL_ARRAY_BUFFER, total * sizeof(glm::mat4), &cube_matrices[start], GL_STATIC_DRAW);
+
+			for (unsigned int i = 0; i < cube->meshes.size(); i++)
+			{
+				glBindVertexArray(cube->meshes[i].VAO);
+				glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, render);
+				glBindVertexArray(0);
+			}
+
+			start += render;
+			remaining -= render;
+			if (remaining < 255) {
+				render = remaining;
+				total = remaining;
+			}
+			//std::cout << remaining << std::endl;
+			shade->setBool("u_color2", true);
+		}
+		//std::cout << "out of loop" << std::endl;
+	
+	}
+	return -1;
+}
+
 void terrian::update(float delta_time) {
     switch (draw_mode)
     {
@@ -290,6 +345,7 @@ void terrian::cubes_init() {
 
         glBindVertexArray(0);
     }
+
 
 
     std::cout << "finished creating" << std::endl;

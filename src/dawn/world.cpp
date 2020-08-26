@@ -30,6 +30,13 @@ void world::draw() {
 	
 }
 
+void world::draw_selection() {
+
+	Terrian->set_cam(view);
+	Terrian->draw_selection(selection);
+
+}
+
 void world::update(float deltaTime) {
 	//Terrian->update(deltaTime);
 	Sky->update(deltaTime);
@@ -60,8 +67,10 @@ void world::init() {
 	Sky->set_cam(view);
 	Sky->set_width(Terrian->get_x_width(), Terrian->get_y_width(), Terrian->get_z_width());
 	Sky->init();
-}
 
+	selection = new Shader("selection.vs", "selection.fs");
+
+}
 
 void world::init_lighting_test() {
 	moon = new Model("resources/objects/planet/planet.obj");

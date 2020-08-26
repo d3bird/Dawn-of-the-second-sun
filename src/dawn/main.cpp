@@ -17,6 +17,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -60,6 +61,7 @@ int main() {
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetScrollCallback(window, scroll_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
@@ -108,8 +110,8 @@ int main() {
         view = camera.GetViewMatrix();
 
         map->set_cam(view);
-        map->draw();
-
+       // map->draw();
+        map->draw_selection();
 
         glfwSwapBuffers(window);
 
@@ -173,4 +175,14 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     camera.ProcessMouseScroll(yoffset);
+}
+
+// glfw: whenever the mouse buttons are clicked, this callback is called
+// ----------------------------------------------------------------------
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+
+    }
+       
 }

@@ -19,6 +19,7 @@
 using namespace std;
 typedef pair<int, int> Pair;
 typedef pair<double, pair<int, int>> pPair;
+
 struct cell {
 	int parent_i, parent_j;
 	// f = g + h 
@@ -35,12 +36,18 @@ struct map_tile {
 	int g_cost;//move cost to move to this square
 };
 
+struct selection_buffer {
+	unsigned int buffer;
+	unsigned int cube_amount;
+};
+
 class terrian{
 public:
 
 	terrian();
 
 	void draw();
+	int draw_selection(Shader* shade);
 	void update(float delta_time);
 
 	void space_init();
@@ -101,6 +108,7 @@ private:
 	unsigned int y_width;
 	float cube_offset;
 	map_tile** terrian_map;
+	std::vector<selection_buffer> selection_buffers;
 
 	//space terrian vars
 	Model *rock;
