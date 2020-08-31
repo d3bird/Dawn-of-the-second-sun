@@ -27,7 +27,8 @@ void world::draw() {
 	
 	BM->set_cam(view);
 	BM->draw();
-	
+
+	OBJM->draw();
 }
 
 void world::draw_selection() {
@@ -42,6 +43,7 @@ void world::update(float deltaTime) {
 	//Terrian->update(deltaTime);
 	Sky->update(deltaTime);
 	BM->update(deltaTime);
+	//OBJM->update(deltaTime);
 }
 
 void world::process_mouse_action(float m_x, float m_y) {
@@ -65,6 +67,12 @@ void world::init() {
 	Terrian->set_cam(view);
 	Terrian->set_cube_shader(lighting_in);
 	Terrian->cubes_init();
+
+	OBJM = new object_manger();
+	OBJM->set_projection(projection);
+	OBJM->set_cam(view);
+	OBJM->set_standered_shader(lighting_in);
+	OBJM->init();
 
 	BM = new beast_manager();
 	BM->set_projection(projection);

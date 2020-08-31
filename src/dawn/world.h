@@ -9,6 +9,7 @@
 
 #include "terrian.h"
 #include "beast_manager.h"
+#include "object_manger.h"
 #include "sky.h"
 
 class world{
@@ -39,6 +40,7 @@ private:
 
 	terrian* Terrian;
 	beast_manager* BM;
+	object_manger* OBJM;
 	sky* Sky;
 
 	//lighting test
