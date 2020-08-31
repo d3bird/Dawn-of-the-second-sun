@@ -31,10 +31,11 @@ void world::draw() {
 }
 
 void world::draw_selection() {
-
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	Terrian->set_cam(view);
 	Terrian->draw_selection(selection);
-
+	glFlush();
 }
 
 void world::update(float deltaTime) {
@@ -45,8 +46,8 @@ void world::update(float deltaTime) {
 
 void world::process_mouse_action(float m_x, float m_y) {
 
-
-	glFlush();
+	draw_selection();
+	
 	glReadBuffer(GL_BACK);
 	unsigned char PixelColor[3];
 	glReadPixels(m_x, m_y, 1, 1, GL_RGB, GL_UNSIGNED_BYTE, &PixelColor);

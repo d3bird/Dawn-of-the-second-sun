@@ -49,8 +49,8 @@ void terrian::draw_selection(Shader* shade) {
 	}
 	else {
 		int start = 0;
-		int render = 255;
-		int total = 255;
+		int render = 254;
+		int total = 254;
 		int increment = total;
 		int remaining = cube_amount;
 
@@ -243,6 +243,7 @@ void terrian::cubes_init() {
 	cube_amount = (x_width * z_width);
 	cube_matrices = new glm::mat4[cube_buffer_size];// the main buffer
 	cube_matrices_selected = new glm::mat4[cube_buffer_size];// the buffer for the selected cubes
+	links = new map_loc[cube_buffer_size];
 
     bool first = true;
 
@@ -260,6 +261,12 @@ void terrian::cubes_init() {
         temp.buffer_loc = i;
         temp.type = 1;
         terrian_map[xloc][zloc] = temp;
+		//create the buffer to map link
+		map_loc temp2;
+		temp2.x = xloc;
+		temp2.z = zloc;
+		links[i] = temp2;
+
         glm::mat4 model = glm::mat4(1.0f);
 		if (x == 0 && z == 0) {
 			y = 2 * cube_offset;
@@ -377,6 +384,8 @@ void terrian::select(unsigned char PixelColor[3]) {
 	//float(id)/colors_amount
 	buffer_loc += offset;
 	std::cout << "cube located at " << buffer_loc<< std::endl;
+	
+	std::cout << "loc x = " << links[buffer_loc].x << ", loc z = " << links[buffer_loc].z << std::endl;
 }
 
 void terrian::space_init() {

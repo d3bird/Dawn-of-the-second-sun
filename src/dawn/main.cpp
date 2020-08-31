@@ -111,13 +111,13 @@ int main() {
 
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         view = camera.GetViewMatrix();
 
         World->set_cam(view);
-       // World->draw();
-        World->draw_selection();
+        World->draw();
+       // World->draw_selection();
 
         glfwSwapBuffers(window);
 

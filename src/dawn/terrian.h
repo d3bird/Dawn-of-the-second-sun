@@ -36,6 +36,11 @@ struct map_tile {
 	int g_cost;//move cost to move to this square
 };
 
+struct map_loc {
+	unsigned int x;
+	unsigned int z;
+};
+
 struct selection_buffer {
 	unsigned int buffer;
 	unsigned int cube_amount;
@@ -120,6 +125,7 @@ private:
 	float cube_offset;
 	map_tile** terrian_map;
 	std::vector<selection_buffer> selection_buffers;
+	map_loc* links;
 
 	//space terrian vars
 	Model *rock;
