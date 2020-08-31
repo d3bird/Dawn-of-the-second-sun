@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "model.h"
 #include "terrian.h"
+#include "object_manger.h"
 #include "creature.h"
 
 
@@ -27,7 +28,7 @@ public:
 	void set_projection(glm::mat4 i) { projection = i; }
 	void set_cam(glm::mat4 i) { view = i;  }
 	void set_terrian(terrian* i) { map = i; }
-
+	void set_object_manger(object_manger* i) { objects = i; }
 	void set_def_shader(Shader* i) { beast_shader = i; }
 
 private:
@@ -51,6 +52,7 @@ private:
 	std::vector<creature*> moving;
 
 	terrian* map;
+	object_manger* objects;
 	Model* beast;
 	glm::mat4* beast_matrices;
 	Shader* beast_shader;

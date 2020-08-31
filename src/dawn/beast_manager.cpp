@@ -105,6 +105,8 @@ void beast_manager::update(float deltaTime) {
 
             trans = glm::translate(trans, glm::vec3(current_loc->x, current_loc->y, current_loc->z));
             beast_matrices[wandering[i]->get_buffer_loc()] = trans;
+             //update held items
+            objects->update_item_matrix(wandering[i]->generate_item_update());
 
             if (reached_z && reached_x) {
                 wandering[i]->pop_nav_point();
@@ -140,6 +142,8 @@ void beast_manager::init() {
 
     for (unsigned int i = 0; i < amount; i++){
         creature* temp = new creature();
+        temp->hold_item(objects->get_item_info());
+        temp->set_scale(4);
         x = nav_points[0]->x * 4;
         z = nav_points[0]->z * 4;
         glm::vec3* start_loc = new glm::vec3(x, y, z);

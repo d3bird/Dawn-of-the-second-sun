@@ -17,13 +17,34 @@
 */
 
 
-struct item{
+//the information on each unique object
+struct item_info {
+	unsigned int item_id;
+	unsigned int buffer_loc;
+	float x, y, z;
+	float x_scale;
+	float y_scale;
+	float z_scale;
+};
+
+//the data needed to render the objects in the world
+struct item {
 	Model* model;
 	unsigned int buffer;
 	unsigned int buffer_size;
 	unsigned int amount;
 	glm::mat4* modelMatrices;
 	Shader* custom_shader;
+	vector<item_info*> item_data;
+};
+
+struct update_pak {
+	unsigned int item_id;
+	unsigned int buffer_loc;
+	float x,y,z;
+	float x_scale;
+	float y_scale;
+	float z_scale;
 };
 
 class object_manger{
@@ -35,6 +56,10 @@ public:
 	void draw();
 	void update(float deltaTime);
 	void init();
+
+	void update_item_matrix(update_pak* data);
+	item_info* get_item_info();
+
 
 	//getters and setters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }

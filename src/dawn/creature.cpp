@@ -4,6 +4,8 @@ creature::creature(){
 	wandering = true;
 	new_point = true;
 	loc = NULL;
+	held_item = NULL;
+	scale_factor = 1;
 }
 
 creature::~creature(){
@@ -35,5 +37,22 @@ glm::vec3* creature::get_next_nav_point() {
 		new_point = true;
 	}
 
+	return output;
+}
+
+
+update_pak* creature::generate_item_update() {
+	update_pak* output = NULL;
+	if (held_item != NULL) {
+		output = new update_pak;
+		output->item_id = held_item->item_id;
+		output->buffer_loc = held_item->item_id;
+		output->x = (loc->x/ scale_factor);
+		output->y = (loc->y/ scale_factor)+ 4;
+		output->z = (loc->z/ scale_factor);
+		output->x_scale = held_item->item_id;
+		output->y_scale = held_item->item_id;
+		output->z_scale = held_item->item_id;
+	}
 	return output;
 }

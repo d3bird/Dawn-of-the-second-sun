@@ -41,7 +41,7 @@ void object_manger::update(float deltaTime) {
 
 void object_manger::init() {
 	std::cout << "creating the object manager" << std::endl;
-
+	//create the differnt objects
 	create_log_objects();
 
 	std::cout << "finished creating the object manager" << std::endl;
@@ -52,6 +52,26 @@ void object_manger::increase_buffer_size() {
 
 }
 
+void object_manger::update_item_matrix(update_pak* data) {
+
+	if (data != NULL && data->item_id < items.size()) {
+		glm::mat4 model = glm::mat4(1.0f);
+		//model = glm::scale(model, glm::vec3(data->x_scale, data->y_scale, data->z_scale));
+		model = glm::translate(model, glm::vec3(data->x, data->y, data->z));
+		items[data->item_id]->modelMatrices[data->buffer_loc] = model;
+		delete data;//clean mem
+	}
+	else {
+		std::cout << "could not update item, item_id out of range" << std::endl;
+	}
+
+}
+
+item_info* object_manger::get_item_info() {
+	item_info* output;// = new item_info;
+	output = items[0]->item_data[0];
+	return output;
+}
 
 void object_manger::create_log_objects() {
 
@@ -70,10 +90,25 @@ void object_manger::create_log_objects() {
 	custom_shader = NULL;
 	model = new Model("resources/objects/log/log.obj");
 
+	float x = 0;
+	float y = 7;
+	float z = 0;
+	float x_scale = 1;
+	float y_scale = 1;
+	float z_scale = 1;
 	glm::mat4 trans = glm::mat4(1.0f);
-	trans = glm::translate(trans, glm::vec3(0, 7, 0));
+	trans = glm::translate(trans, glm::vec3(x, y, z));
 	modelMatrices[0] = trans;
 
+	item_info* temp_data = new item_info;
+	temp_data->x = x;
+	temp_data->y = y;
+	temp_data->z = z;
+	temp_data->x_scale = x_scale;
+	temp_data->y_scale = y_scale;
+	temp_data->z_scale = z_scale;
+	temp_data->item_id = 0;
+	temp_data->buffer_loc = 0;
 
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -108,6 +143,9 @@ void object_manger::create_log_objects() {
 	temp->model = model;
 	temp->modelMatrices = modelMatrices;
 	temp->custom_shader = custom_shader;
+
+	temp->item_data.push_back(temp_data);//add the data for the object
+
 	items.push_back(temp);
 
 }

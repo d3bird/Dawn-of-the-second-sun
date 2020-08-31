@@ -43,7 +43,7 @@ void world::update(float deltaTime) {
 	//Terrian->update(deltaTime);
 	Sky->update(deltaTime);
 	BM->update(deltaTime);
-	//OBJM->update(deltaTime);
+	OBJM->update(deltaTime);
 }
 
 void world::process_mouse_action(float m_x, float m_y) {
@@ -80,6 +80,7 @@ void world::init() {
 	BM->set_terrian(Terrian);
 	BM->set_map_size(Terrian->get_x_width(), Terrian->get_z_width());
 	BM->set_def_shader(lighting_in);
+	BM->set_object_manger(OBJM);
 	BM->init();
 
 	Sky = new sky();
