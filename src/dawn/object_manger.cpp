@@ -200,7 +200,7 @@ void object_manger::create_alter_objects() {
 	temp_data->x_scale = x_scale;
 	temp_data->y_scale = y_scale;
 	temp_data->z_scale = z_scale;
-	temp_data->item_id = 0;
+	temp_data->item_id = 1;
 	temp_data->buffer_loc = 0;
 
 	glGenBuffers(1, &buffer);
