@@ -328,7 +328,6 @@ void terrian::cubes_init() {
 
 	//find_path(8, 0, 0, 0, 3);//conversion to a more accepted type
 	//aStarSearch(src, dest);//private function 
-	
 
 	glGenBuffers(1, &buffer_slected);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
@@ -505,6 +504,15 @@ void terrian::print_map_blocked() {
     else {
         std::cout << "the terrian_map data structure was never created" << std::endl;
     }
+}
+
+void terrian::block_spot(int x_loc, int z_loc) {
+	terrian_map[x_loc][z_loc].blocked = true;
+	//std::cout << "blocking map spot" << std::endl;
+}
+
+glm::vec3 terrian::get_coridents(int x_loc, int z_loc) {
+	return glm::vec3(x_loc * cube_offset,cube_offset, z_loc * cube_offset);
 }
 
 //path finding functions

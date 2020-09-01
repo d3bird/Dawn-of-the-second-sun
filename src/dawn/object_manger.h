@@ -11,6 +11,7 @@
 
 #include "model.h"
 #include "shader.h"
+#include "terrian.h"
 
 /*
 * this class maganges the information about the workshops, items, and misc furniture 
@@ -65,6 +66,7 @@ public:
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 	void set_standered_shader(Shader* i) { common = i; }
+	void set_terrian_obj(terrian* i) { Terrian = i; }
 
 	bool need_cam_updates() { return using_custom_shaders; }
 
@@ -73,12 +75,14 @@ private:
 	void increase_buffer_size();
 
 	void create_log_objects();
-
+	void create_alter_objects();
 	//common vars
 	bool update_projection;
 	bool update_cam;
 
 	bool using_custom_shaders;
+
+	terrian* Terrian;
 
 	glm::mat4 view;
 	glm::mat4 projection;

@@ -62,6 +62,10 @@ public:
 
 	std::vector<glm::vec3*> find_path(int x1, int z1, int x2,int z2, float height);
 
+	void block_spot(int x_loc, int z_loc);
+	glm::vec3 get_coridents(int x_loc, int z_loc);
+
+
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
@@ -75,6 +79,7 @@ public:
 
 	void set_cube_shader(Shader* i) { cube_shader = i; }
 
+	void print_map_blocked();//needs to be out for debugging
 private:
 
 	void draw_space();
@@ -83,7 +88,7 @@ private:
 	void update_cubes(float delta_time);
 
 	void print_map();
-	void print_map_blocked();
+	
 
 	void inline updateBuffer_ter() {
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);

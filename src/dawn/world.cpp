@@ -72,6 +72,7 @@ void world::init() {
 	OBJM->set_projection(projection);
 	OBJM->set_cam(view);
 	OBJM->set_standered_shader(lighting_in);
+	OBJM->set_terrian_obj(Terrian);
 	OBJM->init();
 
 	BM = new beast_manager();
