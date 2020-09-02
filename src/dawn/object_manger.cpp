@@ -179,7 +179,7 @@ void object_manger::create_alter_objects() {
 	Terrian->block_spot(int_x_loc + 1, int_z_loc);
 	Terrian->block_spot(int_x_loc, int_z_loc - 1);
 	Terrian->block_spot(int_x_loc, int_z_loc + 1);
-	Terrian->print_map_blocked();//for debuggin the collision
+	//Terrian->print_map_blocked();//for debuggin the collision
 
 	float x = location.x;
 	float y = location.y;

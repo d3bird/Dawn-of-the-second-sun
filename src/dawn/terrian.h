@@ -15,6 +15,7 @@
 
 #include "model.h"
 #include "shader.h"
+#include "zone.h"
 
 using namespace std;
 typedef pair<int, int> Pair;
@@ -34,6 +35,7 @@ struct map_tile {
 	int type;
 	bool blocked;
 	int g_cost;//move cost to move to this square
+	zone* zoned;
 };
 
 struct map_loc {
@@ -80,6 +82,10 @@ public:
 	void set_cube_shader(Shader* i) { cube_shader = i; }
 
 	void print_map_blocked();//needs to be out for debugging
+	void print_map_zoned();
+
+	void zone_land(type tp, int x1, int y1, int z1, int x2,int y2, int z2);
+
 private:
 
 	void draw_space();
@@ -148,4 +154,6 @@ private:
 	void tracePath(cell** cellDetails, Pair dest);
 	cell** aStarSearch(Pair src, Pair dest);
 
+	//zoning data
+	std::vector<zone*> zones;
 };

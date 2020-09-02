@@ -174,8 +174,8 @@ void terrian::draw_space() {
 }
 
 void terrian::cubes_init() {
-    std::cout << "creating the terrian class (cubes)" << std::endl;
-    draw_mode = 1;
+	std::cout << "creating the terrian class (cubes)" << std::endl;
+	draw_mode = 1;
 	cube_amount_selected = 0;
 
 	if (cube_shader == NULL) {
@@ -184,17 +184,17 @@ void terrian::cubes_init() {
 	else {
 		std::cout << "using premade shader for the cubes" << std::endl;
 	}
-    cube = new Model("resources/objects/cube/cube.obj");
-	
+	cube = new Model("resources/objects/cube/cube.obj");
+
 	x_width = 20;
 	z_width = 20;
 	y_width = 0;
-    cube_offset = 2.0f;
-	
-    terrian_map = new map_tile * [x_width];
-    for (int i = 0; i < x_width; i++) {
-        terrian_map[i] = new map_tile[z_width];
-    }
+	cube_offset = 2.0f;
+
+	terrian_map = new map_tile * [x_width];
+	for (int i = 0; i < x_width; i++) {
+		terrian_map[i] = new map_tile[z_width];
+	}
 
 	/* testing the path finding by setting up a test grid
 	1-- > The cell is not blocked
@@ -245,49 +245,51 @@ void terrian::cubes_init() {
 	cube_matrices_selected = new glm::mat4[cube_buffer_size];// the buffer for the selected cubes
 	links = new map_loc[cube_buffer_size];
 
-    bool first = true;
+	bool first = true;
 
-    unsigned int xloc = 0;
-    unsigned int zloc = 0;
+	unsigned int xloc = 0;
+	unsigned int zloc = 0;
 
 	//creates the plain of cubes
-    for (unsigned int i = 0; i < cube_amount; i++) {
-        map_tile temp;
-        temp.x = x;
-        temp.y = y;
-        temp.z = z;
-        temp.g_cost = 1;
-        temp.blocked = false;
-        temp.buffer_loc = i;
-        temp.type = 1;
-        terrian_map[xloc][zloc] = temp;
+	for (unsigned int i = 0; i < cube_amount; i++) {
+		map_tile temp;
+		temp.x = x;
+		temp.y = y;
+		temp.z = z;
+		temp.g_cost = 1;
+		temp.blocked = false;
+		temp.buffer_loc = i;
+		temp.type = 1;
+		temp.zoned = NULL;
+		terrian_map[xloc][zloc] = temp;
 		//create the buffer to map link
 		map_loc temp2;
 		temp2.x = xloc;
 		temp2.z = zloc;
 		links[i] = temp2;
 
-        glm::mat4 model = glm::mat4(1.0f);
+		glm::mat4 model = glm::mat4(1.0f);
 		if (x == 0 && z == 0) {
 			y = 2 * cube_offset;
-		}else if (x == (cube_offset * (x_width-1)) && z == 0){
+		}
+		else if (x == (cube_offset * (x_width - 1)) && z == 0) {
 			y = 2 * cube_offset;
 		}
 		else {
 			y = 0;
 		}
-        model = glm::translate(model, glm::vec3(x, y, z));
-        cube_matrices[i] = model;
-        x += cube_offset;
-        xloc++;
-        if (x == (cube_offset * x_width)) {
-            z += cube_offset;
-            zloc++;
-            x = 0;
-            xloc = 0;
-        }
+		model = glm::translate(model, glm::vec3(x, y, z));
+		cube_matrices[i] = model;
+		x += cube_offset;
+		xloc++;
+		if (x == (cube_offset * x_width)) {
+			z += cube_offset;
+			zloc++;
+			x = 0;
+			xloc = 0;
+		}
 
-    }
+	}
 
 	x = 0;
 	y = 0;
@@ -320,7 +322,7 @@ void terrian::cubes_init() {
 		cube_amount++;
 	}
 
-    print_map_blocked();
+	//print_map_blocked();
 
 	Pair src = make_pair(8, 0);
 	// Destination is the left-most top-most corner 
@@ -329,39 +331,69 @@ void terrian::cubes_init() {
 	//find_path(8, 0, 0, 0, 3);//conversion to a more accepted type
 	//aStarSearch(src, dest);//private function 
 
+	//test out the map zoning 
+	int x1 = int(get_x_width()) - 3;
+	int y1 = 0;
+	int z1 = int(get_z_width()) - 3;
+
+	int x2 = int(get_x_width());
+	int y2 = 0;
+	int z2 = int(get_z_width());
+	zone_land(ALTER, x1, y1, z1, x2, y2, z2);
+	print_map_zoned();
+
+	x1 = int(get_x_width()) - 5;
+	y1 = 0;
+	z1 = 0;
+
+	x2 = int(get_x_width());
+	y2 = 0;
+	z2 = 4;
+	zone_land(GATHER, x1, y1, z1, x2, y2, z2);
+
+	x1 = 0;
+	y1 = 0;
+	z1 = int(get_z_width()) - 5;
+
+	x2 = 4;
+	y2 = 0;
+	z2 = int(get_z_width());
+	zone_land(SPAWN, x1, y1, z1, x2, y2, z2);
+	print_map_zoned();
+
 	glGenBuffers(1, &buffer_slected);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
 	glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices_selected[0], GL_STATIC_DRAW);
 
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
-    glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices[0], GL_STATIC_DRAW);
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, cube_amount * sizeof(glm::mat4), &cube_matrices[0], GL_STATIC_DRAW);
 
-    for (unsigned int i = 0; i < cube->meshes.size(); i++)
-    {
-        unsigned int VAO = cube->meshes[i].VAO;
-        glBindVertexArray(VAO);
-        // set attribute pointers for matrix (4 times vec4)
-        glEnableVertexAttribArray(3);
-        glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
-        glEnableVertexAttribArray(4);
-        glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
-        glEnableVertexAttribArray(5);
-        glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
-        glEnableVertexAttribArray(6);
-        glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+	for (unsigned int i = 0; i < cube->meshes.size(); i++)
+	{
+		unsigned int VAO = cube->meshes[i].VAO;
+		glBindVertexArray(VAO);
+		// set attribute pointers for matrix (4 times vec4)
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
 
-        glVertexAttribDivisor(3, 1);
-        glVertexAttribDivisor(4, 1);
-        glVertexAttribDivisor(5, 1);
-        glVertexAttribDivisor(6, 1);
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
 
-        glBindVertexArray(0);
-    }
+		glBindVertexArray(0);
+	}
 
 
 
-    std::cout << "finished creating" << std::endl;
+	std::cout << "finished creating" << std::endl;
 }
 
 void terrian::select(unsigned char PixelColor[3]) {
@@ -513,6 +545,85 @@ void terrian::block_spot(int x_loc, int z_loc) {
 
 glm::vec3 terrian::get_coridents(int x_loc, int z_loc) {
 	return glm::vec3(x_loc * cube_offset,cube_offset, z_loc * cube_offset);
+}
+
+//prints out the zoned map
+void terrian::print_map_zoned() {
+	if (terrian_map != NULL) {
+		std::cout << "printing out internal terrian_map representation" << std::endl;
+		for (int x = 0; x < x_width; x++) {
+			for (int z = 0; z < z_width; z++) {
+				if (terrian_map[x][z].zoned != NULL) {
+					switch (terrian_map[x][z].zoned->get_type()) {
+					case SPAWN:
+						std::cout << "1 ";
+						break;
+					case ALTER:
+						std::cout << "2 ";
+						break;
+					case GATHER:
+						std::cout << "3 ";
+						break;
+					default:
+						std::cout << "* ";
+						break;
+					}
+				}
+				else {
+					std::cout << "0 ";
+				}
+			}
+			std::cout << std::endl;
+		}
+	}
+	else {
+		std::cout << "the terrian_map data structure was never created" << std::endl;
+	}
+}
+
+//zone a grid of spaces
+// TODO: account for the blocked spaces
+void terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2) {
+	zone* fresh_zone = new zone(tp);
+	std::cout << "zoning land" << std::endl;
+	if (x1 == x2 && y1 == y2 && z1 == z2) {
+		std::cout << "single space" << std::endl;
+		fresh_zone->add_spot(x1, y1, z1);
+		terrian_map[x1][z1].zoned = fresh_zone;
+	}
+	else {
+		std::cout << "big space" << std::endl;
+		int width;
+		int height;
+		int s_x;//start pos
+		int s_z;
+
+		if (x1 > x2) {
+			s_x = x2;
+			width = x1 - x2;
+		}
+		else {
+			s_x = x1;
+			width = x2 - x1;
+		}
+
+		if (z1 > z2) {
+			s_z = y2;
+			height = z1 - z2;
+		}
+		else {
+			s_z = z1;
+			height = z2 - z1;
+		}
+		std::cout << "start: x = " << s_x << ", y = " << s_z << std::endl;
+		std::cout << "width = " << width << ", height = " << height << std::endl;
+		for (int x = 0; x < width; x++)	{
+			for (int z = 0; z < height; z++) {
+				terrian_map[s_x+x][s_z +z].zoned = fresh_zone;
+			}
+		}
+	}
+	std::cout << "done zoning land" << std::endl;
 }
 
 //path finding functions
