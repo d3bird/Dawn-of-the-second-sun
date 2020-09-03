@@ -21,6 +21,8 @@ public:
 	void draw();
 	void update(float deltaTime);
 
+	void spawn_creature(zone* spawn_zone);
+
 	void init();
 
 	void set_map_size(unsigned int x, unsigned int z) { x_width = x; z_width = z; }
@@ -30,6 +32,8 @@ public:
 	void set_terrian(terrian* i) { map = i; }
 	void set_object_manger(object_manger* i) { objects = i; }
 	void set_def_shader(Shader* i) { beast_shader = i; }
+
+	void assign_task(int creature_id, task* Job);
 
 private:
 
@@ -57,6 +61,6 @@ private:
 	glm::mat4* beast_matrices;
 	Shader* beast_shader;
 	unsigned int amount;
-
+	unsigned int max_amount;
 };
 

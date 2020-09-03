@@ -46,6 +46,8 @@ world* World;
 
 int main() {
 
+    std::cout << "For those who wish for the dawn of the second sun, would also shatter a risen moon."<< std::endl;
+
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);

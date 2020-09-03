@@ -3,6 +3,7 @@
 creature::creature(){
 	wandering = true;
 	new_point = true;
+	holding_item = false;
 	loc = NULL;
 	held_item = NULL;
 	scale_factor = 1;

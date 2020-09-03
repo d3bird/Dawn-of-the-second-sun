@@ -84,7 +84,12 @@ public:
 	void print_map_blocked();//needs to be out for debugging
 	void print_map_zoned();
 
-	void zone_land(type tp, int x1, int y1, int z1, int x2,int y2, int z2);
+	zone* zone_land(type tp, int x1, int y1, int z1, int x2,int y2, int z2);
+
+	//temp functions to get the three zone types for testing
+	zone* get_spawn_zone() { return spawn_zone; }
+	zone* get_alter_zone() { return alter_zone; }
+	zone* get_gather_zone() { return gather_zone; }
 
 private:
 
@@ -156,4 +161,7 @@ private:
 
 	//zoning data
 	std::vector<zone*> zones;
+	zone* spawn_zone;
+	zone* alter_zone;
+	zone* gather_zone;
 };

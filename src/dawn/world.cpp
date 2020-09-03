@@ -91,7 +91,17 @@ void world::init() {
 	Sky->init();
 
 	selection = new Shader("selection.vs", "selection.fs");
+	//std::cout << "printing info" << std::endl;
+	//Terrian->get_spawn_zone()->print_info();
+	//add the creatures
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
 
+	task* temp = new task;
+	temp->Job = SACRIFICE;
+	temp->dest = new glm::vec3(0.0, 0.0, 0.0);
+	BM->assign_task(2, temp);
 }
 
 void world::init_lighting_test() {

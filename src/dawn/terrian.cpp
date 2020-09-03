@@ -339,8 +339,7 @@ void terrian::cubes_init() {
 	int x2 = int(get_x_width());
 	int y2 = 0;
 	int z2 = int(get_z_width());
-	zone_land(ALTER, x1, y1, z1, x2, y2, z2);
-	print_map_zoned();
+	alter_zone = zone_land(ALTER, x1, y1, z1, x2, y2, z2);
 
 	x1 = int(get_x_width()) - 5;
 	y1 = 0;
@@ -349,7 +348,7 @@ void terrian::cubes_init() {
 	x2 = int(get_x_width());
 	y2 = 0;
 	z2 = 4;
-	zone_land(GATHER, x1, y1, z1, x2, y2, z2);
+	gather_zone =	zone_land(GATHER, x1, y1, z1, x2, y2, z2);
 
 	x1 = 0;
 	y1 = 0;
@@ -358,7 +357,8 @@ void terrian::cubes_init() {
 	x2 = 4;
 	y2 = 0;
 	z2 = int(get_z_width());
-	zone_land(SPAWN, x1, y1, z1, x2, y2, z2);
+	spawn_zone = zone_land(SPAWN, x1, y1, z1, x2, y2, z2);
+
 	print_map_zoned();
 
 	glGenBuffers(1, &buffer_slected);
@@ -583,7 +583,7 @@ void terrian::print_map_zoned() {
 
 //zone a grid of spaces
 // TODO: account for the blocked spaces
-void terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2) {
+zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2) {
 	zone* fresh_zone = new zone(tp);
 	std::cout << "zoning land" << std::endl;
 	if (x1 == x2 && y1 == y2 && z1 == z2) {
@@ -620,10 +620,15 @@ void terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2)
 		for (int x = 0; x < width; x++)	{
 			for (int z = 0; z < height; z++) {
 				terrian_map[s_x+x][s_z +z].zoned = fresh_zone;
+
+				fresh_zone->add_spot(s_x + x, y1, s_z + z, false);
 			}
 		}
+		//fresh_zone->print_info();
+		
 	}
 	std::cout << "done zoning land" << std::endl;
+	return fresh_zone;
 }
 
 //path finding functions
