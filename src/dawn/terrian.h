@@ -158,6 +158,8 @@ private:
 	double calculateHValue(int row, int col, Pair dest);
 	void tracePath(cell** cellDetails, Pair dest);
 	cell** aStarSearch(Pair src, Pair dest);
+	bool** closedList;
+
 
 	//zoning data
 	std::vector<zone*> zones;

@@ -10,6 +10,7 @@ terrian::terrian() {
     draw_mode = -1;
 	cube_shader = NULL;
 	draw_selected = false;
+	closedList = NULL;
 }
 
 void terrian::draw() {
@@ -675,6 +676,12 @@ std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float 
 	//	std::cout << "x: " << output[i]->x << " y: " << output[i]->y << " z: " << output[i]->z << std::endl;
 	//}
 
+	//clean used mem
+	for (int i = 0; i < x_width; i++) {
+		delete[]  cellDetails[i];
+	}
+	delete[]  cellDetails;
+
     return output;
 }
 
@@ -777,10 +784,12 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 	// Create a closed list and initialise it to false which means 
 	// that no cell has been included yet 
 
-
-	bool** closedList = new bool* [x_width];
-	for (int i = 0; i < x_width; i++) {
-		closedList[i] = new bool[z_width];
+	if (closedList == NULL) {
+		std::cout << "creating closedList for path fining" << std::endl;
+		closedList = new bool* [x_width];
+		for (int i = 0; i < x_width; i++) {
+			closedList[i] = new bool[z_width];
+		}
 	}
 
 	for (int x = 0; x < x_width; x++) {
