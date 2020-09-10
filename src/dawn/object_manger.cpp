@@ -10,7 +10,7 @@ object_manger::object_manger() {
 }
 
 object_manger::~object_manger() {
-
+	delete blocked_spots;
 }
 
 void object_manger::draw() {
@@ -42,6 +42,7 @@ void object_manger::update(float deltaTime) {
 void object_manger::init() {
 	std::cout << "creating the object manager" << std::endl;
 	//create the differnt objects
+	blocked_spots = new vector<block_loc*>();
 	create_log_objects();
 	create_alter_objects();
 	std::cout << "finished creating the object manager" << std::endl;
@@ -81,7 +82,7 @@ void object_manger::create_log_objects() {
 	glm::mat4* modelMatrices;
 	Shader* custom_shader;
 	Model* model;
-
+	std::string* item_name_t = new std::string("log object");
 	//creating the log item
 	buffer = 0;
 	buffer_size = 1;
@@ -109,6 +110,7 @@ void object_manger::create_log_objects() {
 	temp_data->z_scale = z_scale;
 	temp_data->item_id = 0;
 	temp_data->buffer_loc = 0;
+	temp_data->item_name = item_name_t;
 
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -143,14 +145,14 @@ void object_manger::create_log_objects() {
 	temp->model = model;
 	temp->modelMatrices = modelMatrices;
 	temp->custom_shader = custom_shader;
-
+	temp->item_name = item_name_t;
 	temp->item_data.push_back(temp_data);//add the data for the object
 
 	items.push_back(temp);
 
 }
 
-
+//alter fucntion
 void object_manger::create_alter_objects() {
 
 	unsigned int buffer;
@@ -159,6 +161,7 @@ void object_manger::create_alter_objects() {
 	glm::mat4* modelMatrices;
 	Shader* custom_shader;
 	Model* model;
+	std::string* item_name_t = new std::string("alter object");
 
 	//creating the alter object
 	buffer = 0;
@@ -169,16 +172,24 @@ void object_manger::create_alter_objects() {
 	model = new Model("resources/objects/alter/alter.obj");
 
 	//get the location in respect to the bottom right correner of hte map
-	int int_x_loc = Terrian->get_x_width() - 2;
-	int int_y_loc;
-	int int_z_loc = Terrian->get_z_width() - 2;;
-	glm::vec3 location = Terrian->get_coridents(int_x_loc, int_z_loc);
+	int int_x_loc = 15;
+	int int_y_loc = 1;
+	int int_z_loc = 15;
+	//*2.0 is the cube offset vaule
+	glm::vec3 location = glm::vec3(int_x_loc * 2.0, int_y_loc * 2.0, int_z_loc * 2.0);
 	//block the locations
-	Terrian->block_spot(int_x_loc, int_z_loc);
-	Terrian->block_spot(int_x_loc - 1, int_z_loc);
-	Terrian->block_spot(int_x_loc + 1, int_z_loc);
-	Terrian->block_spot(int_x_loc, int_z_loc - 1);
-	Terrian->block_spot(int_x_loc, int_z_loc + 1);
+	block_loc *loc_temp;
+	loc_temp = new block_loc(int_x_loc, int_z_loc);
+	blocked_spots->push_back(loc_temp);
+	loc_temp = new block_loc(int_x_loc - 1, int_z_loc);
+	blocked_spots->push_back(loc_temp);
+	loc_temp = new block_loc(int_x_loc + 1, int_z_loc);
+	blocked_spots->push_back(loc_temp);
+	loc_temp = new block_loc(int_x_loc, int_z_loc - 1);
+	blocked_spots->push_back(loc_temp);
+	loc_temp = new block_loc(int_x_loc, int_z_loc + 1);
+	blocked_spots->push_back(loc_temp);
+
 	//Terrian->print_map_blocked();//for debuggin the collision
 
 	float x = location.x;
@@ -202,7 +213,8 @@ void object_manger::create_alter_objects() {
 	temp_data->z_scale = z_scale;
 	temp_data->item_id = 1;
 	temp_data->buffer_loc = 0;
-
+	temp_data->item_name = item_name_t;
+	alter = temp_data;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
@@ -236,10 +248,15 @@ void object_manger::create_alter_objects() {
 	temp->model = model;
 	temp->modelMatrices = modelMatrices;
 	temp->custom_shader = custom_shader;
-
+	temp->item_name = item_name_t;
 	temp->item_data.push_back(temp_data);//add the data for the object
 
 	items.push_back(temp);
 
 }
 
+void object_manger::preform_sacrifice(item_info* sac) {
+	std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
+
+
+}

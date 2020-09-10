@@ -62,18 +62,18 @@ void world::init() {
 	//the lighting shader for instanced objects
 	lighting_in = new Shader("lighting_instance.vs", "lighting_instance.fs");
 
-	Terrian = new terrian();
-	Terrian->set_projection(projection);
-	Terrian->set_cam(view);
-	Terrian->set_cube_shader(lighting_in);
-	Terrian->cubes_init();
-
 	OBJM = new object_manger();
 	OBJM->set_projection(projection);
 	OBJM->set_cam(view);
 	OBJM->set_standered_shader(lighting_in);
-	OBJM->set_terrian_obj(Terrian);
 	OBJM->init();
+
+	Terrian = new terrian();
+	Terrian->set_projection(projection);
+	Terrian->set_cam(view);
+	Terrian->set_cube_shader(lighting_in);
+	Terrian->set_object_manger(OBJM);
+	Terrian->cubes_init();	
 
 	BM = new beast_manager();
 	BM->set_projection(projection);
@@ -97,6 +97,10 @@ void world::init() {
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
+
+	//spawn the tasks
+	work_order* new_task = Terrian->generate_work_order(STOCK_OBJ, 5,5,5)[0];
+	Terrian->print_work_order(new_task);
 
 	task* temp = new task;
 	temp->Job = SACRIFICE;

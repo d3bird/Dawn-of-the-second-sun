@@ -293,3 +293,27 @@ void beast_manager::assign_task(int creature_id, task* Job) {
         wandering[creature_id]->add_nav_point(nav_points[i]);
     }
 }
+
+
+void beast_manager::assign_task(task* Job) {
+
+    //wandering[creature_id]->set_current_job(Job);
+    //glm::vec3* start = wandering[creature_id]->get_loc_map();
+    //glm::vec3* destination = Job->dest;
+    //wandering[creature_id]->clear_travel();
+    //std::cout << std::endl;
+    //std::cout << "giving task" << std::endl;
+    //std::cout << start->x << " " << start->z << " " << destination->x << " " <<
+    //    destination->z << " " << start->y << std::endl;
+    //// while (true);
+    //std::vector<glm::vec3*> nav_points =
+    //    map->find_path(start->z, start->x, destination->z, destination->x, start->y);
+
+    //for (size_t i = 0; i < nav_points.size(); i++)
+    //{
+    //    glm::vec3* temp2 = nav_points[i];
+    //    temp2->x *= 4;// compensate for the cubes scale
+    //    temp2->z *= 4;
+    //    wandering[creature_id]->add_nav_point(nav_points[i]);
+    //}
+}

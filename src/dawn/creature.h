@@ -8,14 +8,15 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "object_manger.h"
+#include "terrian.h"
 
 #include <string>
 
-enum job { MOVE_OBJECT, SACRIFICE };
+//sub jobs that break up the main job
+enum sub_job { PICKUP_OBJECT, GATHER_OBJECT, DROP_OBJECT, SACRIFICE };
 
 struct task {
-	job Job;
+	sub_job Job;
 	glm::vec3* dest;
 };
 

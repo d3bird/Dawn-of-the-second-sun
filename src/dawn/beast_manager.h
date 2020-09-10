@@ -8,8 +8,6 @@
 
 #include "shader.h"
 #include "model.h"
-#include "terrian.h"
-#include "object_manger.h"
 #include "creature.h"
 
 
@@ -34,7 +32,7 @@ public:
 	void set_def_shader(Shader* i) { beast_shader = i; }
 
 	void assign_task(int creature_id, task* Job);
-
+	void assign_task(task* Job);
 private:
 
 	float diff_btwn_pnt(float start, float end);
@@ -52,8 +50,8 @@ private:
 	unsigned int x_width;
 	unsigned int z_width;
 
-	std::vector<creature*> wandering;
-	std::vector<creature*> moving;
+	std::vector<creature*> wandering;//all the creatures 
+	std::vector<creature*> need_jobs;
 
 	terrian* map;
 	object_manger* objects;

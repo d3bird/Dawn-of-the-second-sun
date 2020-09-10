@@ -10,10 +10,10 @@
 #include <queue>
 #include <cstdlib>
 #include <ctime>
-#include<random>
+#include <random>
 #include <string>
 
-enum type { SPAWN, ALTER, GATHER };
+enum type { SPAWN, ALTER, STOCKPILE, GATHER };
 
 struct zone_loc { 
 	int x, y, z; 

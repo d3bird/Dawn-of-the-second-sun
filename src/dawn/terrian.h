@@ -16,6 +16,7 @@
 #include "model.h"
 #include "shader.h"
 #include "zone.h"
+#include "object_manger.h"
 
 using namespace std;
 typedef pair<int, int> Pair;
@@ -36,6 +37,7 @@ struct map_tile {
 	bool blocked;
 	int g_cost;//move cost to move to this square
 	zone* zoned;
+	item_info* item_on_top;
 };
 
 struct map_loc {
@@ -47,6 +49,21 @@ struct selection_buffer {
 	unsigned int buffer;
 	unsigned int cube_amount;
 };
+
+//the two objects that needed to generate tasks
+//the job 
+enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, MOVE_C };//overall
+enum action { PICK_UP, DROP, SAC_OBJ, MOVE };//the action required
+//job and item that needs to be interacted with
+struct work_order {
+	work_jobs job;
+	action *action_rq;
+	unsigned int action_numbers;
+	item_info* object;//the object that needs the interaction (also usally the start point
+	glm::vec3* destination;//where the object needs to go (if it needs to be moved 
+	bool arrived;
+};
+
 
 class terrian{
 public:
@@ -67,6 +84,17 @@ public:
 	void block_spot(int x_loc, int z_loc);
 	glm::vec3 get_coridents(int x_loc, int z_loc);
 
+	//zoning function
+	zone* zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2);
+
+	//temp functions to get the three zone types for testing
+	zone* get_spawn_zone() { return spawn_zone; }
+	zone* get_alter_zone() { return alter_zone; }
+	zone* get_gather_zone() { return gather_zone; }
+
+	//task creation function
+	void print_work_order(work_order* wo);
+	std::vector<work_order*> generate_work_order(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -80,16 +108,10 @@ public:
 	unsigned int get_z_width() { return z_width; }
 
 	void set_cube_shader(Shader* i) { cube_shader = i; }
-
+	void set_object_manger(object_manger* i) { OBJM = i; }
 	void print_map_blocked();//needs to be out for debugging
 	void print_map_zoned();
 
-	zone* zone_land(type tp, int x1, int y1, int z1, int x2,int y2, int z2);
-
-	//temp functions to get the three zone types for testing
-	zone* get_spawn_zone() { return spawn_zone; }
-	zone* get_alter_zone() { return alter_zone; }
-	zone* get_gather_zone() { return gather_zone; }
 
 private:
 
@@ -125,6 +147,7 @@ private:
 	unsigned int buffer_slected;
 	glm::mat4 view;
 	glm::mat4 projection;
+	object_manger* OBJM;
 
 	//cube terrian vars
 	Model* cube;
@@ -166,4 +189,5 @@ private:
 	zone* spawn_zone;
 	zone* alter_zone;
 	zone* gather_zone;
+	zone* stockpile_zone;
 };

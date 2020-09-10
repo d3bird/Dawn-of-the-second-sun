@@ -262,6 +262,7 @@ void terrian::cubes_init() {
 		temp.buffer_loc = i;
 		temp.type = 1;
 		temp.zoned = NULL;
+		temp.item_on_top = NULL;
 		terrian_map[xloc][zloc] = temp;
 		//create the buffer to map link
 		map_loc temp2;
@@ -359,8 +360,30 @@ void terrian::cubes_init() {
 	y2 = 0;
 	z2 = int(get_z_width());
 	spawn_zone = zone_land(SPAWN, x1, y1, z1, x2, y2, z2);
+	
+	x1 = 5;
+	y1 = 0;
+	z1 = 5;
+
+	x2 = 10;
+	y2 = 0;
+	z2 = 10;
+	stockpile_zone = zone_land(STOCKPILE, x1, y1, z1, x2, y2, z2);
 
 	print_map_zoned();
+
+	//block off the land from the objects that take up space
+	std::vector< block_loc*> *blocked_loc = OBJM->get_blocked_spots();
+	std::cout << "amount of blocked spaces from objects = " << blocked_loc->size() << std::endl;
+	for (int i = 0; i < blocked_loc->size(); i++) {
+		block_loc* loc_temp = (*blocked_loc)[i];
+
+		std::cout << "x = " << loc_temp->x << " z = " << loc_temp->z << std::endl;
+		block_spot(loc_temp->x, loc_temp->z);
+		delete loc_temp;
+	}
+	blocked_loc->clear();
+	//print_map_blocked();
 
 	glGenBuffers(1, &buffer_slected);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
@@ -565,6 +588,9 @@ void terrian::print_map_zoned() {
 					case GATHER:
 						std::cout << "3 ";
 						break;
+					case STOCKPILE:
+						std::cout << "4 ";
+						break;
 					default:
 						std::cout << "* ";
 						break;
@@ -584,6 +610,7 @@ void terrian::print_map_zoned() {
 
 //zone a grid of spaces
 // TODO: account for the blocked spaces
+
 zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2) {
 	zone* fresh_zone = new zone(tp);
 	std::cout << "zoning land" << std::endl;
@@ -632,8 +659,142 @@ zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2
 	return fresh_zone;
 }
 
-//path finding functions
+//task creation function
+void terrian::print_work_order(work_order* wo) {
+	std::cout << "printing a work order" << std::endl;
+	if (wo != NULL) {
+		std::string obj;
+		std::string action;
+		std::string overall_job;
 
+		switch (wo->job) {
+		case STOCK_OBJ:
+			overall_job = "STOCK_OBJ";
+			break;
+		case SACRIFICE_OBJ:
+			overall_job = "SACRIFICE_OBJ";
+			break;
+		case MOVE_C:
+			overall_job = "MOVE_C";
+			break;
+		default:
+			overall_job = "not on list of approved jobs";
+			break;
+		}
+
+		std::cout << "overall job = " << overall_job << std::endl;
+		if (wo->object != NULL) {
+			//obj = *(wo->object->item_name);
+		}
+		else {
+
+		}
+		obj = "NULL";
+
+		for (int i = 0; i < wo->action_numbers; i++) {
+			switch (wo->action_rq[i]) {
+			case PICK_UP:
+				std::cout << "action required: PICK_UP" << std::endl;
+				break;
+			case DROP:
+				std::cout << "action required: DROP" << std::endl;
+				break;
+			case SAC_OBJ:
+				std::cout << "action required: SAC_OBJ" << std::endl;
+				break;
+			case MOVE:
+				std::cout << "action required: MOVE" << std::endl;
+				break;
+			default:
+				std::cout << "not on list of approved actions" << std::endl;
+				break;
+			}
+		}
+
+		std::cout << "object needed = " << obj << std::endl;
+
+		if (wo->destination != NULL) {
+			float x = wo->destination->x;
+			float z = wo->destination->z;
+			printf("destination = %f , %f \n", x, z);
+		}
+		else {
+			std::cout << "destination  = NULL" << std::endl;
+		}
+		
+		std::cout << "has arrived: " << wo->arrived << std::endl;
+	}
+	else {
+		std::cout << "not a work order" << std::endl;
+	}
+}
+
+std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1, int x2, int y2, int z2) {
+	std::cout << "creating work order" << std::endl;
+	std::vector<work_order*> output;
+
+	work_order* temp;
+
+	//generates one work order
+	if ((x1 == x2 && y1 == y2 && z1 == z2) || (x2 == -1 || y2 == -1 || z2 == -1)) {
+		std::cout << "single space" << std::endl;
+		temp = new work_order;
+		temp->job = work_job;//the overall job
+		item_info* obj_dest;
+		temp->arrived = false;
+		if (terrian_map[x1][z1].item_on_top == NULL) {
+			obj_dest = NULL;
+			std::cout << "no item on top, this might create errors" << std::endl;
+		}
+		else {
+			obj_dest = terrian_map[x1][z1].item_on_top;
+		}
+
+		unsigned int action_numbers;
+		switch (work_job)
+		{
+		case STOCK_OBJ:
+			action_numbers = 3;
+			temp->action_numbers = action_numbers;
+			temp->action_rq = new action[action_numbers];
+			temp->action_rq[0] = PICK_UP;
+			temp->action_rq[1] = MOVE;
+			temp->action_rq[2] = DROP;
+			break;
+		case SACRIFICE_OBJ:
+			action_numbers = 3;
+			temp->action_numbers = action_numbers;
+			temp->action_rq = new action[action_numbers];
+			temp->action_rq[0] = PICK_UP;
+			temp->action_rq[1] = MOVE;
+			temp->action_rq[2] = SAC_OBJ;
+			break;
+		case MOVE_C:
+			action_numbers = 1;
+			temp->action_numbers = action_numbers;
+			temp->action_rq = new action[action_numbers];
+			temp->action_rq[0] = MOVE;
+			break;
+		default:
+			break;
+		}
+
+		temp->destination = NULL;//
+
+		output.push_back(temp);
+
+		//print_work_order(temp);
+
+	}
+	else {//for generating multiple work orders
+		std::cout << "multiple spaces" << std::endl;
+
+	}
+
+	return output;
+}
+
+//path finding functions
 std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float height) {
     vector<glm::vec3*> output;
 
