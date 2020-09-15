@@ -48,7 +48,7 @@ bool beast_manager::determin_direction(float start, float end) {
 }
 
 void beast_manager::update(float deltaTime) {
-    float speed = deltaTime * 8;
+    float speed = deltaTime * 30;
 
     glm::mat4 trans = glm::mat4(1.0f);
     glm::vec3* nav_point;
@@ -134,6 +134,8 @@ void beast_manager::update(float deltaTime) {
                         int z1 = all_creatures[i]->get_loc_map_z();
                         int x2 = current_job->destination[1].x;
                         int z2 = current_job->destination[1].z;
+                        all_creatures[i]->set_loc_map_x_d(x2);
+                        all_creatures[i]->set_loc_map_z_d(z2);
                         std::cout << "x1 = " << x1 << " z1 = " << z1 << " x2 = " << x2 << " z2 = " << z2 << std::endl;
                   
                         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
@@ -153,7 +155,10 @@ void beast_manager::update(float deltaTime) {
             }
         }
         else {//for debuggin only
-          // std::cout << "no nav point for " << i<<std::endl;
+            if (jobs_backlog.size() > 0) {
+                assign_backlog_task(jobs_backlog.front());
+                jobs_backlog.pop();
+            }
         }
 
     }
@@ -321,27 +326,37 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 }
 
 //old code not being used
-void beast_manager::assign_task(int creature_id, task* Job) {
+void beast_manager::assign_backlog_task(work_order* Job) {
+    creature* Creature = need_jobs[need_jobs.size() - 1];
+    //Creature->map_loc_check();
+    Creature->set_has_job_buffer_loc(have_jobs.size());
+    have_jobs.push_back(Creature);
+    need_jobs.pop_back();
+    std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
+    int x1 = Creature->get_loc_map_x();
+    int z1 = Creature->get_loc_map_z();
+    int x2 = Job->destination[0].x;
+    int z2 = Job->destination[0].z;
+    Creature->set_loc_map_x_d(x2);
+    Creature->set_loc_map_z_d(z2);
+    std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+        << x2 << " " << z2 << std::endl;
+    std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
-    all_creatures[creature_id]->set_current_job(Job);
-    glm::vec3* start = all_creatures[creature_id]->get_loc_map();
-    glm::vec3* destination = Job->dest;
-    all_creatures[creature_id]->clear_travel();
-    std::cout << std::endl;
-    std::cout <<"giving task"<< std::endl;
-    std::cout << start->x<<" "<< start->z << " " << destination->x << " " <<
-        destination->z<<" "<< start->y << std::endl;
-   // while (true);
-    std::vector<glm::vec3*> nav_points = 
-        map->find_path(start->z, start->x, destination->z, destination->x, start->y);
-
-    for (size_t i = 0; i < nav_points.size(); i++)
-    {
-        glm::vec3* temp2 = nav_points[i];
-        temp2->x *= 4;// compensate for the cubes scale
-        temp2->z *= 4;
-        all_creatures[creature_id]->add_nav_point(nav_points[i]);
+    if (nav_points.size() > 0) {
+        for (size_t i = 0; i < nav_points.size(); i++)
+        {
+            glm::vec3* temp2 = nav_points[i];
+            temp2->x *= 4;// compensate for the cubes scale
+            temp2->z *= 4;
+            Creature->add_nav_point(nav_points[i]);
+        }
     }
+    Creature->set_current_work_order(Job);
+
+
+    std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+    std::cout << "have_jobs = " << have_jobs.size() << std::endl;
 }
 
 void beast_manager::create_tasks(work_order* Job) {
@@ -378,7 +393,7 @@ void beast_manager::create_tasks(work_order* Job) {
         std::cout << "have_jobs = " << have_jobs.size() << std::endl;
     }
     else {
-        jobs_backlog.push_back(Job);
+        jobs_backlog.push(Job);
         std::cout << "no open workers, adding to the backlog" << std::endl;
     }
     std::cout << "finished creating task" << std::endl;
@@ -389,12 +404,15 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
     switch (Job->action_rq[Job->currently_on]){
     case PICK_UP:
         std::cout << "picking up item" << std::endl;
+        npc->hold_item(Job->object);
         break;
     case DROP:
         std::cout << "dropping item" << std::endl;
+        npc->drop_item();
         break;
     case SAC_OBJ:
         std::cout << "sacrificing item" << std::endl;
+        npc->drop_item();
         break;
     default:
         std::cout << "nothing needs to be done here" << std::endl;

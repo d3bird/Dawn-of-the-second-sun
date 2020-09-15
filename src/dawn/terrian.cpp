@@ -1,5 +1,5 @@
 #include "terrian.h"
-#include <engine/shader.h>
+
 
 terrian::terrian() {
 
@@ -773,6 +773,7 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			location_amount = 2;
 			temp->action_numbers = action_numbers;
 			temp->location_amount = location_amount;
+			temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
 			temp->destination = new map_loc[location_amount];
 			temp->destination[0].x = x1;
 			temp->destination[0].y =y1;

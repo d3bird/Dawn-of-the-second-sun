@@ -48,6 +48,7 @@ public:
 	bool need_new_point() { return new_point; }
 
 	void hold_item(item_info* i) { held_item = i; holding_item = true; }
+	void drop_item() { held_item = NULL; holding_item = false; }
 	bool is_holding_item() { return holding_item; }
 
 	update_pak* generate_item_update();
@@ -78,6 +79,7 @@ public:
 	int get_loc_map_z_d() { return dz; }
 
 	void swap_dest_loc();
+	void map_loc_check();
 
 	void set_has_job_buffer_loc(unsigned int i) { has_job_buffer_loc = i; }
 	unsigned int get_has_job_buffer_loc() { return has_job_buffer_loc; }

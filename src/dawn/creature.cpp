@@ -63,3 +63,15 @@ void creature::swap_dest_loc() {
 	y = dy;
 	z = dz;
 }
+
+void creature::map_loc_check() {
+	if (x != dx) {
+		x = dx;
+	}
+	if (y != dy) {
+		y = dy;
+	}
+	if (z != dz) {
+		z = dz;
+	}
+}

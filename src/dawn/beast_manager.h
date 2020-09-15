@@ -31,10 +31,8 @@ public:
 	void set_object_manger(object_manger* i) { objects = i; }
 	void set_def_shader(Shader* i) { beast_shader = i; }
 
-	void assign_task(int creature_id, task* Job);
-	void assign_task(task* Job);
-
 	void create_tasks(work_order* Job);
+	void assign_backlog_task(work_order* Job);
 
 private:
 
@@ -60,7 +58,7 @@ private:
 	std::vector<creature*> need_jobs;
 	std::vector<creature*> have_jobs;
 
-	std::vector< work_order*> jobs_backlog;
+	std::queue< work_order*> jobs_backlog;
 
 	terrian* map;
 	object_manger* objects;
