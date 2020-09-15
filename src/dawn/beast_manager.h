@@ -40,6 +40,9 @@ private:
 
 	float diff_btwn_pnt(float start, float end);
 
+	void preform_action(work_order* Job, creature* npc);
+	void remove_from_has_jobs(creature* npc);
+
 	void inline updateBuffer() {
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &beast_matrices[0], GL_STATIC_DRAW);

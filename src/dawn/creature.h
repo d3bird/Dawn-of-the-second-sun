@@ -79,6 +79,9 @@ public:
 
 	void swap_dest_loc();
 
+	void set_has_job_buffer_loc(unsigned int i) { has_job_buffer_loc = i; }
+	unsigned int get_has_job_buffer_loc() { return has_job_buffer_loc; }
+
 	//not implemented yet
 	unsigned int get_id() { return id; }
 	void set_id(unsigned int i) { id = i; }
@@ -91,6 +94,8 @@ private:
 	std::string name;
 	unsigned int id;
 	unsigned int buffer_loc;
+
+	unsigned int has_job_buffer_loc;
 
 	bool wandering;
 	bool new_point;

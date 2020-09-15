@@ -59,9 +59,11 @@ enum action { PICK_UP, DROP, SAC_OBJ, MOVE };//the action required
 struct work_order {
 	work_jobs job;
 	action *action_rq;
-	unsigned int action_numbers;
 	unsigned int currently_on;
+	unsigned int action_numbers;
+	unsigned int act_currently_on;
 	unsigned int location_amount;
+	unsigned int loc_currently_on;
 	item_info* object;//the object that needs the interaction (also usally the start point
 	map_loc* destination;//where the object needs to go (if it needs to be moved 
 	bool arrived;

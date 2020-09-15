@@ -383,7 +383,7 @@ void terrian::cubes_init() {
 		delete loc_temp;
 	}
 	blocked_loc->clear();
-	print_map_blocked();
+	//print_map_blocked();
 
 	glGenBuffers(1, &buffer_slected);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
@@ -414,8 +414,6 @@ void terrian::cubes_init() {
 
 		glBindVertexArray(0);
 	}
-
-
 
 	std::cout << "finished creating" << std::endl;
 }
@@ -741,6 +739,8 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		std::cout << "single space" << std::endl;
 		temp = new work_order;
 		temp->job = work_job;//the overall job
+		temp->act_currently_on = 0;
+		temp->loc_currently_on = 0;
 		temp->currently_on = 0;
 		item_info* obj_dest;
 		temp->arrived = false;
@@ -755,28 +755,36 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 
 		unsigned int action_numbers;
 		unsigned int location_amount;
+
 		switch (work_job){
 		case STOCK_OBJ:
-			action_numbers = 3;
+			action_numbers = 2;
 			location_amount = 3;
 			temp->action_numbers = action_numbers;	
 			temp->location_amount = location_amount;
 			temp->destination = new map_loc[location_amount];
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = PICK_UP;
-			temp->action_rq[1] = MOVE;
-			temp->action_rq[2] = DROP;
+			//temp->action_rq[1] = MOVE;
+			temp->action_rq[1] = DROP;
 			break;
 		case SACRIFICE_OBJ:
-			action_numbers = 3;
-			location_amount = 3;
+			action_numbers = 2;
+			location_amount = 2;
 			temp->action_numbers = action_numbers;
 			temp->location_amount = location_amount;
 			temp->destination = new map_loc[location_amount];
+			temp->destination[0].x = x1;
+			temp->destination[0].y =y1;
+			temp->destination[0].z = z1;
+
+			temp->destination[1].x = alter_zone->get_alter_loc()->x;
+			temp->destination[1].y = alter_zone->get_alter_loc()->y;
+			temp->destination[1].z = alter_zone->get_alter_loc()->z;
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = PICK_UP;
-			temp->action_rq[1] = MOVE;
-			temp->action_rq[2] = SAC_OBJ;
+			//temp->action_rq[1] = MOVE;
+			temp->action_rq[1] = SAC_OBJ;
 			break;
 		case MOVE_C:
 			action_numbers = 1;

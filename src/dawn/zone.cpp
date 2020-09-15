@@ -41,7 +41,6 @@ void zone::unblock_spot(int x, int y, int z) {
 zone_loc* zone::get_spawn_loc() {
 	
 	//std::cout << "spawning function, "<< open_spots.size()<<" " << std::endl;
-
 	if (open_spots.size() > 0) {
 		if (current_type == SPAWN) {
 			int temp = open_spots.size();
@@ -66,6 +65,34 @@ zone_loc* zone::get_spawn_loc() {
 	return NULL;
 }
 
+zone_loc* zone::get_alter_loc() {
+	std::cout << "getting open spot in alter zone" << std::endl;
+	print_info();
+	if (current_type == ALTER) {
+		if (open_spots.size() > 0) {
+
+			return open_spots[0];
+		}
+		else {
+			std::cout << "no open spots in alter zone" << std::endl;
+		}
+	}
+	else {
+		std::cout << "not a alter zone" << std::endl;
+	}
+	return NULL;
+}
+
+zone_loc* zone::get_stockpile_loc() {
+
+	if (current_type == STOCKPILE) {
+
+	}
+	else {
+		std::cout << "not a stockpile zone" << std::endl;
+	}
+	return NULL;
+}
 
 void zone::print_info() {
 	std::string type_s ="Asd";
@@ -76,10 +103,10 @@ void zone::print_info() {
 		type_s = "SPAWN";
 		break;
 	case ALTER:
-		type_s = "SPAWN";
+		type_s = "ALTER";
 		break;
 	case GATHER:
-		type_s = "SPAWN";
+		type_s = "GATHER";
 		break;
 	default:
 		type_s = "DEF";

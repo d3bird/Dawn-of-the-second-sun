@@ -38,6 +38,8 @@ public:
 	type get_type() { return current_type; }
 
 	zone_loc* get_spawn_loc();
+	zone_loc* get_alter_loc();
+	zone_loc* get_stockpile_loc();
 
 	void print_info();
 
