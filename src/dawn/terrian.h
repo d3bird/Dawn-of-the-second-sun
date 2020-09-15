@@ -42,6 +42,7 @@ struct map_tile {
 
 struct map_loc {
 	unsigned int x;
+	unsigned int y;
 	unsigned int z;
 };
 
@@ -59,8 +60,10 @@ struct work_order {
 	work_jobs job;
 	action *action_rq;
 	unsigned int action_numbers;
+	unsigned int currently_on;
+	unsigned int location_amount;
 	item_info* object;//the object that needs the interaction (also usally the start point
-	glm::vec3* destination;//where the object needs to go (if it needs to be moved 
+	map_loc* destination;//where the object needs to go (if it needs to be moved 
 	bool arrived;
 };
 
@@ -95,6 +98,7 @@ public:
 	//task creation function
 	void print_work_order(work_order* wo);
 	std::vector<work_order*> generate_work_order(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
+	void delete_work_order(work_order* work_job);
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }

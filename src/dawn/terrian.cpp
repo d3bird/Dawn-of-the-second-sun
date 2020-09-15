@@ -383,7 +383,7 @@ void terrian::cubes_init() {
 		delete loc_temp;
 	}
 	blocked_loc->clear();
-	//print_map_blocked();
+	print_map_blocked();
 
 	glGenBuffers(1, &buffer_slected);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer_slected);
@@ -690,7 +690,8 @@ void terrian::print_work_order(work_order* wo) {
 
 		}
 		obj = "NULL";
-
+		std::cout << "action currently on " << wo->currently_on << std::endl;
+		std::cout << "total action " << wo->action_numbers << std::endl;
 		for (int i = 0; i < wo->action_numbers; i++) {
 			switch (wo->action_rq[i]) {
 			case PICK_UP:
@@ -740,8 +741,10 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		std::cout << "single space" << std::endl;
 		temp = new work_order;
 		temp->job = work_job;//the overall job
+		temp->currently_on = 0;
 		item_info* obj_dest;
 		temp->arrived = false;
+	
 		if (terrian_map[x1][z1].item_on_top == NULL) {
 			obj_dest = NULL;
 			std::cout << "no item on top, this might create errors" << std::endl;
@@ -751,11 +754,14 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		}
 
 		unsigned int action_numbers;
-		switch (work_job)
-		{
+		unsigned int location_amount;
+		switch (work_job){
 		case STOCK_OBJ:
 			action_numbers = 3;
-			temp->action_numbers = action_numbers;
+			location_amount = 3;
+			temp->action_numbers = action_numbers;	
+			temp->location_amount = location_amount;
+			temp->destination = new map_loc[location_amount];
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = PICK_UP;
 			temp->action_rq[1] = MOVE;
@@ -763,7 +769,10 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			break;
 		case SACRIFICE_OBJ:
 			action_numbers = 3;
+			location_amount = 3;
 			temp->action_numbers = action_numbers;
+			temp->location_amount = location_amount;
+			temp->destination = new map_loc[location_amount];
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = PICK_UP;
 			temp->action_rq[1] = MOVE;
@@ -771,7 +780,13 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			break;
 		case MOVE_C:
 			action_numbers = 1;
+			location_amount = 1;
 			temp->action_numbers = action_numbers;
+			temp->location_amount = location_amount;
+			temp->destination = new map_loc[location_amount];
+			temp->destination->x = x1;
+			temp->destination->y = y1;
+			temp->destination->z = z1;
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = MOVE;
 			break;
@@ -779,7 +794,6 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			break;
 		}
 
-		temp->destination = NULL;//
 
 		output.push_back(temp);
 
@@ -794,7 +808,16 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 	return output;
 }
 
+void terrian::delete_work_order(work_order* work_job) {
+	work_job->object = NULL;
+	delete[] work_job->destination;
+	delete[] work_job->action_rq;
+	delete work_job;
+}
+
 //path finding functions
+
+//makesure to swap the input of x and z due to the implementtion of the function
 std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float height) {
     vector<glm::vec3*> output;
 

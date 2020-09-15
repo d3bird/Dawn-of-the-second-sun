@@ -33,6 +33,9 @@ public:
 
 	void assign_task(int creature_id, task* Job);
 	void assign_task(task* Job);
+
+	void create_tasks(work_order* Job);
+
 private:
 
 	float diff_btwn_pnt(float start, float end);
@@ -50,8 +53,11 @@ private:
 	unsigned int x_width;
 	unsigned int z_width;
 
-	std::vector<creature*> wandering;//all the creatures 
+	std::vector<creature*> all_creatures;//all the creatures 
 	std::vector<creature*> need_jobs;
+	std::vector<creature*> have_jobs;
+
+	std::vector< work_order*> jobs_backlog;
 
 	terrian* map;
 	object_manger* objects;

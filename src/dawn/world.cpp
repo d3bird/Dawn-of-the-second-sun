@@ -61,19 +61,22 @@ void world::init() {
 
 	//the lighting shader for instanced objects
 	lighting_in = new Shader("lighting_instance.vs", "lighting_instance.fs");
-
+	selection = new Shader("selection.vs", "selection.fs");
+	std::cout << std::endl;
 	OBJM = new object_manger();
 	OBJM->set_projection(projection);
 	OBJM->set_cam(view);
 	OBJM->set_standered_shader(lighting_in);
 	OBJM->init();
+	std::cout << std::endl;
 
 	Terrian = new terrian();
 	Terrian->set_projection(projection);
 	Terrian->set_cam(view);
 	Terrian->set_cube_shader(lighting_in);
 	Terrian->set_object_manger(OBJM);
-	Terrian->cubes_init();	
+	Terrian->cubes_init();
+	std::cout << std::endl;
 
 	BM = new beast_manager();
 	BM->set_projection(projection);
@@ -83,29 +86,33 @@ void world::init() {
 	BM->set_def_shader(lighting_in);
 	BM->set_object_manger(OBJM);
 	BM->init();
+	std::cout << std::endl;
 
 	Sky = new sky();
 	Sky->set_projection(projection);
 	Sky->set_cam(view);
 	Sky->set_width(Terrian->get_x_width(), Terrian->get_y_width(), Terrian->get_z_width());
 	Sky->init();
+	std::cout << std::endl;
 
-	selection = new Shader("selection.vs", "selection.fs");
 	//std::cout << "printing info" << std::endl;
 	//Terrian->get_spawn_zone()->print_info();
+
 	//add the creatures
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	std::cout << std::endl;
 
 	//spawn the tasks
-	work_order* new_task = Terrian->generate_work_order(STOCK_OBJ, 5,5,5)[0];
+	work_order* new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
 	Terrian->print_work_order(new_task);
+	BM->create_tasks(new_task);
 
-	task* temp = new task;
-	temp->Job = SACRIFICE;
-	temp->dest = new glm::vec3(0.0, 0.0, 0.0);
-	BM->assign_task(2, temp);
+	new_task = Terrian->generate_work_order(MOVE_C, 0, 5, 0)[0];
+	Terrian->print_work_order(new_task);
+	BM->create_tasks(new_task);
 }
 
 void world::init_lighting_test() {

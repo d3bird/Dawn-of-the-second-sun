@@ -1,7 +1,7 @@
 #include "beast_manager.h"
 
 beast_manager::beast_manager(){
-	amount = 1;
+	amount = 0;
     max_amount = 4;
     beast_shader = NULL;
 }
@@ -54,15 +54,15 @@ void beast_manager::update(float deltaTime) {
     glm::vec3* nav_point;
     glm::vec3* current_loc;
 
-    //procces the wandering beasts
-    for (unsigned int i = 0; i < wandering.size(); i++) {
+    //procces the all_creatures beasts
+    for (unsigned int i = 0; i < all_creatures.size(); i++) {
         trans = glm::mat4(1.0f);
-        nav_point = wandering[i]->get_next_nav_point();
+        nav_point = all_creatures[i]->get_next_nav_point();
 
 
         if (nav_point != NULL) {
 
-            current_loc = wandering[i]->get_loc();
+            current_loc = all_creatures[i]->get_loc();
             trans = glm::scale(trans, glm::vec3(0.25, 0.25, 0.25));
 
             bool reached_x = false;
@@ -105,13 +105,17 @@ void beast_manager::update(float deltaTime) {
             }
 
             trans = glm::translate(trans, glm::vec3(current_loc->x, current_loc->y, current_loc->z));
-            beast_matrices[wandering[i]->get_buffer_loc()] = trans;
+            beast_matrices[all_creatures[i]->get_buffer_loc()] = trans;
              //update held items
-            if (wandering[i]->is_holding_item()) {
-                objects->update_item_matrix(wandering[i]->generate_item_update());
+            if (all_creatures[i]->is_holding_item()) {
+                objects->update_item_matrix(all_creatures[i]->generate_item_update());
             }
+
             if (reached_z && reached_x) {
-                wandering[i]->pop_nav_point();
+                all_creatures[i]->pop_nav_point();
+                if (all_creatures[i]->get_travel_que_size() == 0) {
+                    std::cout << "out of travel points" << std::endl;
+                }
             }
         }
         else {//for debuggin only
@@ -140,9 +144,9 @@ void beast_manager::init() {
     float y = 3;
     float z = 0;
 
-    std::vector<glm::vec3*> nav_points= map->find_path(8, 0, 0, 0, 3);
+   /* std::vector<glm::vec3*> nav_points = map->find_path(8, 0, 0, 0, 3);
 
-    for (unsigned int i = 0; i < amount; i++){
+   for (unsigned int i = 0; i < amount; i++){
         creature* temp = new creature();
         temp->hold_item(objects->get_item_info());
         temp->set_scale(4);
@@ -184,10 +188,15 @@ void beast_manager::init() {
             temp->add_nav_point(nav_points[i]);
         }
 
-        wandering.push_back(temp);
+       // all_creatures.push_back(temp);
         
         x += 4;
-    }
+    }*/
+
+    need_jobs = all_creatures;
+
+    std::cout << "all_creatures list = " << all_creatures.size() << std::endl;
+    std::cout << "need_jobs list = " << need_jobs.size() << std::endl;
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -230,11 +239,16 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
             std::cout << "failed to spawn a creature" << std::endl;
             return;
         }
-        //the map locaions
-        float x = spawn_loc->x;
-        float y = spawn_loc->y + 7;
-        float z = spawn_loc->z;
-        glm::vec3* start_loc_map = new glm::vec3(x, y-7, z);
+
+        //the map 
+        int x_m = spawn_loc->x;
+        int y_m = spawn_loc->y + 7;
+        int z_m = spawn_loc->z;
+
+        float x = x_m;
+        float y = y_m;
+        float z = z_m;
+        glm::vec3* start_loc_map = new glm::vec3(x, y - 7, z);
         //factor in the cube offset
         x *= 2.0;
 
@@ -246,7 +260,7 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 
         glm::vec3* start_loc = new glm::vec3(x, y, z);
 
-
+        std::cout << "x_m = " << x_m<< " y_m = " << y_m << " z_m = " << z_m << std::endl;
         std::cout << "x = " << x / 4 << " y = " << y << " z = " << z / 4 << std::endl;
 
         creature* temp = new creature();
@@ -263,20 +277,22 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
         trans = glm::translate(trans, glm::vec3(x, y, z));
         beast_matrices[amount] = trans;
         amount++;
-        wandering.push_back(temp);
+        all_creatures.push_back(temp);
+        temp->set_loc_map_int(spawn_loc->x, spawn_loc->y, spawn_loc->z);
+        need_jobs.push_back(temp);
     }
     else {
         std::cout << "can not spawn another creature, buffer filled" << std::endl;
     }
 }
 
-
+//old code not being used
 void beast_manager::assign_task(int creature_id, task* Job) {
 
-    wandering[creature_id]->set_current_job(Job);
-    glm::vec3* start = wandering[creature_id]->get_loc_map();
+    all_creatures[creature_id]->set_current_job(Job);
+    glm::vec3* start = all_creatures[creature_id]->get_loc_map();
     glm::vec3* destination = Job->dest;
-    wandering[creature_id]->clear_travel();
+    all_creatures[creature_id]->clear_travel();
     std::cout << std::endl;
     std::cout <<"giving task"<< std::endl;
     std::cout << start->x<<" "<< start->z << " " << destination->x << " " <<
@@ -290,30 +306,44 @@ void beast_manager::assign_task(int creature_id, task* Job) {
         glm::vec3* temp2 = nav_points[i];
         temp2->x *= 4;// compensate for the cubes scale
         temp2->z *= 4;
-        wandering[creature_id]->add_nav_point(nav_points[i]);
+        all_creatures[creature_id]->add_nav_point(nav_points[i]);
     }
 }
 
+void beast_manager::create_tasks(work_order* Job) {
+    std::cout << "creating task" << std::endl;
+    if (need_jobs.size() > 0) {
+        creature* Creature = need_jobs[need_jobs.size() - 1];
+        have_jobs.push_back(Creature);
+        need_jobs.pop_back();
+        std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
+        int x1 = Creature->get_loc_map_x();
+        int z1 = Creature->get_loc_map_z();
+        int x2 =  Job->destination[0].x;
+        int z2 =  Job->destination[0].z;
+        std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+            << x2 << " " << z2 << std::endl;
+        std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
-void beast_manager::assign_task(task* Job) {
 
-    //wandering[creature_id]->set_current_job(Job);
-    //glm::vec3* start = wandering[creature_id]->get_loc_map();
-    //glm::vec3* destination = Job->dest;
-    //wandering[creature_id]->clear_travel();
-    //std::cout << std::endl;
-    //std::cout << "giving task" << std::endl;
-    //std::cout << start->x << " " << start->z << " " << destination->x << " " <<
-    //    destination->z << " " << start->y << std::endl;
-    //// while (true);
-    //std::vector<glm::vec3*> nav_points =
-    //    map->find_path(start->z, start->x, destination->z, destination->x, start->y);
+        if (nav_points.size() > 0) {
+            for (size_t i = 0; i < nav_points.size(); i++)
+            {
+                glm::vec3* temp2 = nav_points[i];
+                temp2->x *= 4;// compensate for the cubes scale
+                temp2->z *= 4;
+                Creature->add_nav_point(nav_points[i]);
+            }
+        }
+        Creature->set_current_work_order(Job);
 
-    //for (size_t i = 0; i < nav_points.size(); i++)
-    //{
-    //    glm::vec3* temp2 = nav_points[i];
-    //    temp2->x *= 4;// compensate for the cubes scale
-    //    temp2->z *= 4;
-    //    wandering[creature_id]->add_nav_point(nav_points[i]);
-    //}
+
+        std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+        std::cout << "have_jobs = " << have_jobs.size() << std::endl;
+    }
+    else {
+        jobs_backlog.push_back(Job);
+        std::cout << "no open workers, adding to the backlog" << std::endl;
+    }
+    std::cout << "finished creating task" << std::endl;
 }

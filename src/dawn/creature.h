@@ -35,6 +35,7 @@ public:
 	void add_next_nav_point(glm::vec3* i);
 	glm::vec3* get_next_nav_point();
 	void pop_nav_point(){ travel_que.pop(); }
+	int get_travel_que_size() { return travel_que.size(); }
 
 	glm::vec3* get_loc() { return loc; }//returns the location in regards to screen cords
 	void set_loc(glm::vec3* i) { loc = i; }
@@ -55,11 +56,38 @@ public:
 	void set_current_job(task*i) { current_job = i; }
 	task* get_current_job() { return current_job; }
 
+	void set_current_work_order(work_order* i) { work_or = i; }
+	work_order* get_current_work_order() { return work_or; }
+
+
+	void set_loc_map_int(int x1, int y1, int z1) { x = x1; y = y1; z = z1; }
+	void set_loc_map_x(int xi) { x = xi; }
+	void set_loc_map_y(int yi) { y = yi; }
+	void set_loc_map_z(int zi) { z = zi; }
+
+	void set_loc_map_x_d(int xi) { dx = xi; }
+	void set_loc_map_y_d(int yi) { dy = yi; }
+	void set_loc_map_z_d(int zi) { dz = zi; }
+
+	int get_loc_map_x() { return x; }
+	int get_loc_map_y() { return y; }
+	int get_loc_map_z() { return z; }
+
+	int get_loc_map_x_d() { return dx; }
+	int get_loc_map_y_d() { return dy; }
+	int get_loc_map_z_d() { return dz; }
+
+	void swap_dest_loc();
+
 	//not implemented yet
 	unsigned int get_id() { return id; }
 	void set_id(unsigned int i) { id = i; }
 
 private:
+
+	int x, y, z;
+	int dx, dy, dz;
+
 	std::string name;
 	unsigned int id;
 	unsigned int buffer_loc;
@@ -77,5 +105,6 @@ private:
 	std::queue<glm::vec3*> travel_que;
 
 	task* current_job;
+	work_order* work_or;
 };
 

@@ -57,3 +57,9 @@ update_pak* creature::generate_item_update() {
 	}
 	return output;
 }
+
+void creature::swap_dest_loc() {
+	x = dx;
+	y = dy;
+	z = dz;
+}
