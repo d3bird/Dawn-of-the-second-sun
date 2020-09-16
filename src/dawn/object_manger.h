@@ -13,7 +13,7 @@
 
 #include "model.h"
 #include "shader.h"
-
+#include "zone.h"
 
 /*
 * this class maganges the information about the workshops, items, and misc furniture 
@@ -33,6 +33,7 @@ struct item_info {
 	float z_scale;
 	std::string* item_name;
 	item_type type;
+	zone_loc* zone_location;//needed for when an object leaves a zone
 };
 
 //the data needed to render the objects in the world
@@ -97,6 +98,8 @@ public:
 	//alter functions
 	item_info* get_alter_info() { return alter; }
 	void preform_sacrifice(item_info* sac);
+	bool start_sacrifice();
+	bool is_alter_ready() { return ready_to_sac; }
 
 	//getters and setters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -147,6 +150,7 @@ private:
 	bool alter_draw;
 	glm::mat4 sac_obj_mat;
 	glm::vec2 resultion;
-
+	bool init_sac;
+	bool ready_to_sac;
 };
 

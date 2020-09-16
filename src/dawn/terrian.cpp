@@ -326,22 +326,17 @@ void terrian::cubes_init() {
 
 	//print_map_blocked();
 
-	Pair src = make_pair(8, 0);
-	// Destination is the left-most top-most corner 
-	Pair dest = make_pair(0, 0);
-
-	//find_path(8, 0, 0, 0, 3);//conversion to a more accepted type
-	//aStarSearch(src, dest);//private function 
-
+	//add in the items
+	import_items();
 	//test out the map zoning 
 	int x1 = 14;
 	int y1 = 0;
 	int z1 = 14;
 
-	int x2 = 16;
+	int x2 = 17;
 	int y2 = 0;
-	int z2 = 16;
-	alter_zone = zone_land(ALTER, x1, y1, z1, x2, y2, z2);
+	int z2 = 17;
+	alter_zone = zone_land(ALTER,1, x1, y1, z1, x2, y2, z2);
 
 	x1 = int(get_x_width()) - 5;
 	y1 = 0;
@@ -350,7 +345,7 @@ void terrian::cubes_init() {
 	x2 = int(get_x_width());
 	y2 = 0;
 	z2 = 4;
-	gather_zone =	zone_land(GATHER, x1, y1, z1, x2, y2, z2);
+	gather_zone =	zone_land(GATHER,2, x1, y1, z1, x2, y2, z2);
 
 	x1 = 0;
 	y1 = 0;
@@ -359,7 +354,7 @@ void terrian::cubes_init() {
 	x2 = 4;
 	y2 = 0;
 	z2 = int(get_z_width());
-	spawn_zone = zone_land(SPAWN, x1, y1, z1, x2, y2, z2);
+	spawn_zone = zone_land(SPAWN,3, x1, y1, z1, x2, y2, z2);
 	
 	x1 = 5;
 	y1 = 0;
@@ -368,10 +363,11 @@ void terrian::cubes_init() {
 	x2 = 10;
 	y2 = 0;
 	z2 = 10;
-	stockpile_zone = zone_land(STOCKPILE, x1, y1, z1, x2, y2, z2);
+	stockpile_zone = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
 
 	//print_map_zoned();
-
+	print_map_blocked_zones();
+	//while (true);
 	//block off the land from the objects that take up space
 	std::vector< block_loc*> *blocked_loc = OBJM->get_blocked_spots();
 	std::cout << "amount of blocked spaces from objects = " << blocked_loc->size() << std::endl;
@@ -415,7 +411,6 @@ void terrian::cubes_init() {
 		glBindVertexArray(0);
 	}
 	
-	import_items();
 
 	std::cout << "finished creating" << std::endl;
 }
@@ -611,12 +606,14 @@ void terrian::print_map_zoned() {
 //zone a grid of spaces
 // TODO: account for the blocked spaces
 
-zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2) {
-	zone* fresh_zone = new zone(tp);
+zone* terrian::zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2) {
+	zone* fresh_zone = new zone(tp, id);
+	bool blocked;
 	std::cout << "zoning land" << std::endl;
 	if (x1 == x2 && y1 == y2 && z1 == z2) {
 		std::cout << "single space" << std::endl;
-		fresh_zone->add_spot(x1, y1, z1);
+		blocked = terrian_map[x1][z1].blocked;
+		fresh_zone->add_spot(x1, y1, z1, blocked);
 		terrian_map[x1][z1].zoned = fresh_zone;
 	}
 	else {
@@ -648,8 +645,8 @@ zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2
 		for (int x = 0; x < width; x++)	{
 			for (int z = 0; z < height; z++) {
 				terrian_map[s_x+x][s_z +z].zoned = fresh_zone;
-
-				fresh_zone->add_spot(s_x + x, y1, s_z + z, false);
+				blocked = terrian_map[s_x + x][s_z + z].blocked;
+				fresh_zone->add_spot(s_x + x, y1, s_z + z, blocked);
 			}
 		}
 		//fresh_zone->print_info();
@@ -657,6 +654,50 @@ zone* terrian::zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2
 	}
 	std::cout << "done zoning land" << std::endl;
 	return fresh_zone;
+}
+
+void terrian::print_map_blocked_zones() {
+
+		if (terrian_map != NULL) {
+			std::cout << "printing out internal terrian_map representation of zones and blocked points" << std::endl;
+			for (int x = 0; x < x_width; x++) {
+				for (int z = 0; z < z_width; z++) {
+					if (terrian_map[x][z].zoned != NULL) {
+						if (terrian_map[x][z].blocked) {
+							std::cout << "* ";
+						}
+						else {
+							switch (terrian_map[x][z].zoned->get_type()) {
+							case SPAWN:
+								std::cout << "1 ";
+								break;
+							case ALTER:
+								std::cout << "2 ";
+								break;
+							case GATHER:
+								std::cout << "3 ";
+								break;
+							case STOCKPILE:
+								std::cout << "4 ";
+								break;
+							default:
+								std::cout << ". ";
+								break;
+							}
+						}
+					}
+					else {
+						std::cout << "0 ";
+					}
+				}
+				std::cout << std::endl;
+			}
+		}
+		else {
+			std::cout << "the terrian_map data structure was never created" << std::endl;
+		}
+	
+
 }
 
 //task creation function
@@ -673,6 +714,9 @@ void terrian::print_work_order(work_order* wo) {
 			break;
 		case SACRIFICE_OBJ:
 			overall_job = "SACRIFICE_OBJ";
+			break;
+		case START_SACRIFICE:
+			overall_job = "START_SACRIFICE";
 			break;
 		case MOVE_C:
 			overall_job = "MOVE_C";
@@ -746,20 +790,22 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		temp->currently_on = 0;
 		item_info* obj_dest;
 		temp->arrived = false;
-		std::cout << "checking " << x1 << " " << z1 << std::endl;
+		temp->zone_location = NULL;
+		//std::cout << "checking " << x1 << " " << z1 << std::endl;
 		if (terrian_map[z1][x1].item_on_top != NULL) {
-			std::cout << "1 item on top " << std::endl;
+		//	std::cout << "1 item on top " << std::endl;
 			obj_dest = terrian_map[z1][x1].item_on_top;
 		}
 		else {
-			std::cout << "0 item on top" << std::endl;
+			//std::cout << "0 item on top" << std::endl;
 			obj_dest = NULL;
 		}
 
 		temp->object = obj_dest;
 		unsigned int action_numbers;
 		unsigned int location_amount;
-
+		zone_loc* store;
+		std::cout << "check point 0" << std::endl;
 		switch (work_job){
 		case STOCK_OBJ:
 			action_numbers = 2;
@@ -772,9 +818,11 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			temp->destination[0].x = x1;
 			temp->destination[0].y = y1;
 			temp->destination[0].z = z1;
-			temp->destination[1].x = stockpile_zone->get_stockpile_loc()->x;
-			temp->destination[1].y = stockpile_zone->get_stockpile_loc()->y;
-			temp->destination[1].z = stockpile_zone->get_stockpile_loc()->z;
+			store = alter_zone->get_stockpile_loc();
+			temp->zone_location = store;
+			temp->destination[1].x = store->x;
+			temp->destination[1].y = store->y;
+			temp->destination[1].z = store->z;
 			temp->action_rq[0] = PICK_UP;
 			//temp->action_rq[1] = MOVE;
 			temp->action_rq[1] = DROP;
@@ -789,14 +837,34 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			temp->destination[0].x = x1;
 			temp->destination[0].y =y1;
 			temp->destination[0].z = z1;
-
-			temp->destination[1].x = alter_zone->get_alter_loc()->x;
-			temp->destination[1].y = alter_zone->get_alter_loc()->y;
-			temp->destination[1].z = alter_zone->get_alter_loc()->z;
+			store = alter_zone->get_alter_loc();
+			temp->zone_location = store;
+			temp->destination[1].x = store->x;
+			temp->destination[1].y = store->y;
+			temp->destination[1].z = store->z;
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = PICK_UP;
 			//temp->action_rq[1] = MOVE;
 			temp->action_rq[1] = SAC_OBJ;
+			break;
+		case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
+			action_numbers = 1;
+			location_amount = 1;
+			std::cout << "check point 1" << std::endl;
+			temp->action_numbers = action_numbers;
+			temp->location_amount = location_amount;
+			temp->destination = new map_loc[location_amount];
+			std::cout << "check point 1.1" << std::endl;
+			temp->destination[0].x = x1;
+			std::cout << "check point 1.2" << std::endl;
+			temp->destination[0].y = y1;
+			std::cout << "check point 1.3" << std::endl;
+			temp->destination[0].z = z1;
+			std::cout << "check point 1.4" << std::endl;
+			temp->action_rq = new action[action_numbers];
+			temp->action_rq[0] = START_SAC;
+			std::cout << "check point 2" << std::endl;
+			
 			break;
 		case MOVE_C:
 			action_numbers = 1;
@@ -862,6 +930,9 @@ void terrian::import_items() {
 	if (items_on_map.size() > 0) {
 		for (int i = 0; i < items_on_map.size(); i++) {
 			terrian_map[items_on_map[i].z][items_on_map[i].x].item_on_top = items_on_map[i].object;
+			if (items_on_map[i].object->type == ALTER_T) {
+				terrian_map[items_on_map[i].z][items_on_map[i].x].blocked = true;
+			}
 		}
 	}
 	else {
@@ -888,6 +959,25 @@ void terrian::add_item_to_alter(item_info* i) {
 	OBJM->preform_sacrifice(i);
 }
 
+void terrian::return_zone_loc(zone_loc* i) {
+	switch (i->ID){
+	case 1://alter
+		alter_zone->remove_item_from_spot(i);
+		break;
+	//case 2://gather
+	//	break;
+	case 3://stock
+		stockpile_zone->remove_item_from_spot(i);
+		break;
+	//case 4://spawn
+	//	stockpile_zone->remove_item_from_spot(i);
+	//	break;
+	default:
+		std::cout << "no zone with this ID" << std::endl;
+		break;
+	}
+
+}
 //path finding functions
 
 //makesure to swap the input of x and z due to the implementtion of the function
@@ -904,41 +994,44 @@ std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float 
 	int col = dest.second;
 
 	stack<Pair> Path;
+	if (cellDetails != NULL) {
+		while (!(cellDetails[row][col].parent_i == row
+			&& cellDetails[row][col].parent_j == col))
+		{
+			Path.push(make_pair(row, col));
+			int temp_row = cellDetails[row][col].parent_i;
+			int temp_col = cellDetails[row][col].parent_j;
+			row = temp_row;
+			col = temp_col;
+		}
 
-	while (!(cellDetails[row][col].parent_i == row
-		&& cellDetails[row][col].parent_j == col))
-	{
+		glm::vec3* temp;
 		Path.push(make_pair(row, col));
-		int temp_row = cellDetails[row][col].parent_i;
-		int temp_col = cellDetails[row][col].parent_j;
-		row = temp_row;
-		col = temp_col;
+		while (!Path.empty())
+		{
+			pair<int, int> p = Path.top();
+			Path.pop();
+			float x = p.first * cube_offset;
+			float z = p.second * cube_offset;
+			//printf("-> (%f,%f) ",x, z);
+			temp = new glm::vec3(z, height, x);
+			output.push_back(temp);
+		}
+
+		//std::cout << "current path" << std::endl;
+		//for (int i = 0; i < output.size(); i++) {
+		//	std::cout << "x: " << output[i]->x << " y: " << output[i]->y << " z: " << output[i]->z << std::endl;
+		//}
+
+		//clean used mem
+		for (int i = 0; i < x_width; i++) {
+			delete[]  cellDetails[i];
+		}
+		delete[]  cellDetails;
 	}
-
-	glm::vec3* temp;
-	Path.push(make_pair(row, col));
-	while (!Path.empty())
-	{
-		pair<int, int> p = Path.top();
-		Path.pop();
-		float x = p.first * cube_offset;
-		float z = p.second * cube_offset;
-		//printf("-> (%f,%f) ",x, z);
-		temp = new glm::vec3(z, height, x);
-		output.push_back(temp);
+	else {
+		std::cout << "cellDetails was NULL" << std::endl;
 	}
-
-	//std::cout << "current path" << std::endl;
-	//for (int i = 0; i < output.size(); i++) {
-	//	std::cout << "x: " << output[i]->x << " y: " << output[i]->y << " z: " << output[i]->z << std::endl;
-	//}
-
-	//clean used mem
-	for (int i = 0; i < x_width; i++) {
-		delete[]  cellDetails[i];
-	}
-	delete[]  cellDetails;
-
     return output;
 }
 

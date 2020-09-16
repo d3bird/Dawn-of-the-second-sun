@@ -10,6 +10,12 @@
 #include "model.h"
 #include "creature.h"
 
+//work order that need a condition to met 
+enum condition{ START_ALTER };
+struct work_order_C{
+	work_order* wo;
+	condition cond;
+};
 
 class beast_manager{
 public:
@@ -36,6 +42,8 @@ public:
 
 private:
 
+	void check_conditional_jobs();
+
 	float diff_btwn_pnt(float start, float end);
 
 	void preform_action(work_order* Job, creature* npc);
@@ -59,6 +67,7 @@ private:
 	std::vector<creature*> have_jobs;
 
 	std::queue< work_order*> jobs_backlog;
+	std::vector< work_order_C*> condional_jobs;
 
 	terrian* map;
 	object_manger* objects;

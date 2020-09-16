@@ -48,6 +48,10 @@ bool beast_manager::determin_direction(float start, float end) {
 }
 
 void beast_manager::update(float deltaTime) {
+    if (condional_jobs.size() > 0) {
+        check_conditional_jobs();
+    }
+
     float speed = deltaTime * 30;
 
     glm::mat4 trans = glm::mat4(1.0f);
@@ -379,6 +383,7 @@ void beast_manager::create_tasks(work_order* Job) {
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
         if (nav_points.size() > 0) {
+            std::cout << "addin poitns to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
             {
                 glm::vec3* temp2 = nav_points[i];
@@ -386,8 +391,13 @@ void beast_manager::create_tasks(work_order* Job) {
                 temp2->z *= 4;
                 Creature->add_nav_point(nav_points[i]);
             }
+            //Creature->set_current_work_order(Job);
         }
-        Creature->set_current_work_order(Job);
+        else {
+            glm::vec3* temp2 = new glm::vec3(x1 * 8, 3, z1 * 8);
+            Creature->add_nav_point(temp2);
+        }
+       Creature->set_current_work_order(Job);
 
 
         std::cout << "need_jobs = " << need_jobs.size() << std::endl;
@@ -405,7 +415,14 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
     switch (Job->action_rq[Job->currently_on]) {
     case PICK_UP:
         std::cout << "picking up item" << std::endl;
+        if (Job->object->zone_location != NULL) {//if the object is being picked up from a zone
+
+        }
+        else {
+           
+        }
         map->remove_item_from_map(Job->object);
+        Job->object->zone_location = Job->zone_location;//pass off the destination data to the object
         npc->hold_item(Job->object);
         break;
     case DROP:
@@ -415,7 +432,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         Job->object->z_m = npc->get_loc_map_z_d();
         npc->drop_item();
         map->add_item_to_map(Job->object);
-        map->print_map_items();
+        //map->print_map_items();
         break;
     case SAC_OBJ:
         std::cout << "sacrificing item" << std::endl;
@@ -423,13 +440,43 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         // Job->object->y_m = npc->get_loc_map_y_d();
         Job->object->z_m = npc->get_loc_map_z_d();
         map->add_item_to_alter(Job->object);
+        if (!map->start_sac()) {//needs to create a latter job to be compleated
+            std::cout << "need to wait to start sacrifice, creating a conditional job" << std::endl;
+            work_order_C* temp = new work_order_C;
+            temp->cond = START_ALTER;
+            temp->wo = map->generate_work_order(START_SACRIFICE,
+                Job->object->x_m, Job->object->y_m, Job->object->z_m)[0];
+            condional_jobs.push_back(temp);
+        }
         npc->drop_item();
-        map->print_map_items();
+        //map->print_map_items();
+        break;
+    case START_SAC:
+        std::cout << "starting sacrifice" << std::endl;
+        map->start_sac();
         break;
     default:
         std::cout << "nothing needs to be done here" << std::endl;
         break;
     }
+}
+
+void beast_manager::check_conditional_jobs() {
+    
+    for (int i = 0; i < condional_jobs.size(); i++) {
+        switch (condional_jobs[i]->cond)
+        {
+        case START_ALTER:
+            if (map->is_alter_ready()) {
+                create_tasks(condional_jobs[i]->wo);
+                condional_jobs[i] = condional_jobs[condional_jobs.size() - 1];
+                condional_jobs.pop_back();
+                i--;
+            }
+            break;
+        }
+    }
+
 }
 
 void beast_manager::remove_from_has_jobs(creature* npc) {

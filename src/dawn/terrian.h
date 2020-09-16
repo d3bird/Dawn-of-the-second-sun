@@ -15,7 +15,7 @@
 
 #include "model.h"
 #include "shader.h"
-#include "zone.h"
+
 #include "object_manger.h"
 
 using namespace std;
@@ -53,8 +53,8 @@ struct selection_buffer {
 
 //the two objects that needed to generate tasks
 //the job 
-enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, MOVE_C };//overall
-enum action { PICK_UP, DROP, SAC_OBJ, MOVE };//the action required
+enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, MOVE_C };//overall
+enum action { PICK_UP, DROP, SAC_OBJ,START_SAC, MOVE };//the action required
 //job and item that needs to be interacted with
 struct work_order {
 	work_jobs job;
@@ -65,6 +65,7 @@ struct work_order {
 	unsigned int location_amount;
 	unsigned int loc_currently_on;
 	item_info* object;//the object that needs the interaction (also usally the start point
+	zone_loc* zone_location;
 	map_loc* destination;//where the object needs to go (if it needs to be moved 
 	bool arrived;
 };
@@ -93,9 +94,12 @@ public:
 	void remove_item_from_map(item_info* i);
 	void add_item_to_map(item_info* i);
 	void add_item_to_alter(item_info* i);
+	bool start_sac() {return OBJM->start_sacrifice(); }
+	bool is_alter_ready() {return  OBJM->is_alter_ready(); }
 
 	//zoning function
-	zone* zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2);
+	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
+	void return_zone_loc(zone_loc* i);
 
 	//task creation function
 	void print_work_order(work_order* wo);
@@ -125,6 +129,7 @@ public:
 	void print_map_blocked();
 	void print_map_zoned();
 	void print_map_items();
+	void print_map_blocked_zones();
 
 private:
 	void import_items();

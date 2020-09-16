@@ -16,6 +16,8 @@ object_manger::object_manger() {
 	alter_draw = false;
 	resultion = glm::vec2(800, 600);
 	object_id = 0;
+	init_sac = false;
+	ready_to_sac = true;
 }
 
 object_manger::~object_manger() {
@@ -54,13 +56,15 @@ void object_manger::draw() {
 		items[items_to_sac.front()->item_id]->model->Draw(alter_affect);
 		glDisable(GL_BLEND);
 	
-		if (sac_time >= 10) {
+		if (sac_time >= 10) {//rest the alter
 			alter_draw = false;
 			in_possition = false;
 			same_x = false;
 			same_z = false;
 			items_to_sac.pop();
 			sac_time = 0;
+			init_sac = false;
+			ready_to_sac = true;
 		}
 	}
 }
@@ -86,7 +90,7 @@ void object_manger::increase_buffer_size() {
 void object_manger::update_item_matrix(update_pak* data) {
 
 	if (data != NULL && data->item_id < items.size()) {
-		std::cout << "updateing " << data->item_id << ", bufferloc = " << data->buffer_loc << std::endl;
+		//std::cout << "updateing " << data->item_id << ", bufferloc = " << data->buffer_loc << std::endl;
 		glm::mat4 model = glm::mat4(1.0f);
 		//model = glm::scale(model, glm::vec3(data->x_scale, data->y_scale, data->z_scale));
 		model = glm::translate(model, glm::vec3(data->x, data->y, data->z));
@@ -152,6 +156,7 @@ void object_manger::create_log_objects() {
 	temp_data->buffer_loc = 0;
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
+	temp_data->zone_location = NULL;
 	object_id++;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -213,6 +218,7 @@ void object_manger::create_log_objects() {
 	temp_data->buffer_loc = 1;
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
+	temp_data->zone_location = NULL;
 	object_id++;
 	 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, z));
@@ -294,6 +300,7 @@ void object_manger::create_alter_objects() {
 	temp_data->buffer_loc = 0;
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
+	temp_data->zone_location = NULL;
 	object_id++;
 	alter = temp_data;
 	glGenBuffers(1, &buffer);
@@ -368,16 +375,27 @@ void object_manger::spawn_item(item_type type, int x, int y, int z) {
 }
 
 void object_manger::preform_sacrifice(item_info* sac) {
-	std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
-	std::cout << "buffer size " << items[sac->item_id]->buffer_size << std::endl;
-	std::cout << "buffer amount " << items[sac->item_id]->amount << std::endl;
+	//std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
+	//std::cout << "buffer size " << items[sac->item_id]->buffer_size << std::endl;
+	//std::cout << "buffer amount " << items[sac->item_id]->amount << std::endl;
 
 	sac->x = sac->x_m * 2;
 	sac->y = sac->y_m;
 	sac->z = sac->z_m * 2;
-	
+	//init_sac = true;
+	//ready_to_sac = false;
 	items_to_sac.push(sac);
+}
 
+//returns true if sac is starting 
+//returns false if it needs to be triggered latter
+bool object_manger::start_sacrifice() {
+	if (ready_to_sac && !init_sac) {
+		init_sac = true;
+		ready_to_sac = false;
+		return true;
+	}
+	return false;
 }
 
 float diff_btwn_pnt(float start, float end) {
@@ -400,79 +418,82 @@ bool determin_direction(float start, float end) {
 }
 
 void object_manger::update_alter(float deltatTime) {
-	if (items_to_sac.size() > 0) {
-		item_info* sac_item = items_to_sac.front();
-		glm::mat4 trans = glm::mat4(1.0f);
-		if (in_possition) {
-			sac_time += deltatTime;
-			if (sac_time >= max_time) {
-				sac_time = 0;
-			}
-			
-			//std::cout << sac_item->x << " " << sac_item->y << " " << sac_item->z << std::endl;
-			trans = glm::translate(trans, glm::vec3(sac_item->x , sac_item->y, sac_item->z));
-			trans = glm::rotate(trans, sin(sac_time), glm::vec3(1, 1, 1));
-			sac_obj_mat = trans;
-			//items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
-		}
-		else {
-			float dist_diff;
-			float move_amount = deltatTime * 2;
-			if (!same_x) {
-				dist_diff = diff_btwn_pnt(sac_item->x, alter->x);
-				if (dist_diff <= move_amount) {
-					sac_item->x = alter->x;
-					same_x = true;
+	if (init_sac) {
+		if (items_to_sac.size() > 0) {
+
+			item_info* sac_item = items_to_sac.front();
+			glm::mat4 trans = glm::mat4(1.0f);
+			if (in_possition) {
+				sac_time += deltatTime;
+				if (sac_time >= max_time) {
+					sac_time = 0;
 				}
-				else {
-					if (determin_direction(sac_item->x, alter->x)) {
-						sac_item->x += move_amount;
-					}
-					else {
-						sac_item->x -= move_amount;
-					}
-				}
-			}
-			if (!same_z) {
-				dist_diff = diff_btwn_pnt(sac_item->z, alter->z);
-				if (dist_diff <= move_amount) {
-					sac_item->z = alter->z;
-					same_z = true;
-				}
-				else {
-					if (determin_direction(sac_item->z, alter->z)) {
-						sac_item->z += move_amount;
-					}
-					else {
-						sac_item->z -= move_amount;
-					}
-				}
+
+				//std::cout << sac_item->x << " " << sac_item->y << " " << sac_item->z << std::endl;
 				trans = glm::translate(trans, glm::vec3(sac_item->x, sac_item->y, sac_item->z));
-				items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
-				//sac_obj_mat = trans;
+				trans = glm::rotate(trans, sin(sac_time), glm::vec3(1, 1, 1));
+				sac_obj_mat = trans;
+				//items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
 			}
-			if (same_x && same_z) {
-				
-				delete_item_from_buffer(sac_item);
-				alter_draw = true;
-				in_possition = true;
+			else {
+				float dist_diff;
+				float move_amount = deltatTime * 2;
+				if (!same_x) {
+					dist_diff = diff_btwn_pnt(sac_item->x, alter->x);
+					if (dist_diff <= move_amount) {
+						sac_item->x = alter->x;
+						same_x = true;
+					}
+					else {
+						if (determin_direction(sac_item->x, alter->x)) {
+							sac_item->x += move_amount;
+						}
+						else {
+							sac_item->x -= move_amount;
+						}
+					}
+				}
+				if (!same_z) {
+					dist_diff = diff_btwn_pnt(sac_item->z, alter->z);
+					if (dist_diff <= move_amount) {
+						sac_item->z = alter->z;
+						same_z = true;
+					}
+					else {
+						if (determin_direction(sac_item->z, alter->z)) {
+							sac_item->z += move_amount;
+						}
+						else {
+							sac_item->z -= move_amount;
+						}
+					}
+					trans = glm::translate(trans, glm::vec3(sac_item->x, sac_item->y, sac_item->z));
+					items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
+					//sac_obj_mat = trans;
+				}
+				if (same_x && same_z) {
+
+					delete_item_from_buffer(sac_item);
+					alter_draw = true;
+					in_possition = true;
+				}
 			}
 		}
 	}
 }
 
 void object_manger::delete_item_from_buffer(item_info* it) {
-	std::cout << "buffer size " << items[it->item_id]->buffer_size << std::endl;
-	std::cout << "buffer amount " << items[it->item_id]->amount << std::endl;
+	//std::cout << "buffer size " << items[it->item_id]->buffer_size << std::endl;
+	//std::cout << "buffer amount " << items[it->item_id]->amount << std::endl;
 
 
 	if (it->buffer_loc == items[it->item_id]->amount - 1) {//if it is the last one 
-		std::cout << "last one" << std::endl;
+		//std::cout << "last one" << std::endl;
 		items[it->item_id]->item_data.pop_back();
 		items[it->item_id]->amount--;
 	}
 	else {
-		std::cout << "not last one" << std::endl;
+		//std::cout << "not last one" << std::endl;
 		unsigned int buffer_loc = it->buffer_loc;
 		unsigned int buffer_loc_end = items[it->item_id]->amount - 1;
 		std::cout << buffer_loc << std::endl;

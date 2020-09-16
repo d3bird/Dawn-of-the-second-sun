@@ -110,15 +110,19 @@ void world::init() {
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 	//spawn the tasks
-	//new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
-	//Terrian->print_work_order(new_task);
-	//BM->create_tasks(new_task);
-	//new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4)[0];
-	//Terrian->print_work_order(new_task);
-	//BM->create_tasks(new_task);
+
 	new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 2, 5, 0)[0];
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
+
+
+	new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
+	Terrian->print_work_order(new_task);
+	BM->create_tasks(new_task);
+	new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4)[0];
+	Terrian->print_work_order(new_task);
+	BM->create_tasks(new_task);
+
 
 	//while (true);
 }
