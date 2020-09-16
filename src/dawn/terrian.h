@@ -89,13 +89,13 @@ public:
 	void block_spot(int x_loc, int z_loc);
 	glm::vec3 get_coridents(int x_loc, int z_loc);
 
+	//deal with item handling from creatures
+	void remove_item_from_map(item_info* i);
+	void add_item_to_map(item_info* i);
+	void add_item_to_alter(item_info* i);
+
 	//zoning function
 	zone* zone_land(type tp, int x1, int y1, int z1, int x2, int y2, int z2);
-
-	//temp functions to get the three zone types for testing
-	zone* get_spawn_zone() { return spawn_zone; }
-	zone* get_alter_zone() { return alter_zone; }
-	zone* get_gather_zone() { return gather_zone; }
 
 	//task creation function
 	void print_work_order(work_order* wo);
@@ -115,12 +115,19 @@ public:
 
 	void set_cube_shader(Shader* i) { cube_shader = i; }
 	void set_object_manger(object_manger* i) { OBJM = i; }
-	void print_map_blocked();//needs to be out for debugging
-	void print_map_zoned();
 
+	//temp functions to get the three zone types for testing
+	zone* get_spawn_zone() { return spawn_zone; }
+	zone* get_alter_zone() { return alter_zone; }
+	zone* get_gather_zone() { return gather_zone; }
+
+	//needs to be out for debugging
+	void print_map_blocked();
+	void print_map_zoned();
+	void print_map_items();
 
 private:
-
+	void import_items();
 	void draw_space();
 	void draw_cubes();
 

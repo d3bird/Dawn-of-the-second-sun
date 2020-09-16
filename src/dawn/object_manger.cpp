@@ -7,6 +7,12 @@ object_manger::object_manger() {
 	view = glm::mat4(1.0f);
 	projection = glm::mat4(1.0f);
 	common = NULL;
+	sac_time = 0;
+	max_time = 360;
+	float_sped = 8;
+	in_possition = false;
+	same_x = false;
+	same_z = false;
 }
 
 object_manger::~object_manger() {
@@ -36,7 +42,7 @@ void object_manger::draw() {
 }
 
 void object_manger::update(float deltaTime) {
-
+	update_alter(deltaTime);
 }
 
 void object_manger::init() {
@@ -91,9 +97,14 @@ void object_manger::create_log_objects() {
 	custom_shader = NULL;
 	model = new Model("resources/objects/log/log.obj");
 
-	float x = 0;
-	float y = 7;
-	float z = 0;
+	int int_x_loc = 0;
+	int int_y_loc = 7;
+	int int_z_loc = 0;
+
+	float x = int_x_loc * 2;
+	float y = int_y_loc;
+	float z = int_z_loc * 2;
+
 	float x_scale = 1;
 	float y_scale = 1;
 	float z_scale = 1;
@@ -102,9 +113,13 @@ void object_manger::create_log_objects() {
 	modelMatrices[0] = trans;
 
 	item_info* temp_data = new item_info;
+	temp_data->type = LOG_T;
 	temp_data->x = x;
 	temp_data->y = y;
 	temp_data->z = z;
+	temp_data->x_m = int_x_loc;
+	temp_data->y_m = int_y_loc;
+	temp_data->z_m = int_z_loc;
 	temp_data->x_scale = x_scale;
 	temp_data->y_scale = y_scale;
 	temp_data->z_scale = z_scale;
@@ -208,6 +223,10 @@ void object_manger::create_alter_objects() {
 	temp_data->x = x;
 	temp_data->y = y;
 	temp_data->z = z;
+	temp_data->type = ALTER_T;
+	temp_data->x_m = int_x_loc;
+	temp_data->y_m = int_y_loc;
+	temp_data->z_m = int_z_loc;
 	temp_data->x_scale = x_scale;
 	temp_data->y_scale = y_scale;
 	temp_data->z_scale = z_scale;
@@ -255,8 +274,118 @@ void object_manger::create_alter_objects() {
 
 }
 
+std::vector< item_loc>  object_manger::place_items_init() {
+	std::cout << "placing the items in the world" << std::endl;
+	std::vector< item_loc> output;
+	for (int i = 0; i < items.size(); i++) {//each of the differnt items types
+		for (int q = 0; q < items[i]->item_data.size(); q++) {
+			item_info* unplaced_item = items[i]->item_data[q];
+			item_loc temp(unplaced_item, unplaced_item->x_m, unplaced_item->y_m, unplaced_item->z_m);
+			output.push_back(temp);
+			//objects that take up more than one spot
+			switch (unplaced_item->type) {
+			case ALTER_T:
+				temp = item_loc(unplaced_item, unplaced_item->x_m + 1, unplaced_item->y_m, unplaced_item->z_m);
+				output.push_back(temp);
+				temp = item_loc(unplaced_item, unplaced_item->x_m - 1, unplaced_item->y_m, unplaced_item->z_m);
+				output.push_back(temp);
+				temp = item_loc(unplaced_item, unplaced_item->x_m, unplaced_item->y_m, unplaced_item->z_m + 1);
+				output.push_back(temp);
+				temp = item_loc(unplaced_item, unplaced_item->x_m, unplaced_item->y_m, unplaced_item->z_m - 1);
+				output.push_back(temp);
+				break;
+			}
+		}
+	}
+	std::cout << "finished placing the items in the world" << std::endl;
+	return output;
+}
+
+void object_manger::spawn_item(item_type type, int x, int y, int z) {
+
+}
+
 void object_manger::preform_sacrifice(item_info* sac) {
 	std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
+	sac->x = sac->x_m * 2;
+	sac->y = sac->y_m;
+	sac->z = sac->z_m * 2;
+	items_to_sac.push(sac);
 
+}
 
+float diff_btwn_pnt(float start, float end) {
+	float output = 0;
+	if (start < end) {
+		output = end - start;
+	}
+	else {
+		output = start - end;
+	}
+	return output;
+}
+
+//determins whther to move the loc in a positive or negative direction
+bool determin_direction(float start, float end) {
+	if (start < end) {
+		return true;//possitive
+	}
+	return false;//negative
+}
+
+void object_manger::update_alter(float deltatTime) {
+	if (items_to_sac.size() > 0) {
+		item_info* sac_item = items_to_sac.front();
+		glm::mat4 trans = glm::mat4(1.0f);
+		if (in_possition) {
+			sac_time += deltatTime;
+			if (sac_time >= max_time) {
+				sac_time = 0;
+			}
+			
+			//std::cout << sac_item->x << " " << sac_item->y << " " << sac_item->z << std::endl;
+			trans = glm::translate(trans, glm::vec3(sac_item->x , sac_item->y, sac_item->z));
+			trans = glm::rotate(trans, sin(sac_time), glm::vec3(1, 1, 1));
+			items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
+		}
+		else {
+			float dist_diff;
+			float move_amount = deltatTime * 2;
+			if (!same_x) {
+				dist_diff = diff_btwn_pnt(sac_item->x, alter->x);
+				if (dist_diff <= move_amount) {
+					sac_item->x = alter->x;
+					same_x = true;
+				}
+				else {
+					if (determin_direction(sac_item->x, alter->x)) {
+						sac_item->x += move_amount;
+					}
+					else {
+						sac_item->x -= move_amount;
+					}
+				}
+			}
+			if (!same_z) {
+				dist_diff = diff_btwn_pnt(sac_item->z, alter->z);
+				if (dist_diff <= move_amount) {
+					sac_item->z = alter->z;
+					same_z = true;
+				}
+				else {
+					if (determin_direction(sac_item->z, alter->z)) {
+						sac_item->z += move_amount;
+					}
+					else {
+						sac_item->z -= move_amount;
+					}
+				}
+				trans = glm::translate(trans, glm::vec3(sac_item->x, sac_item->y, sac_item->z));
+				items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
+			}
+			if (same_x && same_z) {
+				in_possition = true;
+			}
+		}
+	}
 }

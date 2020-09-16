@@ -118,6 +118,7 @@ void beast_manager::update(float deltaTime) {
                     work_order* current_job = all_creatures[i]->get_current_work_order();
                     all_creatures[i]->swap_dest_loc();
                     preform_action(current_job, all_creatures[i]);
+
                     current_job->currently_on++;
                     if (current_job->currently_on >= current_job->action_numbers) {// no more actions for this job
                         std::cout << "jobs done" << std::endl;
@@ -401,18 +402,29 @@ void beast_manager::create_tasks(work_order* Job) {
 
 void beast_manager::preform_action(work_order* Job, creature* npc) {
 
-    switch (Job->action_rq[Job->currently_on]){
+    switch (Job->action_rq[Job->currently_on]) {
     case PICK_UP:
         std::cout << "picking up item" << std::endl;
+        map->remove_item_from_map(Job->object);
         npc->hold_item(Job->object);
         break;
     case DROP:
         std::cout << "dropping item" << std::endl;
+        Job->object->x_m = npc->get_loc_map_x_d();
+        //  Job->object->y_m = npc->get_loc_map_y_d();
+        Job->object->z_m = npc->get_loc_map_z_d();
         npc->drop_item();
+        map->add_item_to_map(Job->object);
+        map->print_map_items();
         break;
     case SAC_OBJ:
         std::cout << "sacrificing item" << std::endl;
+        Job->object->x_m = npc->get_loc_map_x_d();
+        // Job->object->y_m = npc->get_loc_map_y_d();
+        Job->object->z_m = npc->get_loc_map_z_d();
+        map->add_item_to_alter(Job->object);
         npc->drop_item();
+        map->print_map_items();
         break;
     default:
         std::cout << "nothing needs to be done here" << std::endl;

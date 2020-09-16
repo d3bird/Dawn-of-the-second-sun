@@ -86,7 +86,10 @@ zone_loc* zone::get_alter_loc() {
 zone_loc* zone::get_stockpile_loc() {
 
 	if (current_type == STOCKPILE) {
+		if (open_spots.size() > 0) {
 
+			return open_spots[0];
+		}
 	}
 	else {
 		std::cout << "not a stockpile zone" << std::endl;

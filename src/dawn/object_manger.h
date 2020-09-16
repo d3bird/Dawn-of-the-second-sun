@@ -19,16 +19,19 @@
 * this class maganges the information about the workshops, items, and misc furniture 
 */
 
+enum item_type {LOG_T, ALTER_T};
 //the information on each unique object
 struct item_info {
 	unsigned int item_id;
 	unsigned int buffer_loc;
 	unsigned int amount;
-	float x, y, z;
+	int x_m, y_m, z_m;// the location in the world
+	float x, y, z;//the location on the screen
 	float x_scale;
 	float y_scale;
 	float z_scale;
 	std::string* item_name;
+	item_type type;
 };
 
 //the data needed to render the objects in the world
@@ -43,6 +46,7 @@ struct item {
 	std::string* item_name;
 };
 
+//update the matrix of a specfic item
 struct update_pak {
 	unsigned int item_id;
 	unsigned int buffer_loc;
@@ -63,6 +67,18 @@ struct block_loc {
 	}
 };
 
+//transfer object to tell the map where all the maps are located
+struct item_loc {
+	int x, y, z;
+	item_info* object;
+	item_loc(item_info* o, int x1, int y1, int z1) {
+		object = o;
+		x = x1;
+		y = y1;
+		z = z1;
+	}
+};
+
 class object_manger{
 public:
 
@@ -75,6 +91,7 @@ public:
 
 	void update_item_matrix(update_pak* data);
 	item_info* get_item_info();
+	void update_alter(float deltatTime);
 
 	//alter functions
 	item_info* get_alter_info() { return alter; }
@@ -89,12 +106,18 @@ public:
 	bool need_cam_updates() { return using_custom_shaders; }
 	std::vector<block_loc*>* get_blocked_spots() { return blocked_spots; }
 
+	//places the items on the world map after each object has been created
+	std::vector< item_loc> place_items_init();
+	//spawn an item after all the initital items have been created
+	void spawn_item(item_type type, int x, int y, int z );
+
 private:
 	
 	void increase_buffer_size();
 
 	void create_log_objects();
 	void create_alter_objects();
+
 	//common vars
 	bool update_projection;
 	bool update_cam;
@@ -108,8 +131,15 @@ private:
 
 	std::vector< item*> items;
 	std::vector<block_loc*>* blocked_spots;
+
 	//the main alter info
 	item_info* alter;
-
+	std::queue< item_info*> items_to_sac;
+	float sac_time;
+	float max_time;
+	float float_sped;
+	Shader* alter_affect;
+	bool in_possition;
+	bool same_x, same_z;
 };
 

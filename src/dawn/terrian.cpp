@@ -370,7 +370,7 @@ void terrian::cubes_init() {
 	z2 = 10;
 	stockpile_zone = zone_land(STOCKPILE, x1, y1, z1, x2, y2, z2);
 
-	print_map_zoned();
+	//print_map_zoned();
 
 	//block off the land from the objects that take up space
 	std::vector< block_loc*> *blocked_loc = OBJM->get_blocked_spots();
@@ -414,6 +414,8 @@ void terrian::cubes_init() {
 
 		glBindVertexArray(0);
 	}
+	
+	import_items();
 
 	std::cout << "finished creating" << std::endl;
 }
@@ -759,11 +761,18 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		switch (work_job){
 		case STOCK_OBJ:
 			action_numbers = 2;
-			location_amount = 3;
+			location_amount = 2;
 			temp->action_numbers = action_numbers;	
 			temp->location_amount = location_amount;
 			temp->destination = new map_loc[location_amount];
 			temp->action_rq = new action[action_numbers];
+			temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
+			temp->destination[0].x = x1;
+			temp->destination[0].y = y1;
+			temp->destination[0].z = z1;
+			temp->destination[1].x = stockpile_zone->get_stockpile_loc()->x;
+			temp->destination[1].y = stockpile_zone->get_stockpile_loc()->y;
+			temp->destination[1].z = stockpile_zone->get_stockpile_loc()->z;
 			temp->action_rq[0] = PICK_UP;
 			//temp->action_rq[1] = MOVE;
 			temp->action_rq[1] = DROP;
@@ -822,6 +831,59 @@ void terrian::delete_work_order(work_order* work_job) {
 	delete[] work_job->destination;
 	delete[] work_job->action_rq;
 	delete work_job;
+}
+
+void terrian::print_map_items() {
+
+	if (terrian_map != NULL) {
+		std::cout << "printing out internal terrian_map representation" << std::endl;
+		for (int x = 0; x < x_width; x++) {
+			for (int z = 0; z < z_width; z++) {
+				if (terrian_map[x][z].item_on_top != NULL) {
+					std::cout << "1 ";
+				}
+				else {
+					std::cout << "0 ";
+				}
+			}
+			std::cout << std::endl;
+		}
+	}
+	else {
+		std::cout << "the terrian_map data structure was never created" << std::endl;
+	}
+}
+
+void terrian::import_items() {
+	std::vector< item_loc> items_on_map = OBJM->place_items_init();
+
+	if (items_on_map.size() > 0) {
+		for (int i = 0; i < items_on_map.size(); i++) {
+			terrian_map[items_on_map[i].x][items_on_map[i].z].item_on_top = items_on_map[i].object;
+		}
+	}
+	else {
+		std::cout << "there was no items to import" << std::endl;
+	}
+
+	print_map_items();
+}
+
+void terrian::remove_item_from_map(item_info* i) {
+	int x = i->x_m;
+	int y = i->y_m;
+	int z = i->z_m;
+	terrian_map[x][z].item_on_top = NULL;
+}
+void terrian::add_item_to_map(item_info* i) {
+	int x = i->x_m;
+	int y = i->y_m;
+	int z = i->z_m;
+	terrian_map[x][z].item_on_top = i;
+}
+
+void terrian::add_item_to_alter(item_info* i) {
+	OBJM->preform_sacrifice(i);
 }
 
 //path finding functions
