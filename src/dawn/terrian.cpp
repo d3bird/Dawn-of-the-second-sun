@@ -805,7 +805,6 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		unsigned int action_numbers;
 		unsigned int location_amount;
 		zone_loc* store;
-		std::cout << "check point 0" << std::endl;
 		switch (work_job){
 		case STOCK_OBJ:
 			action_numbers = 2;
@@ -850,20 +849,15 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
 			action_numbers = 1;
 			location_amount = 1;
-			std::cout << "check point 1" << std::endl;
 			temp->action_numbers = action_numbers;
 			temp->location_amount = location_amount;
 			temp->destination = new map_loc[location_amount];
-			std::cout << "check point 1.1" << std::endl;
 			temp->destination[0].x = x1;
-			std::cout << "check point 1.2" << std::endl;
 			temp->destination[0].y = y1;
-			std::cout << "check point 1.3" << std::endl;
 			temp->destination[0].z = z1;
-			std::cout << "check point 1.4" << std::endl;
 			temp->action_rq = new action[action_numbers];
 			temp->action_rq[0] = START_SAC;
-			std::cout << "check point 2" << std::endl;
+
 			
 			break;
 		case MOVE_C:

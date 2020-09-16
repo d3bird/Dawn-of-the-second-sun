@@ -383,7 +383,7 @@ void beast_manager::create_tasks(work_order* Job) {
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
         if (nav_points.size() > 0) {
-            std::cout << "addin poitns to creature" << std::endl;
+            std::cout << "adding points to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
             {
                 glm::vec3* temp2 = nav_points[i];
