@@ -101,20 +101,26 @@ void world::init() {
 
 	//add the creatures
 	BM->spawn_creature(Terrian->get_spawn_zone());
-	//BM->spawn_creature(Terrian->get_spawn_zone());
-	//BM->spawn_creature(Terrian->get_spawn_zone());
-	//BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
 	std::cout << std::endl;
 
-work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0)[0];
+	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0)[0];
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 	//spawn the tasks
-	new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
+	//new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
+	//Terrian->print_work_order(new_task);
+	//BM->create_tasks(new_task);
+	//new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4)[0];
+	//Terrian->print_work_order(new_task);
+	//BM->create_tasks(new_task);
+	new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 2, 5, 0)[0];
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 
-	
+	//while (true);
 }
 
 void world::init_lighting_test() {

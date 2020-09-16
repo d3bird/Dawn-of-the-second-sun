@@ -22,6 +22,7 @@
 enum item_type {LOG_T, ALTER_T};
 //the information on each unique object
 struct item_info {
+	unsigned int debug_id;
 	unsigned int item_id;
 	unsigned int buffer_loc;
 	unsigned int amount;
@@ -90,7 +91,7 @@ public:
 	void init();
 
 	void update_item_matrix(update_pak* data);
-	item_info* get_item_info();
+	//item_info* get_item_info();
 	void update_alter(float deltatTime);
 
 	//alter functions
@@ -113,6 +114,8 @@ public:
 
 private:
 	
+	void delete_item_from_buffer(item_info* it);
+
 	void increase_buffer_size();
 
 	void create_log_objects();
@@ -124,7 +127,7 @@ private:
 
 	bool using_custom_shaders;
 
-
+	unsigned int object_id;
 	glm::mat4 view;
 	glm::mat4 projection;
 	Shader* common;
@@ -144,5 +147,6 @@ private:
 	bool alter_draw;
 	glm::mat4 sac_obj_mat;
 	glm::vec2 resultion;
+
 };
 

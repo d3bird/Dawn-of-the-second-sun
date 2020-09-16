@@ -47,7 +47,7 @@ update_pak* creature::generate_item_update() {
 	if (held_item != NULL) {
 		output = new update_pak;
 		output->item_id = held_item->item_id;
-		output->buffer_loc = held_item->item_id;
+		output->buffer_loc = held_item->buffer_loc;
 		output->x = (loc->x/ scale_factor);
 		output->y = (loc->y/ scale_factor)+ 4;
 		output->z = (loc->z/ scale_factor);

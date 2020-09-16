@@ -746,15 +746,17 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 		temp->currently_on = 0;
 		item_info* obj_dest;
 		temp->arrived = false;
-	
-		if (terrian_map[x1][z1].item_on_top == NULL) {
-			obj_dest = NULL;
-			std::cout << "no item on top, this might create errors" << std::endl;
+		std::cout << "checking " << x1 << " " << z1 << std::endl;
+		if (terrian_map[z1][x1].item_on_top != NULL) {
+			std::cout << "1 item on top " << std::endl;
+			obj_dest = terrian_map[z1][x1].item_on_top;
 		}
 		else {
-			obj_dest = terrian_map[x1][z1].item_on_top;
+			std::cout << "0 item on top" << std::endl;
+			obj_dest = NULL;
 		}
 
+		temp->object = obj_dest;
 		unsigned int action_numbers;
 		unsigned int location_amount;
 
@@ -766,7 +768,7 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			temp->location_amount = location_amount;
 			temp->destination = new map_loc[location_amount];
 			temp->action_rq = new action[action_numbers];
-			temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
+			//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
 			temp->destination[0].x = x1;
 			temp->destination[0].y = y1;
 			temp->destination[0].z = z1;
@@ -782,7 +784,7 @@ std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1
 			location_amount = 2;
 			temp->action_numbers = action_numbers;
 			temp->location_amount = location_amount;
-			temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
+			//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
 			temp->destination = new map_loc[location_amount];
 			temp->destination[0].x = x1;
 			temp->destination[0].y =y1;
@@ -840,10 +842,10 @@ void terrian::print_map_items() {
 		for (int x = 0; x < x_width; x++) {
 			for (int z = 0; z < z_width; z++) {
 				if (terrian_map[x][z].item_on_top != NULL) {
-					std::cout << "1 ";
+					std::cout << terrian_map[x][z].item_on_top->debug_id<<" ";
 				}
 				else {
-					std::cout << "0 ";
+					std::cout << "* ";
 				}
 			}
 			std::cout << std::endl;
@@ -859,7 +861,7 @@ void terrian::import_items() {
 
 	if (items_on_map.size() > 0) {
 		for (int i = 0; i < items_on_map.size(); i++) {
-			terrian_map[items_on_map[i].x][items_on_map[i].z].item_on_top = items_on_map[i].object;
+			terrian_map[items_on_map[i].z][items_on_map[i].x].item_on_top = items_on_map[i].object;
 		}
 	}
 	else {

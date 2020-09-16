@@ -15,6 +15,7 @@ object_manger::object_manger() {
 	same_z = false;
 	alter_draw = false;
 	resultion = glm::vec2(800, 600);
+	object_id = 0;
 }
 
 object_manger::~object_manger() {
@@ -43,7 +44,7 @@ void object_manger::draw() {
 	}
 	if (alter_draw) {
 		glEnable(GL_BLEND);
-		std::cout << "sac_time = " << sac_time << " u_resolutions = " << resultion.x << " " << resultion.y << std::endl;
+		//std::cout << "sac_time = " << sac_time << " u_resolutions = " << resultion.x << " " << resultion.y << std::endl;
 		alter_affect->use();
 		alter_affect->setMat4("projection", projection);
 		alter_affect->setMat4("view", view);
@@ -52,9 +53,14 @@ void object_manger::draw() {
 		alter_affect->setMat4("model", sac_obj_mat);
 		items[items_to_sac.front()->item_id]->model->Draw(alter_affect);
 		glDisable(GL_BLEND);
-		
+	
 		if (sac_time >= 10) {
 			alter_draw = false;
+			in_possition = false;
+			same_x = false;
+			same_z = false;
+			items_to_sac.pop();
+			sac_time = 0;
 		}
 	}
 }
@@ -80,6 +86,7 @@ void object_manger::increase_buffer_size() {
 void object_manger::update_item_matrix(update_pak* data) {
 
 	if (data != NULL && data->item_id < items.size()) {
+		std::cout << "updateing " << data->item_id << ", bufferloc = " << data->buffer_loc << std::endl;
 		glm::mat4 model = glm::mat4(1.0f);
 		//model = glm::scale(model, glm::vec3(data->x_scale, data->y_scale, data->z_scale));
 		model = glm::translate(model, glm::vec3(data->x, data->y, data->z));
@@ -92,11 +99,11 @@ void object_manger::update_item_matrix(update_pak* data) {
 
 }
 
-item_info* object_manger::get_item_info() {
-	item_info* output;// = new item_info;
-	output = items[0]->item_data[0];
-	return output;
-}
+//item_info* object_manger::get_item_info() {
+//	item_info* output;// = new item_info;
+//	output = items[0]->item_data[0];
+//	return output;
+//}
 
 void object_manger::create_log_objects() {
 
@@ -109,8 +116,8 @@ void object_manger::create_log_objects() {
 	std::string* item_name_t = new std::string("log object");
 	//creating the log item
 	buffer = 0;
-	buffer_size = 1;
-	amount = 1;
+	buffer_size = 10;
+	amount = 2;
 	modelMatrices = new glm::mat4[buffer_size];
 	custom_shader = NULL;
 	model = new Model("resources/objects/log/log.obj");
@@ -144,7 +151,8 @@ void object_manger::create_log_objects() {
 	temp_data->item_id = 0;
 	temp_data->buffer_loc = 0;
 	temp_data->item_name = item_name_t;
-
+	temp_data->debug_id = object_id;
+	object_id++;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
@@ -179,6 +187,38 @@ void object_manger::create_log_objects() {
 	temp->modelMatrices = modelMatrices;
 	temp->custom_shader = custom_shader;
 	temp->item_name = item_name_t;
+	temp->item_data.push_back(temp_data);//add the data for the object
+
+
+	 int_x_loc = 2;
+	 int_y_loc = 7;
+	 int_z_loc = 0;
+
+	 x = int_x_loc * 2;
+	 y = int_y_loc;
+	 z = int_z_loc * 2;
+
+	temp_data = new item_info;
+	temp_data->type = LOG_T;
+	temp_data->x = x;
+	temp_data->y = y;
+	temp_data->z = z;
+	temp_data->x_m = int_x_loc;
+	temp_data->y_m = int_y_loc;
+	temp_data->z_m = int_z_loc;
+	temp_data->x_scale = x_scale;
+	temp_data->y_scale = y_scale;
+	temp_data->z_scale = z_scale;
+	temp_data->item_id = 0;
+	temp_data->buffer_loc = 1;
+	temp_data->item_name = item_name_t;
+	temp_data->debug_id = object_id;
+	object_id++;
+	 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, glm::vec3(x, y, z));
+	modelMatrices[1] = trans;
+
+
 	temp->item_data.push_back(temp_data);//add the data for the object
 
 	items.push_back(temp);
@@ -253,6 +293,8 @@ void object_manger::create_alter_objects() {
 	temp_data->item_id = 1;
 	temp_data->buffer_loc = 0;
 	temp_data->item_name = item_name_t;
+	temp_data->debug_id = object_id;
+	object_id++;
 	alter = temp_data;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -410,10 +452,36 @@ void object_manger::update_alter(float deltatTime) {
 				//sac_obj_mat = trans;
 			}
 			if (same_x && same_z) {
-				items[sac_item->item_id]->amount--;
+				
+				delete_item_from_buffer(sac_item);
 				alter_draw = true;
 				in_possition = true;
 			}
 		}
 	}
+}
+
+void object_manger::delete_item_from_buffer(item_info* it) {
+	std::cout << "buffer size " << items[it->item_id]->buffer_size << std::endl;
+	std::cout << "buffer amount " << items[it->item_id]->amount << std::endl;
+
+
+	if (it->buffer_loc == items[it->item_id]->amount - 1) {//if it is the last one 
+		std::cout << "last one" << std::endl;
+		items[it->item_id]->item_data.pop_back();
+		items[it->item_id]->amount--;
+	}
+	else {
+		std::cout << "not last one" << std::endl;
+		unsigned int buffer_loc = it->buffer_loc;
+		unsigned int buffer_loc_end = items[it->item_id]->amount - 1;
+		std::cout << buffer_loc << std::endl;
+		std::cout << buffer_loc_end << std::endl;
+		items[it->item_id]->item_data[buffer_loc] = items[it->item_id]->item_data[buffer_loc_end];
+		items[it->item_id]->item_data[buffer_loc]->buffer_loc = buffer_loc;
+		items[it->item_id]->item_data.pop_back();
+		items[it->item_id]->amount--;
+		items[it->item_id]->modelMatrices[buffer_loc] = items[it->item_id]->modelMatrices[buffer_loc_end];
+	}
+	
 }
