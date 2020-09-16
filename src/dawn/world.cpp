@@ -28,6 +28,7 @@ void world::draw() {
 	BM->set_cam(view);
 	BM->draw();
 
+	OBJM->set_cam(view);
 	OBJM->draw();
 }
 

@@ -334,13 +334,13 @@ void terrian::cubes_init() {
 	//aStarSearch(src, dest);//private function 
 
 	//test out the map zoning 
-	int x1 = int(get_x_width()) - 3;
+	int x1 = 14;
 	int y1 = 0;
-	int z1 = int(get_z_width()) - 3;
+	int z1 = 14;
 
-	int x2 = int(get_x_width());
+	int x2 = 16;
 	int y2 = 0;
-	int z2 = int(get_z_width());
+	int z2 = 16;
 	alter_zone = zone_land(ALTER, x1, y1, z1, x2, y2, z2);
 
 	x1 = int(get_x_width()) - 5;

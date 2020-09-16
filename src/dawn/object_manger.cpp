@@ -8,11 +8,13 @@ object_manger::object_manger() {
 	projection = glm::mat4(1.0f);
 	common = NULL;
 	sac_time = 0;
-	max_time = 360;
+	max_time = 3600000;
 	float_sped = 8;
 	in_possition = false;
 	same_x = false;
 	same_z = false;
+	alter_draw = false;
+	resultion = glm::vec2(800, 600);
 }
 
 object_manger::~object_manger() {
@@ -37,6 +39,22 @@ void object_manger::draw() {
 			glBindVertexArray(items[q]->model->meshes[i].VAO);
 			glDrawElementsInstanced(GL_TRIANGLES, items[q]->model->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, items[q]->amount);
 			glBindVertexArray(0);
+		}
+	}
+	if (alter_draw) {
+		glEnable(GL_BLEND);
+		std::cout << "sac_time = " << sac_time << " u_resolutions = " << resultion.x << " " << resultion.y << std::endl;
+		alter_affect->use();
+		alter_affect->setMat4("projection", projection);
+		alter_affect->setMat4("view", view);
+		alter_affect->setFloat("u_time", sac_time);
+		alter_affect->setVec2("u_resolutions", resultion);
+		alter_affect->setMat4("model", sac_obj_mat);
+		items[items_to_sac.front()->item_id]->model->Draw(alter_affect);
+		glDisable(GL_BLEND);
+		
+		if (sac_time >= 10) {
+			alter_draw = false;
 		}
 	}
 }
@@ -176,6 +194,8 @@ void object_manger::create_alter_objects() {
 	glm::mat4* modelMatrices;
 	Shader* custom_shader;
 	Model* model;
+	alter_affect = new Shader("alter.vs", "alter.fs");
+
 	std::string* item_name_t = new std::string("alter object");
 
 	//creating the alter object
@@ -307,9 +327,13 @@ void object_manger::spawn_item(item_type type, int x, int y, int z) {
 
 void object_manger::preform_sacrifice(item_info* sac) {
 	std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
+	std::cout << "buffer size " << items[sac->item_id]->buffer_size << std::endl;
+	std::cout << "buffer amount " << items[sac->item_id]->amount << std::endl;
+
 	sac->x = sac->x_m * 2;
 	sac->y = sac->y_m;
 	sac->z = sac->z_m * 2;
+	
 	items_to_sac.push(sac);
 
 }
@@ -346,7 +370,8 @@ void object_manger::update_alter(float deltatTime) {
 			//std::cout << sac_item->x << " " << sac_item->y << " " << sac_item->z << std::endl;
 			trans = glm::translate(trans, glm::vec3(sac_item->x , sac_item->y, sac_item->z));
 			trans = glm::rotate(trans, sin(sac_time), glm::vec3(1, 1, 1));
-			items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
+			sac_obj_mat = trans;
+			//items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
 		}
 		else {
 			float dist_diff;
@@ -382,8 +407,11 @@ void object_manger::update_alter(float deltatTime) {
 				}
 				trans = glm::translate(trans, glm::vec3(sac_item->x, sac_item->y, sac_item->z));
 				items[sac_item->item_id]->modelMatrices[sac_item->buffer_loc] = trans;
+				//sac_obj_mat = trans;
 			}
 			if (same_x && same_z) {
+				items[sac_item->item_id]->amount--;
+				alter_draw = true;
 				in_possition = true;
 			}
 		}

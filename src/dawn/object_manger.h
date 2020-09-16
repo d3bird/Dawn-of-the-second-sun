@@ -141,5 +141,8 @@ private:
 	Shader* alter_affect;
 	bool in_possition;
 	bool same_x, same_z;
+	bool alter_draw;
+	glm::mat4 sac_obj_mat;
+	glm::vec2 resultion;
 };
 
