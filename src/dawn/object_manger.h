@@ -95,6 +95,9 @@ public:
 	//item_info* get_item_info();
 	void update_alter(float deltatTime);
 
+	item_info* spawn_item(item_type type,int x, int z);
+	item_info* get_itme(int x, int z);
+
 	//alter functions
 	item_info* get_alter_info() { return alter; }
 	void preform_sacrifice(item_info* sac);

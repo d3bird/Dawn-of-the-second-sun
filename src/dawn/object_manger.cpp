@@ -506,3 +506,63 @@ void object_manger::delete_item_from_buffer(item_info* it) {
 	}
 	
 }
+
+item_info* object_manger::spawn_item(item_type type, int x, int z) {
+	unsigned int buffer_loc;
+	unsigned int item_id;
+	//check to see if the buffer is large enough
+	switch (type) {
+	case LOG_T:
+		if (items[0]->amount >= items[0]->buffer_size) {
+			return NULL;
+		}
+		item_id = 0;
+		buffer_loc = items[0]->amount;
+		items[0]->amount++;
+		break;
+	case ALTER_T:
+		if (items[1]->amount >= items[1]->buffer_size) {
+			return NULL;
+		}
+		item_id = 1;
+		buffer_loc = items[1]->amount;
+		items[1]->amount++;
+		break;
+	}
+
+	float x_f = x * 2;
+	float y_f = 7;
+	float z_f = z * 2;
+
+	item_info* output = new item_info;
+	output->amount = 1;
+	output->x_m = x;
+	output->y_m = 7;
+	output->z_m = z;
+	output->type = type;
+	output->x_scale = 1;
+	output->y_scale = 1;
+	output->z_scale = 1;
+	output->x = x_f;
+	output->y = y_f;
+	output->z = z_f;
+	output->zone_location = NULL;
+	output->item_name = items[item_id]->item_name;
+	output->item_id = item_id;
+	output->buffer_loc = buffer_loc;
+	output->debug_id = object_id;
+	object_id++;
+
+
+	glm::mat4 trans = glm::mat4(1.0f);
+	std::cout << "item at " << x_f << "," << y_f << "," << z_f << std::endl;
+	trans = glm::translate(trans, glm::vec3(x_f, y_f, z_f));
+	items[item_id]->modelMatrices[buffer_loc] = trans;
+
+	items[item_id]->item_data.push_back(output);
+	return output;
+}
+
+item_info* object_manger::get_itme(int x, int z) {
+	return NULL;
+}

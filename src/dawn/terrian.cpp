@@ -972,6 +972,15 @@ void terrian::return_zone_loc(zone_loc* i) {
 	}
 
 }
+
+void terrian::spawn_item(item_type type, int x, int z) {
+	item_info* output = OBJM->spawn_item(type,x,z);
+	terrian_map[z][x].item_on_top = output;
+	print_map_items();
+
+	//while (true);
+}
+
 //path finding functions
 
 //makesure to swap the input of x and z due to the implementtion of the function

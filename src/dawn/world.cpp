@@ -77,6 +77,12 @@ void world::init() {
 	Terrian->set_cube_shader(lighting_in);
 	Terrian->set_object_manger(OBJM);
 	Terrian->cubes_init();
+
+	Terrian->spawn_item(LOG_T, 0, 4);
+	Terrian->spawn_item(LOG_T, 0, 3);
+	Terrian->spawn_item(LOG_T, 0, 2);
+	Terrian->spawn_item(LOG_T, 0, 1);
+
 	std::cout << std::endl;
 
 	BM = new beast_manager();

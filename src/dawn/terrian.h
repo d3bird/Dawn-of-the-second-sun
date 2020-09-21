@@ -96,6 +96,7 @@ public:
 	void add_item_to_alter(item_info* i);
 	bool start_sac() {return OBJM->start_sacrifice(); }
 	bool is_alter_ready() {return  OBJM->is_alter_ready(); }
+	void spawn_item(item_type type, int x, int z);
 
 	//zoning function
 	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
