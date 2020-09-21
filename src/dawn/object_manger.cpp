@@ -370,9 +370,6 @@ std::vector< item_loc>  object_manger::place_items_init() {
 	return output;
 }
 
-void object_manger::spawn_item(item_type type, int x, int y, int z) {
-
-}
 
 void object_manger::preform_sacrifice(item_info* sac) {
 	//std::cout << "sacrificing " << items[sac->item_id]->item_name << std::endl;
@@ -563,6 +560,3 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	return output;
 }
 
-item_info* object_manger::get_itme(int x, int z) {
-	return NULL;
-}

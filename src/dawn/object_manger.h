@@ -96,7 +96,6 @@ public:
 	void update_alter(float deltatTime);
 
 	item_info* spawn_item(item_type type,int x, int z);
-	item_info* get_itme(int x, int z);
 
 	//alter functions
 	item_info* get_alter_info() { return alter; }
@@ -115,8 +114,7 @@ public:
 
 	//places the items on the world map after each object has been created
 	std::vector< item_loc> place_items_init();
-	//spawn an item after all the initital items have been created
-	void spawn_item(item_type type, int x, int y, int z );
+
 
 private:
 	
