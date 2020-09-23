@@ -774,116 +774,187 @@ void terrian::print_work_order(work_order* wo) {
 	}
 }
 
-std::vector<work_order*> terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1, int x2, int y2, int z2) {
+work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1) {
 	std::cout << "creating work order" << std::endl;
-	std::vector<work_order*> output;
-
 	work_order* temp;
 
 	//generates one work order
-	if ((x1 == x2 && y1 == y2 && z1 == z2) || (x2 == -1 || y2 == -1 || z2 == -1)) {
-		std::cout << "single space" << std::endl;
-		temp = new work_order;
-		temp->job = work_job;//the overall job
-		temp->act_currently_on = 0;
-		temp->loc_currently_on = 0;
-		temp->currently_on = 0;
-		item_info* obj_dest;
-		temp->arrived = false;
-		temp->zone_location = NULL;
-		//std::cout << "checking " << x1 << " " << z1 << std::endl;
-		if (terrian_map[z1][x1].item_on_top != NULL) {
+
+	std::cout << "single space" << std::endl;
+	temp = new work_order;
+	temp->job = work_job;//the overall job
+	temp->act_currently_on = 0;
+	temp->loc_currently_on = 0;
+	temp->currently_on = 0;
+	item_info* obj_dest;
+	temp->arrived = false;
+	temp->zone_location = NULL;
+	//std::cout << "checking " << x1 << " " << z1 << std::endl;
+	if (terrian_map[z1][x1].item_on_top != NULL) {
 		//	std::cout << "1 item on top " << std::endl;
-			obj_dest = terrian_map[z1][x1].item_on_top;
+		obj_dest = terrian_map[z1][x1].item_on_top;
+	}
+	else {
+		//std::cout << "0 item on top" << std::endl;
+		obj_dest = NULL;
+	}
+
+	temp->object = obj_dest;
+	unsigned int action_numbers;
+	unsigned int location_amount;
+	zone_loc* store;
+	switch (work_job) {
+	case STOCK_OBJ:
+		action_numbers = 2;
+		location_amount = 2;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->action_rq = new action[action_numbers];
+		//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		store = stockpile_zone->get_stockpile_loc();
+		temp->zone_location = store;
+		temp->destination[1].x = store->x;
+		temp->destination[1].y = store->y;
+		temp->destination[1].z = store->z;
+		temp->action_rq[0] = PICK_UP;
+		//temp->action_rq[1] = MOVE;
+		temp->action_rq[1] = DROP;
+		break;
+	case SACRIFICE_OBJ:
+		action_numbers = 2;
+		location_amount = 2;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
+		temp->destination = new map_loc[location_amount];
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		store = alter_zone->get_alter_loc();
+		temp->zone_location = store;
+		temp->destination[1].x = store->x;
+		temp->destination[1].y = store->y;
+		temp->destination[1].z = store->z;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = PICK_UP;
+		//temp->action_rq[1] = MOVE;
+		temp->action_rq[1] = SAC_OBJ;
+		break;
+	case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = START_SAC;
+		break;
+	case MOVE_C:
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->destination->x = x1;
+		temp->destination->y = y1;
+		temp->destination->z = z1;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = MOVE;
+		break;
+	default:
+		break;
+	}
+	//print_work_order(temp);
+	return temp;
+}
+
+std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2, int y2, int z2) {
+	std::vector<work_order*> output;
+	std::cout << "creating multiple orders" << std::endl;
+	std::cout << "inputs x1: "<<x1<<" z1: "<<z1<<" x2: " <<x2<<" z2: "<< z2 << std::endl;
+
+	if ((x1 == x2 && y1 == y2 && z1 == z2) || (x2 == -1 || y2 == -1 || z2 == -1)) {
+		output.push_back(generate_work_order(work_job, x1, y1, z1));
+	}
+	else {
+		int x_s, width;
+		int z_s, height;
+		if (x1 == x2) {//only the z cords are changing 
+			std::cout << "zline" << std::endl;
+			if (z1 > z2) {
+				z_s = z2;
+				height = z1 - z2;
+			}
+			else {
+				z_s = z1;
+				height = z2 - z1;
+			}
+
+			for (int i = 0; i < height; i++) {
+				//std::cout << z_s + i << " ";
+				if (terrian_map[z_s + i][x1].item_on_top != NULL) {
+					output.push_back(generate_work_order(work_job, x1, 5, z_s + i));
+				}
+			}
+		}
+		else if (z1 == z2) {//only the x cords are changing 
+			std::cout << "xline" << std::endl;
+			if (x1 > x2) {
+				x_s = x2;
+				width = x1 - x2;
+			}
+			else {
+				x_s = x1;
+				width = x2 - x1;
+			}
+
+			for (int i = 0; i < width; i++) {
+				//std::cout << x_s + i << " ";
+				if (terrian_map[z1][x_s + i].item_on_top != NULL) {
+					output.push_back(generate_work_order(work_job, x_s + i, 5, z1));
+				}
+			}
 		}
 		else {
-			//std::cout << "0 item on top" << std::endl;
-			obj_dest = NULL;
+			std::cout << "a box" << std::endl;
+			if (z1 > z2) {
+				z_s = z2;
+				height = z1 - z2;
+			}
+			else {
+				z_s = z1;
+				height = z2 - z1;
+			}
+			if (x1 > x2) {
+				x_s = x2;
+				width = x1 - x2;
+			}
+			else {
+				x_s = x1;
+				width = x2 - x1;
+			}
+
+			for (int i = 0; i < width; i++) {
+				for (int q = 0; q < height; q++) {
+					if (terrian_map[z_s + q][x_s + i].item_on_top != NULL) {
+						output.push_back(generate_work_order(work_job, x_s + i, 5, z_s + q));
+					}
+				}
+			}
 		}
 
-		temp->object = obj_dest;
-		unsigned int action_numbers;
-		unsigned int location_amount;
-		zone_loc* store;
-		switch (work_job){
-		case STOCK_OBJ:
-			action_numbers = 2;
-			location_amount = 2;
-			temp->action_numbers = action_numbers;	
-			temp->location_amount = location_amount;
-			temp->destination = new map_loc[location_amount];
-			temp->action_rq = new action[action_numbers];
-			//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
-			temp->destination[0].x = x1;
-			temp->destination[0].y = y1;
-			temp->destination[0].z = z1;
-			store = alter_zone->get_stockpile_loc();
-			temp->zone_location = store;
-			temp->destination[1].x = store->x;
-			temp->destination[1].y = store->y;
-			temp->destination[1].z = store->z;
-			temp->action_rq[0] = PICK_UP;
-			//temp->action_rq[1] = MOVE;
-			temp->action_rq[1] = DROP;
-			break;
-		case SACRIFICE_OBJ:
-			action_numbers = 2;
-			location_amount = 2;
-			temp->action_numbers = action_numbers;
-			temp->location_amount = location_amount;
-			//temp->object = OBJM->get_item_info();//just as a temp thing untill th object handler gets updated
-			temp->destination = new map_loc[location_amount];
-			temp->destination[0].x = x1;
-			temp->destination[0].y =y1;
-			temp->destination[0].z = z1;
-			store = alter_zone->get_alter_loc();
-			temp->zone_location = store;
-			temp->destination[1].x = store->x;
-			temp->destination[1].y = store->y;
-			temp->destination[1].z = store->z;
-			temp->action_rq = new action[action_numbers];
-			temp->action_rq[0] = PICK_UP;
-			//temp->action_rq[1] = MOVE;
-			temp->action_rq[1] = SAC_OBJ;
-			break;
-		case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
-			action_numbers = 1;
-			location_amount = 1;
-			temp->action_numbers = action_numbers;
-			temp->location_amount = location_amount;
-			temp->destination = new map_loc[location_amount];
-			temp->destination[0].x = x1;
-			temp->destination[0].y = y1;
-			temp->destination[0].z = z1;
-			temp->action_rq = new action[action_numbers];
-			temp->action_rq[0] = START_SAC;
-
-			
-			break;
-		case MOVE_C:
-			action_numbers = 1;
-			location_amount = 1;
-			temp->action_numbers = action_numbers;
-			temp->location_amount = location_amount;
-			temp->destination = new map_loc[location_amount];
-			temp->destination->x = x1;
-			temp->destination->y = y1;
-			temp->destination->z = z1;
-			temp->action_rq = new action[action_numbers];
-			temp->action_rq[0] = MOVE;
-			break;
-		default:
-			break;
-		}
-
-
-		output.push_back(temp);
-
-		//print_work_order(temp);
-
-	}
-	else {//for generating multiple work orders
-		std::cout << "multiple spaces" << std::endl;
+		//while (true);
+		/*output.push_back(generate_work_order(work_job, 7, 5, 0));
+		output.push_back(generate_work_order(work_job, 8, 5, 0));
+		output.push_back(generate_work_order(work_job, 9, 5, 0));
+		output.push_back(generate_work_order(work_job, 10, 5, 0));*/
 
 	}
 

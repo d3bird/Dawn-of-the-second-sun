@@ -104,7 +104,8 @@ public:
 
 	//task creation function
 	void print_work_order(work_order* wo);
-	std::vector<work_order*> generate_work_order(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
+	work_order* generate_work_order(work_jobs work_job, int x1, int y1, int z1);
+	std::vector<work_order*> generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 	void delete_work_order(work_order* work_job);
 
 	//settersand getters

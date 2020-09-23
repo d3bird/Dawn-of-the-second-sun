@@ -2,7 +2,7 @@
 
 beast_manager::beast_manager(){
 	amount = 0;
-    max_amount = 4;
+    max_amount = 10;
     beast_shader = NULL;
 }
 
@@ -445,7 +445,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
             work_order_C* temp = new work_order_C;
             temp->cond = START_ALTER;
             temp->wo = map->generate_work_order(START_SACRIFICE,
-                Job->object->x_m, Job->object->y_m, Job->object->z_m)[0];
+                Job->object->x_m, Job->object->y_m, Job->object->z_m);
             condional_jobs.push_back(temp);
         }
         npc->drop_item();

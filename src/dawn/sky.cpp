@@ -44,4 +44,5 @@ void sky::init() {
 	radius = x_width + (x_width * 0.5);
 	space = new Shader("planet.vs", "planet.fs"); 
 	moon = new Model("resources/objects/planet/planet.obj");
+
 }

@@ -78,10 +78,15 @@ void world::init() {
 	Terrian->set_object_manger(OBJM);
 	Terrian->cubes_init();
 
-	Terrian->spawn_item(LOG_T, 0, 4);
-	Terrian->spawn_item(LOG_T, 0, 3);
-	Terrian->spawn_item(LOG_T, 0, 2);
-	Terrian->spawn_item(LOG_T, 0, 1);
+	Terrian->spawn_item(LOG_T, 7, 0);
+	Terrian->spawn_item(LOG_T, 8, 0);
+	Terrian->spawn_item(LOG_T, 9, 0);
+	//Terrian->spawn_item(LOG_T, 10, 0);
+
+	Terrian->spawn_item(LOG_T, 10, 0);
+	Terrian->spawn_item(LOG_T, 10, 1);
+	Terrian->spawn_item(LOG_T, 10, 2);
+	Terrian->spawn_item(LOG_T, 10, 3);
 
 	std::cout << std::endl;
 
@@ -110,25 +115,37 @@ void world::init() {
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
+	BM->spawn_creature(Terrian->get_spawn_zone());
 	std::cout << std::endl;
 
-	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0)[0];
+	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0);
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 	//spawn the tasks
 
-	new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 2, 5, 0)[0];
+	new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 2, 5, 0);
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 
 
-	new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4)[0];
+	new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4);
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
-	new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4)[0];
+	new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4);
 	Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 
+	//std::cout << std::endl;
+	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 0);//xline test
+	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 10, 5, 0, 10, 5, 4);//zline test
+	  std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 4);//box test
+	//while (true);
+
+	for (int i = 0; i < workOplaenty.size(); i++) {
+		BM->create_tasks(workOplaenty[i]);
+	}
 
 	//while (true);
 }
