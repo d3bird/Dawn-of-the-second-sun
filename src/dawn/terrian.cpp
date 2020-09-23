@@ -877,8 +877,8 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 
 std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2, int y2, int z2) {
 	std::vector<work_order*> output;
-	std::cout << "creating multiple orders" << std::endl;
-	std::cout << "inputs x1: "<<x1<<" z1: "<<z1<<" x2: " <<x2<<" z2: "<< z2 << std::endl;
+	//	std::cout << "creating multiple orders" << std::endl;
+		//std::cout << "inputs x1: "<<x1<<" z1: "<<z1<<" x2: " <<x2<<" z2: "<< z2 << std::endl;
 
 	if ((x1 == x2 && y1 == y2 && z1 == z2) || (x2 == -1 || y2 == -1 || z2 == -1)) {
 		output.push_back(generate_work_order(work_job, x1, y1, z1));
@@ -887,7 +887,7 @@ std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int 
 		int x_s, width;
 		int z_s, height;
 		if (x1 == x2) {//only the z cords are changing 
-			std::cout << "zline" << std::endl;
+			//std::cout << "zline" << std::endl;
 			if (z1 > z2) {
 				z_s = z2;
 				height = z1 - z2;
@@ -905,7 +905,7 @@ std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int 
 			}
 		}
 		else if (z1 == z2) {//only the x cords are changing 
-			std::cout << "xline" << std::endl;
+		//	std::cout << "xline" << std::endl;
 			if (x1 > x2) {
 				x_s = x2;
 				width = x1 - x2;
@@ -923,7 +923,7 @@ std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int 
 			}
 		}
 		else {
-			std::cout << "a box" << std::endl;
+			//	std::cout << "a box" << std::endl;
 			if (z1 > z2) {
 				z_s = z2;
 				height = z1 - z2;
@@ -949,13 +949,6 @@ std::vector<work_order*> terrian::generate_work_order_m(work_jobs work_job, int 
 				}
 			}
 		}
-
-		//while (true);
-		/*output.push_back(generate_work_order(work_job, 7, 5, 0));
-		output.push_back(generate_work_order(work_job, 8, 5, 0));
-		output.push_back(generate_work_order(work_job, 9, 5, 0));
-		output.push_back(generate_work_order(work_job, 10, 5, 0));*/
-
 	}
 
 	return output;

@@ -138,16 +138,17 @@ void world::init() {
 	BM->create_tasks(new_task);
 
 	//std::cout << std::endl;
+
+	//because of the way that this function works, the box should always be one bigger TODO: fix this 
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 0);//xline test
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 10, 5, 0, 10, 5, 4);//zline test
-	  std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 4);//box test
-	//while (true);
+	std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 4);//box test
+
 
 	for (int i = 0; i < workOplaenty.size(); i++) {
 		BM->create_tasks(workOplaenty[i]);
 	}
 
-	//while (true);
 }
 
 void world::init_lighting_test() {
