@@ -180,7 +180,7 @@ void terrian::cubes_init() {
 	cube_amount_selected = 0;
 
 	if (cube_shader == NULL) {
-		cube_shader = new Shader("asteroids.vs", "asteroids.fs");
+		cube_shader = new Shader("shaders/asteroids.vs", "shaders/asteroids.fs");
 	}
 	else {
 		std::cout << "using premade shader for the cubes" << std::endl;
@@ -441,8 +441,8 @@ void terrian::select(unsigned char PixelColor[3]) {
 void terrian::space_init() {
 	std::cout << "creating the terrian class (space)" << std::endl;
     draw_mode = 0;
-	asteroidShader = new Shader("asteroids.vs", "asteroids.fs");
-	planetShader = new Shader("planet.vs", "planet.fs");
+	asteroidShader = new Shader("shaders/asteroids.vs", "shaders/asteroids.fs");
+	planetShader = new Shader("shaders/planet.vs", "shaders/planet.fs");
 
 	rock = new Model("resources/objects/rock/rock.obj");
 	planet = new Model("resources/objects/planet/planet.obj");

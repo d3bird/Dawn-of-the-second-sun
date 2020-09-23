@@ -240,7 +240,7 @@ void object_manger::create_alter_objects() {
 	glm::mat4* modelMatrices;
 	Shader* custom_shader;
 	Model* model;
-	alter_affect = new Shader("alter.vs", "alter.fs");
+	alter_affect = new Shader("shaders/alter.vs", "shaders/alter.fs");
 
 	std::string* item_name_t = new std::string("alter object");
 

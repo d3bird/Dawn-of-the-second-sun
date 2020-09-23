@@ -174,7 +174,7 @@ void beast_manager::init() {
     std::cout << "creating the beast_manger class" << std::endl;
     
     if (beast_shader == NULL) {
-        beast_shader = new Shader("asteroids.vs", "asteroids.fs");
+        beast_shader = new Shader("shaders/asteroids.vs", "shaders/asteroids.fs");
     }
     else {
         std::cout << "using a premade shader for the beast_master object" << std::endl;

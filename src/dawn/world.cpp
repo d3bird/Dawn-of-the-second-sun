@@ -61,8 +61,8 @@ void world::process_mouse_action(float m_x, float m_y) {
 void world::init() {
 
 	//the lighting shader for instanced objects
-	lighting_in = new Shader("lighting_instance.vs", "lighting_instance.fs");
-	selection = new Shader("selection.vs", "selection.fs");
+	lighting_in = new Shader("shaders/lighting_instance.vs", "shaders/lighting_instance.fs");
+	selection = new Shader("shaders/selection.vs", "shaders/selection.fs");
 	std::cout << std::endl;
 	OBJM = new object_manger();
 	OBJM->set_projection(projection);
@@ -154,9 +154,9 @@ void world::init() {
 void world::init_lighting_test() {
 	moon = new Model("resources/objects/planet/planet.obj");
 	cube = new Model("resources/objects/cube/cube.obj");
-	lighting = new Shader("lighting.vs", "lighting.fs");
-	lighting_in = new Shader("lighting_instance.vs", "lighting_instance.fs");
-	def = new Shader("planet.vs", "planet.fs");
+	lighting = new Shader("shaders/lighting.vs", "shaders/lighting.fs");
+	lighting_in = new Shader("shaders/lighting_instance.vs", "shaders/lighting_instance.fs");
+	def = new Shader("shaders/planet.vs", "shaders/planet.fs");
 }
 
 void world::draw_lighitng_test() {
