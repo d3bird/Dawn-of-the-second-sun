@@ -118,20 +118,20 @@ void beast_manager::update(float deltaTime) {
             if (reached_z && reached_x) {
                 all_creatures[i]->pop_nav_point();
                 if (all_creatures[i]->get_travel_que_size() == 0) {
-                    std::cout << "out of travel points" << std::endl;
+                   // std::cout << "out of travel points" << std::endl;
                     work_order* current_job = all_creatures[i]->get_current_work_order();
                     all_creatures[i]->swap_dest_loc();
                     preform_action(current_job, all_creatures[i]);
 
                     current_job->currently_on++;
                     if (current_job->currently_on >= current_job->action_numbers) {// no more actions for this job
-                        std::cout << "jobs done" << std::endl;
+                      //  std::cout << "jobs done" << std::endl;
                         map->delete_work_order(current_job);
                         all_creatures[i]->set_current_work_order(NULL);
                         need_jobs.push_back(all_creatures[i]);
                         remove_from_has_jobs(all_creatures[i]);
-                        std::cout << "have_jobs  = " << have_jobs.size() << std::endl;
-                        std::cout << "need_jobs  = " << need_jobs.size() << std::endl;
+                      //  std::cout << "have_jobs  = " << have_jobs.size() << std::endl;
+                      //  std::cout << "need_jobs  = " << need_jobs.size() << std::endl;
                     }
                     else {// move to the next destination
                      
@@ -141,7 +141,7 @@ void beast_manager::update(float deltaTime) {
                         int z2 = current_job->destination[1].z;
                         all_creatures[i]->set_loc_map_x_d(x2);
                         all_creatures[i]->set_loc_map_z_d(z2);
-                        std::cout << "x1 = " << x1 << " z1 = " << z1 << " x2 = " << x2 << " z2 = " << z2 << std::endl;
+                      //  std::cout << "x1 = " << x1 << " z1 = " << z1 << " x2 = " << x2 << " z2 = " << z2 << std::endl;
                   
                         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
@@ -239,8 +239,8 @@ void beast_manager::init() {
 
     need_jobs = all_creatures;
 
-    std::cout << "all_creatures list = " << all_creatures.size() << std::endl;
-    std::cout << "need_jobs list = " << need_jobs.size() << std::endl;
+   // std::cout << "all_creatures list = " << all_creatures.size() << std::endl;
+   // std::cout << "need_jobs list = " << need_jobs.size() << std::endl;
 
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -277,7 +277,7 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 
         zone_loc* spawn_loc = spawn_zone->get_spawn_loc();
 
-        std::cout << "spawning creature" << std::endl;
+       // std::cout << "spawning creature" << std::endl;
 
         if (spawn_zone == NULL) {
             std::cout << "failed to spawn a creature" << std::endl;
@@ -304,8 +304,8 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 
         glm::vec3* start_loc = new glm::vec3(x, y, z);
 
-        std::cout << "x_m = " << x_m<< " y_m = " << y_m << " z_m = " << z_m << std::endl;
-        std::cout << "x = " << x / 4 << " y = " << y << " z = " << z / 4 << std::endl;
+        //std::cout << "x_m = " << x_m<< " y_m = " << y_m << " z_m = " << z_m << std::endl;
+        //std::cout << "x = " << x / 4 << " y = " << y << " z = " << z / 4 << std::endl;
 
         creature* temp = new creature();
         //temp->hold_item(objects->get_item_info());
@@ -330,22 +330,21 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
     }
 }
 
-//old code not being used
 void beast_manager::assign_backlog_task(work_order* Job) {
     creature* Creature = need_jobs[need_jobs.size() - 1];
     //Creature->map_loc_check();
     Creature->set_has_job_buffer_loc(have_jobs.size());
     have_jobs.push_back(Creature);
     need_jobs.pop_back();
-    std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
+    //std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
     int x1 = Creature->get_loc_map_x();
     int z1 = Creature->get_loc_map_z();
     int x2 = Job->destination[0].x;
     int z2 = Job->destination[0].z;
     Creature->set_loc_map_x_d(x2);
     Creature->set_loc_map_z_d(z2);
-    std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
-        << x2 << " " << z2 << std::endl;
+   // std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+     //   << x2 << " " << z2 << std::endl;
     std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
     if (nav_points.size() > 0) {
@@ -360,30 +359,30 @@ void beast_manager::assign_backlog_task(work_order* Job) {
     Creature->set_current_work_order(Job);
 
 
-    std::cout << "need_jobs = " << need_jobs.size() << std::endl;
-    std::cout << "have_jobs = " << have_jobs.size() << std::endl;
+   // std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+   // std::cout << "have_jobs = " << have_jobs.size() << std::endl;
 }
 
 void beast_manager::create_tasks(work_order* Job) {
-    std::cout << "creating task" << std::endl;
+    //std::cout << "creating task" << std::endl;
     if (need_jobs.size() > 0) {
         creature* Creature = need_jobs[need_jobs.size() - 1];
         Creature->set_has_job_buffer_loc(have_jobs.size());
         have_jobs.push_back(Creature);
         need_jobs.pop_back();
-        std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
+       // std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
         int x1 = Creature->get_loc_map_x();
         int z1 = Creature->get_loc_map_z();
         int x2 =  Job->destination[0].x;
         int z2 =  Job->destination[0].z;
         Creature->set_loc_map_x_d(x2);
         Creature->set_loc_map_z_d(z2);
-        std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
-            << x2 << " " << z2 << std::endl;
+        //std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+          //  << x2 << " " << z2 << std::endl;
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
         if (nav_points.size() > 0) {
-            std::cout << "adding points to creature" << std::endl;
+            //std::cout << "adding points to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
             {
                 glm::vec3* temp2 = nav_points[i];
@@ -400,14 +399,14 @@ void beast_manager::create_tasks(work_order* Job) {
        Creature->set_current_work_order(Job);
 
 
-        std::cout << "need_jobs = " << need_jobs.size() << std::endl;
-        std::cout << "have_jobs = " << have_jobs.size() << std::endl;
+       // std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+        //std::cout << "have_jobs = " << have_jobs.size() << std::endl;
     }
     else {
         jobs_backlog.push(Job);
-        std::cout << "no open workers, adding to the backlog" << std::endl;
+       // std::cout << "no open workers, adding to the backlog" << std::endl;
     }
-    std::cout << "finished creating task" << std::endl;
+   // std::cout << "finished creating task" << std::endl;
 }
 
 void beast_manager::preform_action(work_order* Job, creature* npc) {
@@ -462,7 +461,6 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
 }
 
 void beast_manager::check_conditional_jobs() {
-    
     for (int i = 0; i < condional_jobs.size(); i++) {
         switch (condional_jobs[i]->cond)
         {
@@ -476,7 +474,6 @@ void beast_manager::check_conditional_jobs() {
             break;
         }
     }
-
 }
 
 void beast_manager::remove_from_has_jobs(creature* npc) {

@@ -366,7 +366,7 @@ void terrian::cubes_init() {
 	stockpile_zone = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
 
 	//print_map_zoned();
-	print_map_blocked_zones();
+	//print_map_blocked_zones();
 	//while (true);
 	//block off the land from the objects that take up space
 	std::vector< block_loc*> *blocked_loc = OBJM->get_blocked_spots();
@@ -775,12 +775,12 @@ void terrian::print_work_order(work_order* wo) {
 }
 
 work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1) {
-	std::cout << "creating work order" << std::endl;
+	//std::cout << "creating work order" << std::endl;
 	work_order* temp;
 
 	//generates one work order
 
-	std::cout << "single space" << std::endl;
+	//std::cout << "single space" << std::endl;
 	temp = new work_order;
 	temp->job = work_job;//the overall job
 	temp->act_currently_on = 0;
@@ -997,7 +997,7 @@ void terrian::import_items() {
 		std::cout << "there was no items to import" << std::endl;
 	}
 
-	print_map_items();
+	//print_map_items();
 }
 
 void terrian::remove_item_from_map(item_info* i) {
@@ -1040,9 +1040,7 @@ void terrian::return_zone_loc(zone_loc* i) {
 void terrian::spawn_item(item_type type, int x, int z) {
 	item_info* output = OBJM->spawn_item(type,x,z);
 	terrian_map[z][x].item_on_top = output;
-	print_map_items();
-
-	//while (true);
+	//print_map_items();
 }
 
 //path finding functions
@@ -1319,8 +1317,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i - 1][j].parent_i = i;
 				cellDetails[i - 1][j].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1363,8 +1361,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i + 1][j].parent_i = i;
 				cellDetails[i + 1][j].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1405,8 +1403,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i][j + 1].parent_i = i;
 				cellDetails[i][j + 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1450,8 +1448,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i][j - 1].parent_i = i;
 				cellDetails[i][j - 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1495,8 +1493,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i - 1][j + 1].parent_i = i;
 				cellDetails[i - 1][j + 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1540,8 +1538,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i - 1][j - 1].parent_i = i;
 				cellDetails[i - 1][j - 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1583,8 +1581,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i + 1][j + 1].parent_i = i;
 				cellDetails[i + 1][j + 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}
@@ -1628,8 +1626,8 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 				// Set the Parent of the destination cell 
 				cellDetails[i + 1][j - 1].parent_i = i;
 				cellDetails[i + 1][j - 1].parent_j = j;
-				printf("The destination cell is found\n");
-				tracePath(cellDetails, dest);
+				//printf("The destination cell is found\n");
+				//tracePath(cellDetails, dest);
 				foundDest = true;
 				return cellDetails;
 			}

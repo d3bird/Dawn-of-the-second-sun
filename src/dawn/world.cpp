@@ -120,21 +120,22 @@ void world::init() {
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	std::cout << std::endl;
 
-	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0);
-	Terrian->print_work_order(new_task);
-	BM->create_tasks(new_task);
 	//spawn the tasks
+	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0);
+	//Terrian->print_work_order(new_task);
+	BM->create_tasks(new_task);
+	
 
 	new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 2, 5, 0);
-	Terrian->print_work_order(new_task);
+	//Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 
 
 	new_task = Terrian->generate_work_order(MOVE_C, 4, 5, 4);
-	Terrian->print_work_order(new_task);
+	//Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 	new_task = Terrian->generate_work_order(MOVE_C, 10, 5, 4);
-	Terrian->print_work_order(new_task);
+	//Terrian->print_work_order(new_task);
 	BM->create_tasks(new_task);
 
 	//std::cout << std::endl;
@@ -142,7 +143,7 @@ void world::init() {
 	//because of the way that this function works, the box should always be one bigger TODO: fix this 
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 0);//xline test
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 10, 5, 0, 10, 5, 4);//zline test
-	std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 4);//box test
+	std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(SACRIFICE_OBJ, 7, 5, 0, 11, 5, 4);//box test
 
 
 	for (int i = 0; i < workOplaenty.size(); i++) {
