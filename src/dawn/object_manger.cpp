@@ -18,6 +18,7 @@ object_manger::object_manger() {
 	object_id = 0;
 	init_sac = false;
 	ready_to_sac = true;
+	alter_about = false;
 }
 
 object_manger::~object_manger() {
@@ -65,6 +66,7 @@ void object_manger::draw() {
 			sac_time = 0;
 			init_sac = false;
 			ready_to_sac = true;
+			alter_about = false;
 		}
 	}
 }

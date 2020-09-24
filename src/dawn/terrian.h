@@ -95,7 +95,9 @@ public:
 	void add_item_to_map(item_info* i);
 	void add_item_to_alter(item_info* i);
 	bool start_sac() {return OBJM->start_sacrifice(); }
-	bool is_alter_ready() {return  OBJM->is_alter_ready(); }
+	bool is_alter_ready() { return  OBJM->is_alter_ready(); }
+	bool is_alter_about_to_start(){ return  OBJM->is_alter_about_to_start(); }
+	void toggle_alter_about_to_start() { OBJM->toggle_alter_about_to_start(); }
 	void spawn_item(item_type type, int x, int z);
 
 	//zoning function

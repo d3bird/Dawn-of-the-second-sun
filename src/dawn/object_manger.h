@@ -102,6 +102,8 @@ public:
 	void preform_sacrifice(item_info* sac);
 	bool start_sacrifice();
 	bool is_alter_ready() { return ready_to_sac; }
+	bool is_alter_about_to_start() { return alter_about; }
+	void toggle_alter_about_to_start() { alter_about = !alter_about; }
 
 	//getters and setters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -153,5 +155,6 @@ private:
 	glm::vec2 resultion;
 	bool init_sac;
 	bool ready_to_sac;
+	bool alter_about;
 };
 

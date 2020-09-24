@@ -465,11 +465,12 @@ void beast_manager::check_conditional_jobs() {
         switch (condional_jobs[i]->cond)
         {
         case START_ALTER:
-            if (map->is_alter_ready()) {
+            if (map->is_alter_ready() && !map->is_alter_about_to_start()) {
                 create_tasks(condional_jobs[i]->wo);
                 condional_jobs[i] = condional_jobs[condional_jobs.size() - 1];
                 condional_jobs.pop_back();
                 i--;
+                map->toggle_alter_about_to_start();
             }
             break;
         }
