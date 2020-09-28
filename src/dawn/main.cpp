@@ -9,7 +9,7 @@
 #include "camera.h"
 #include "model.h"
 #include "world.h"
-
+#include "history/world_info.h"
 #include <iostream>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
@@ -28,6 +28,7 @@ const unsigned int SCR_HEIGHT = 600;
 //Camera camera(glm::vec3(0.0f, 0.0f, 60.0f));//LIGHTING test
 Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole World
 
+bool draw_world_info;
 
 float lastX = (float)SCR_WIDTH / 2.0;
 float lastY = (float)SCR_HEIGHT / 2.0;
@@ -42,6 +43,7 @@ float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
 world* World;
+world_info* world_data;
 
 int main() {
 
@@ -79,7 +81,7 @@ int main() {
     }
 
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_CULL_FACE);
+
     glCullFace(GL_BACK);
     //glEnable(GL_MULTISAMPLE);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -87,10 +89,17 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
-    World = new world();
-    World->set_projection(projection);
-    World->init();
-
+    draw_world_info = true;
+    if (!draw_world_info) {
+        World = new world();
+        World->set_projection(projection);
+        World->init();
+    }
+    else {
+        world_data = new world_info();
+        world_data->set_projection(projection);
+        world_data->init();
+    }
     double lastTime = glfwGetTime();
     int nbFrames = 0;
 
@@ -115,14 +124,19 @@ int main() {
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
         view = camera.GetViewMatrix();
-
-        World->set_cam(view);
-        World->draw();
-       // World->draw_selection();
-
+        if (!draw_world_info) {
+            glEnable(GL_CULL_FACE);
+            World->set_cam(view);
+            World->draw();
+            // World->draw_selection();
+            World->update(deltaTime);
+        }
+        else {
+            world_data->set_cam(view);
+            world_data->draw();
+        }
         glfwSwapBuffers(window);
 
-        World->update(deltaTime);
 
         glfwPollEvents();
     }
