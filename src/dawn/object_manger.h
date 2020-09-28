@@ -109,14 +109,12 @@ public:
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 	void set_standered_shader(Shader* i) { common = i; }
-	//void set_terrian_obj(terrian* i) { Terrian = i; }
 
 	bool need_cam_updates() { return using_custom_shaders; }
 	std::vector<block_loc*>* get_blocked_spots() { return blocked_spots; }
 
 	//places the items on the world map after each object has been created
 	std::vector< item_loc> place_items_init();
-
 
 private:
 	

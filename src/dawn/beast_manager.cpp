@@ -380,9 +380,9 @@ void beast_manager::create_tasks(work_order* Job) {
         //std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
           //  << x2 << " " << z2 << std::endl;
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
-
+        std::cout << "adahukjk" << std::endl;
         if (nav_points.size() > 0) {
-            //std::cout << "adding points to creature" << std::endl;
+            std::cout << "adding points to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
             {
                 glm::vec3* temp2 = nav_points[i];

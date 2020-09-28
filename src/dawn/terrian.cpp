@@ -338,14 +338,14 @@ void terrian::cubes_init() {
 	int z2 = 17;
 	alter_zone = zone_land(ALTER,1, x1, y1, z1, x2, y2, z2);
 
-	x1 = int(get_x_width()) - 5;
-	y1 = 0;
-	z1 = 0;
+	//x1 = int(get_x_width()) - 5;
+	//y1 = 0;
+	//z1 = 0;
 
-	x2 = int(get_x_width());
-	y2 = 0;
-	z2 = 4;
-	gather_zone =	zone_land(GATHER,2, x1, y1, z1, x2, y2, z2);
+	//x2 = int(get_x_width());
+	//y2 = 0;
+	//z2 = 4;
+	//gather_zone =	zone_land(GATHER,2, x1, y1, z1, x2, y2, z2);
 
 	x1 = 0;
 	y1 = 0;
@@ -355,17 +355,18 @@ void terrian::cubes_init() {
 	y2 = 0;
 	z2 = int(get_z_width());
 	spawn_zone = zone_land(SPAWN,3, x1, y1, z1, x2, y2, z2);
-	
-	x1 = 5;
-	y1 = 0;
-	z1 = 5;
+	//spawn_zone = zone_land(SPAWN, 3, x2, y2, z2, x1, y1, z1);
 
-	x2 = 10;
+	x1 = int(get_x_width()-5);
+	y1 = 0;
+	z1 = 0;
+
+	x2 = int(get_x_width());;
 	y2 = 0;
-	z2 = 10;
+	z2 = 2;
 	stockpile_zone = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
 
-	//print_map_zoned();
+	print_map_zoned();
 	//print_map_blocked_zones();
 	//while (true);
 	//block off the land from the objects that take up space
@@ -604,8 +605,6 @@ void terrian::print_map_zoned() {
 }
 
 //zone a grid of spaces
-// TODO: account for the blocked spaces
-
 zone* terrian::zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2) {
 	zone* fresh_zone = new zone(tp, id);
 	bool blocked;
@@ -1096,6 +1095,7 @@ std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float 
 	}
 	else {
 		std::cout << "cellDetails was NULL" << std::endl;
+		output.push_back(new glm::vec3(-4, -4, -4));// placed so the program does not crash
 	}
     return output;
 }
