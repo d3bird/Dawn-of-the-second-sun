@@ -27,10 +27,14 @@ void world_map::set_uniforms() {
     for (int i = 0; i < total_biome_types; i++) {
         shader->setVec3(biomes[i].loc, area_colors[i]);
     }
+
+    shader->setInt("color_bounds[0]", color_bounds[0]);
+    shader->setInt("color_bounds[1]", color_bounds[1]);
+    shader->setInt("color_bounds[2]", color_bounds[2]);
+
 }
 
 void world_map::update(float deltaTime) {
-
 
 }
 
@@ -46,9 +50,9 @@ void world_map::init() {
     area_colors[0] = glm::vec3(1.0, 0.0, 0.0);
     area_colors[1] = glm::vec3(0.0, 1.0, 0.0);
     area_colors[2] = glm::vec3(0.0, 0.0, 1.0);
-    color_bounds[0] = 1;
-    color_bounds[1] = 1;
-    color_bounds[2] = 1;
+    color_bounds[0] = 10;
+    color_bounds[1] = 20;
+    color_bounds[2] = 30;
  
     biomes = new uniform_data[total_biome_types];
 

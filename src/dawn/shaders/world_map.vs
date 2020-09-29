@@ -12,7 +12,13 @@ uniform vec3 test;
 
 void main(){
 
-    fColor = colors[0];
+    if(gl_InstanceID <= color_bounds[0]){
+        fColor = colors[0];
+    }else if( gl_InstanceID > color_bounds[0] && gl_InstanceID <= color_bounds[1]){
+        fColor = colors[1];
+    }else {
+        fColor = colors[2];
+    }
 
     gl_Position = vec4(aPos + aOffset, 0.0, 1.0);
 }
