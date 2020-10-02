@@ -11,6 +11,8 @@
 #include <vector>
 #include <string>
 #include <sstream>  
+#include <stdlib.h>
+#include <random>
 
 #include "../model.h"
 #include "../shader.h"

@@ -67,15 +67,14 @@ void world_map::init() {
         }
     }
     
-    tile_map[10][0].biome = FOREST;
-    tile_map[9][0].biome = PLAIN;
 
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-    print_map(1);
     create_location_for_tiles();
     create_map();
     create_buffers_biomes();
+
+    print_map(1);
 
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -115,8 +114,67 @@ void world_map::init() {
 }
 
 void world_map::create_map() {
-    std::cout << "filling in the map" << std::endl;
 
+
+    struct loc {//temp structure used only for world generation to store open spots
+        loc(int x1, int y1) { x = x1; y = y1; }
+        int x;
+        int y;
+    };
+
+    std::cout << "filling in the map" << std::endl;
+    std::random_device rd;
+    std::mt19937 mt(rd());
+
+    std::vector<loc> openSpots;
+
+    int open_land = (height * width) / 4;
+    int placed_land = 1;
+
+    int xmid = width / 2;
+    int ymid = height / 2;
+
+    openSpots.push_back(loc(xmid - 1, ymid));
+    openSpots.push_back(loc(xmid + 1, ymid));
+    openSpots.push_back(loc(xmid, ymid + 1));
+    openSpots.push_back(loc(xmid, ymid - 1));
+
+    tile_map[xmid][ymid].biome = FOREST;
+    
+    while (placed_land < open_land) {
+        //std::cout << "openspots: " << openSpots.size() << std::endl;
+        std::uniform_real_distribution<double> distribution(0, openSpots.size());
+        int selection = distribution(mt);
+        int x = openSpots[selection].x;
+        int y = openSpots[selection].y;
+        //std::cout <<"picked "<< selection <<" openspots: " << openSpots.size() << std::endl;
+
+        if (selection != 0) {
+            openSpots[selection] = openSpots[0];
+        }
+        openSpots.erase(openSpots.begin());
+
+        tile_map[x][y].biome = FOREST;
+
+        if (x + 1 < width && tile_map[x + 1][y].biome == WATER) {
+            openSpots.push_back(loc(x + 1, y));
+        }
+        if (x - 1 >= 0 && tile_map[x - 1][y].biome == WATER) {
+            openSpots.push_back(loc(x - 1, y));
+        }
+
+        if (y + 1 < height && tile_map[x][y + 1].biome == WATER) {
+            openSpots.push_back(loc(x, y + 1));
+        }
+        if (y - 1 >= 0 && tile_map[x][y - 1].biome == WATER) {
+            openSpots.push_back(loc(x, y - 1));
+        }
+
+        placed_land++;
+    }
+    
+    //tile_map[10][0].biome = FOREST;
+    //tile_map[9][0].biome = PLAIN;
 }
 
 void world_map::create_buffers_biomes() {
