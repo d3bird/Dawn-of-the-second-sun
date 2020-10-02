@@ -82,5 +82,7 @@ private:
 	uniform_data* biomes;
 
 	void set_uniforms();
+
+	int seed;
 };
 

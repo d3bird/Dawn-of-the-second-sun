@@ -124,8 +124,10 @@ void world_map::create_map() {
 
     std::cout << "filling in the map" << std::endl;
     std::random_device rd;
-    std::mt19937 mt(rd());
+    seed = rd();
+    std::cout << "using seed: "<<seed << std::endl;
 
+    std::mt19937 mt(seed);
     std::vector<loc> openSpots;
 
     int open_land = (height * width) / 4;
