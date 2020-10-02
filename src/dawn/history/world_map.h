@@ -44,6 +44,8 @@ private:
 	//sorts the map_tiles in to the buffer to get the different biome colors
 	void create_buffers_biomes();
 	void create_location_for_tiles();
+	void create_map();
+
 	void print_map(int data);
 
 	glm::mat4 view;
