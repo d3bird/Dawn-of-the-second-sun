@@ -16,6 +16,15 @@
 #include "../shader.h"
 
 
+enum biome_type{WATER, PLAIN, FOREST};
+struct world_map_tile {
+
+	unsigned int buffer_loc;
+	biome_type biome;
+	int debug_id;
+	glm::vec2 trans;
+};
+
 class world_map {
 public:
 
@@ -31,6 +40,12 @@ public:
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
 private:
+	
+	//sorts the map_tiles in to the buffer to get the different biome colors
+	void create_buffers_biomes();
+	void create_location_for_tiles();
+	void print_map(int data);
+
 	glm::mat4 view;
 	glm::mat4 projection;
 	bool update_projection;
@@ -41,10 +56,16 @@ private:
 	unsigned int quadVAO, quadVBO;
 	unsigned int instanceVBO;
 
-	glm::vec2 translations[100];
+	int width;
+	int height;
+
+	world_map_tile** tile_map;
+
+	glm::vec2* translations;
+	int translations_amount;
 	int index;
 	float offset;
-
+	float map_tile_size;//total size
 	//biome data
 	struct uniform_data {
 		std::string loc;

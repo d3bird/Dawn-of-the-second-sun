@@ -2,7 +2,7 @@
 
 
 world_map::world_map() {
-
+    tile_map = NULL;
 
 }
 
@@ -16,7 +16,7 @@ void world_map::draw() {
     shader->use();
     set_uniforms();
     glBindVertexArray(quadVAO);
-    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, 100); // 100 triangles of 6 vertices each
+    glDrawArraysInstanced(GL_TRIANGLES, 0, 6, translations_amount); // translations_amount triangles of 6 vertices each
     glBindVertexArray(0);
 }
 
@@ -64,35 +64,50 @@ void world_map::init() {
         //std::cout << ss.str() << std::endl;
     }
 
-    index = 0;
-    offset = 0.1f;
+    map_tile_size = 0.1f;
+    map_tile_size = 0.05f;
 
-    //generate the offsets
-    for (int y = -10; y < 10; y += 2)
-    {
-        for (int x = -10; x < 10; x += 2)
-        {
-            glm::vec2 translation;
-            translation.x = (float)x / 10.0f + offset;
-            translation.y = (float)y / 10.0f + offset;
-            translations[index++] = translation;
+    height = 20;
+    width = 20;
+    translations_amount = height * width;
+    std::cout << "total tiles " << translations_amount << std::endl;
+    tile_map = new world_map_tile*[width];
+
+    for (int x = 0; x < width; x++) {
+        tile_map[x] = new world_map_tile[height];
+    }
+
+    int debug_id = 0;
+    //create the map and debug ids the map is always referenced x y (x = width, y = height)
+    for (int y = 0; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            tile_map[x][y].debug_id = debug_id;
+            tile_map[x][y].biome = WATER;
+            debug_id++;
         }
     }
+    
+    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+    print_map(1);
+    create_location_for_tiles();
+    create_buffers_biomes();
 
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * 100, &translations[0], GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * translations_amount, &translations[0], GL_STATIC_DRAW);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    float tile_cord_size = map_tile_size / 2;
     float quadVertices[] = {
         // positions     // colors
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-        -0.05f, -0.05f,  0.0f, 0.0f, 1.0f,
+        -tile_cord_size,  tile_cord_size,  1.0f, 0.0f, 0.0f,
+         tile_cord_size, -tile_cord_size,  0.0f, 1.0f, 0.0f,
+        -tile_cord_size, -tile_cord_size,  0.0f, 0.0f, 1.0f,
 
-        -0.05f,  0.05f,  1.0f, 0.0f, 0.0f,
-         0.05f, -0.05f,  0.0f, 1.0f, 0.0f,
-         0.05f,  0.05f,  0.0f, 1.0f, 1.0f
+        -tile_cord_size,  tile_cord_size,  1.0f, 0.0f, 0.0f,
+         tile_cord_size, -tile_cord_size,  0.0f, 1.0f, 0.0f,
+         tile_cord_size,  tile_cord_size,  0.0f, 1.0f, 1.0f
     };
  
     glGenVertexArrays(1, &quadVAO);
@@ -113,4 +128,81 @@ void world_map::init() {
     glVertexAttribDivisor(2, 1);
 
 	std::cout << "finished generating world_map" << std::endl;
+}
+
+void world_map::create_buffers_biomes() {
+
+
+}
+
+void world_map::create_location_for_tiles() {
+
+
+    index = 0;
+    offset = 0.1f;//space between 
+    offset = map_tile_size;
+    translations = new glm::vec2[translations_amount];
+
+    std::cout << "calculated xsize " << index << " tiles" << std::endl;
+
+    float xloc = -1;
+    float yloc = 1;
+
+    std::cout << "calculated xsize " << xloc + (offset * width) << std::endl;
+    std::cout << "calculated ysize " << yloc - (offset * height) << std::endl;
+    //generate the offsets
+    for (int y = 0; y < height; y++) {
+        yloc -= offset;
+        for (int x = 0; x < width; x++) {
+
+            glm::vec2 translation;
+            xloc += offset;
+            translation.x = xloc;
+            translation.y = yloc;
+            translations[index] = translation;
+            index++; 
+        }
+       // std::cout << "true xsize " << xloc<< std::endl;
+        xloc = -1;
+    }
+   // std::cout << "true ysize " << yloc << std::endl;
+
+    std::cout << "generated " << index << " tiles" << std::endl;
+
+}
+
+void world_map::print_map(int data) {
+    if (tile_map == NULL) {
+        return;
+    }
+    //print debug ids
+    if (data == 0) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                std::cout << tile_map[x][y].debug_id<<" ";
+            }
+            std::cout << std::endl;
+        }
+    }
+    else if (data == 1) {
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                switch (tile_map[x][y].biome){
+                case WATER:
+                    std::cout <<"* ";
+                    break;
+                case PLAIN:
+                    std::cout << "1 ";
+                    break;
+                case FOREST:
+                    std::cout << "2 ";
+                    break;
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
+    else {
+        std::cout << "not a valid print type" << std::endl;
+    }
 }
