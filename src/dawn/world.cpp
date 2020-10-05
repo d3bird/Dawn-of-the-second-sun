@@ -78,6 +78,9 @@ void world::init() {
 	Terrian->set_object_manger(OBJM);
 	Terrian->cubes_init();
 
+	Terrian->print_map_zoned();
+	//while (true);
+
 	Terrian->spawn_item(LOG_T, 7, 0);
 	Terrian->spawn_item(LOG_T, 8, 0);
 	Terrian->spawn_item(LOG_T, 9, 0);
@@ -143,7 +146,7 @@ void world::init() {
 	//because of the way that this function works, the box should always be one bigger TODO: fix this 
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 0);//xline test
 	//std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 10, 5, 0, 10, 5, 4);//zline test
-	std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(SACRIFICE_OBJ, 7, 5, 0, 11, 5, 4);//box test
+	std::vector<work_order*> workOplaenty = Terrian->generate_work_order_m(STOCK_OBJ, 7, 5, 0, 11, 5, 4);//box test
 
 
 	for (int i = 0; i < workOplaenty.size(); i++) {

@@ -611,9 +611,9 @@ zone* terrian::zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x
 	std::cout << "zoning land" << std::endl;
 	if (x1 == x2 && y1 == y2 && z1 == z2) {
 		std::cout << "single space" << std::endl;
-		blocked = terrian_map[x1][z1].blocked;
+		blocked = terrian_map[z1][x1].blocked;
 		fresh_zone->add_spot(x1, y1, z1, blocked);
-		terrian_map[x1][z1].zoned = fresh_zone;
+		terrian_map[z1][x1].zoned = fresh_zone;
 	}
 	else {
 		std::cout << "big space" << std::endl;
@@ -641,10 +641,10 @@ zone* terrian::zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x
 		}
 		std::cout << "start: x = " << s_x << ", y = " << s_z << std::endl;
 		std::cout << "width = " << width << ", height = " << height << std::endl;
-		for (int x = 0; x < width; x++)	{
+		for (int x = 0; x < width; x++) {
 			for (int z = 0; z < height; z++) {
-				terrian_map[s_x+x][s_z +z].zoned = fresh_zone;
-				blocked = terrian_map[s_x + x][s_z + z].blocked;
+				terrian_map[s_z + z][s_x + x].zoned = fresh_zone;
+				blocked = terrian_map[s_z + z][s_x + x].blocked;
 				fresh_zone->add_spot(s_x + x, y1, s_z + z, blocked);
 			}
 		}
