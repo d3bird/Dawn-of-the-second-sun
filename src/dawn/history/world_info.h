@@ -27,6 +27,8 @@ public:
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
+	//misc functions
+	void regen_map() { World_map->regen_map(); }
 private:
 	glm::mat4 view;
 	glm::mat4 projection;

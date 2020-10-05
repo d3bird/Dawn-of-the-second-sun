@@ -46,9 +46,9 @@ void world_map::init() {
 
     map_tile_size = 0.1f;
     map_tile_size = 0.05f;
-
-    height = 20;
-    width = 20;
+    map_tile_size = 0.01f;
+    height = 1/ map_tile_size;
+    width = 1/ map_tile_size;
     translations_amount = height * width;
     std::cout << "total tiles " << translations_amount << std::endl;
     tile_map = new world_map_tile*[width];
@@ -68,13 +68,13 @@ void world_map::init() {
     }
     
 
-    glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+   // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
     create_location_for_tiles();
     create_map();
     create_buffers_biomes();
 
-    print_map(1);
+    //print_map(1);
 
     glGenBuffers(1, &instanceVBO);
     glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
@@ -115,66 +115,20 @@ void world_map::init() {
 
 void world_map::create_map() {
 
+    int center_x = width / 2;
+    int center_y = height / 2;
 
-    struct loc {//temp structure used only for world generation to store open spots
-        loc(int x1, int y1) { x = x1; y = y1; }
-        int x;
-        int y;
-    };
+    int mass_offset = 10;
 
-    std::cout << "filling in the map" << std::endl;
-    std::random_device rd;
-    seed = rd();
-    std::cout << "using seed: "<<seed << std::endl;
+    int mass_size = 4000;
 
-    std::mt19937 mt(seed);
-    std::vector<loc> openSpots;
+    //create the main landmass
+    create_land_mass(center_x- (mass_offset / 2), center_y, mass_size);
+    create_land_mass(center_x+ (mass_offset / 2), center_y, mass_size);
+    create_land_mass(center_x- (mass_offset / 2), center_y+ mass_offset, mass_size);
+    create_land_mass(center_x+ (mass_offset /2), center_y+ mass_offset, mass_size);
 
-    int open_land = (height * width) / 4;
-    int placed_land = 1;
-
-    int xmid = width / 2;
-    int ymid = height / 2;
-
-    openSpots.push_back(loc(xmid - 1, ymid));
-    openSpots.push_back(loc(xmid + 1, ymid));
-    openSpots.push_back(loc(xmid, ymid + 1));
-    openSpots.push_back(loc(xmid, ymid - 1));
-
-    tile_map[xmid][ymid].biome = FOREST;
-    
-    while (placed_land < open_land) {
-        //std::cout << "openspots: " << openSpots.size() << std::endl;
-        std::uniform_real_distribution<double> distribution(0, openSpots.size());
-        int selection = distribution(mt);
-        int x = openSpots[selection].x;
-        int y = openSpots[selection].y;
-        //std::cout <<"picked "<< selection <<" openspots: " << openSpots.size() << std::endl;
-
-        if (selection != 0) {
-            openSpots[selection] = openSpots[0];
-        }
-        openSpots.erase(openSpots.begin());
-
-        tile_map[x][y].biome = FOREST;
-
-        if (x + 1 < width && tile_map[x + 1][y].biome == WATER) {
-            openSpots.push_back(loc(x + 1, y));
-        }
-        if (x - 1 >= 0 && tile_map[x - 1][y].biome == WATER) {
-            openSpots.push_back(loc(x - 1, y));
-        }
-
-        if (y + 1 < height && tile_map[x][y + 1].biome == WATER) {
-            openSpots.push_back(loc(x, y + 1));
-        }
-        if (y - 1 >= 0 && tile_map[x][y - 1].biome == WATER) {
-            openSpots.push_back(loc(x, y - 1));
-        }
-
-        placed_land++;
-    }
-    
+    //create_land_mass(width / 2, height / 2, 300);
     //tile_map[10][0].biome = FOREST;
     //tile_map[9][0].biome = PLAIN;
 }
@@ -309,6 +263,76 @@ void world_map::create_location_for_tiles() {
 
 }
 
+void world_map::create_land_mass(int x, int y, int size) {
+    struct loc {//temp structure used only for world generation to store open spots
+        loc(int x1, int y1) { x = x1; y = y1; }
+        int x;
+        int y;
+    };
+
+    std::cout << "filling in the map" << std::endl;
+    std::random_device rd;
+    seed = rd();
+    std::cout << "using seed: " << seed << std::endl;
+
+    std::mt19937 mt(seed);
+    std::vector<loc> openSpots;
+
+
+    int placed_land = 1;
+    //int open_land = (height * width) / 4;
+    //int xmid = width / 2;
+    //int ymid = height / 2;
+
+    int open_land = size;
+    int xmid = x;
+    int ymid = y;
+
+    openSpots.push_back(loc(xmid - 1, ymid));
+    openSpots.push_back(loc(xmid + 1, ymid));
+    openSpots.push_back(loc(xmid, ymid + 1));
+    openSpots.push_back(loc(xmid, ymid - 1));
+
+    tile_map[xmid][ymid].biome = FOREST;
+
+    while (placed_land < open_land) {
+        //std::cout << "openspots: " << openSpots.size() << std::endl;
+        std::uniform_real_distribution<double> distribution(0, openSpots.size());
+        int selection = distribution(mt);
+        if (openSpots.size() <= 0) {
+            std::cout << "there was no open spaces" << std::endl;
+            return;
+        }
+        int x = openSpots[selection].x;
+        int y = openSpots[selection].y;
+        //std::cout <<"picked "<< selection <<" openspots: " << openSpots.size() << std::endl;
+
+        if (selection != 0) {
+            openSpots[selection] = openSpots[0];
+        }
+        openSpots.erase(openSpots.begin());
+
+        tile_map[x][y].biome = FOREST;
+
+        if (x + 1 < width && tile_map[x + 1][y].biome == WATER) {
+            openSpots.push_back(loc(x + 1, y));
+        }
+        if (x - 1 >= 0 && tile_map[x - 1][y].biome == WATER) {
+            openSpots.push_back(loc(x - 1, y));
+        }
+
+        if (y + 1 < height && tile_map[x][y + 1].biome == WATER) {
+            openSpots.push_back(loc(x, y + 1));
+        }
+        if (y - 1 >= 0 && tile_map[x][y - 1].biome == WATER) {
+            openSpots.push_back(loc(x, y - 1));
+        }
+
+        placed_land++;
+    }
+
+}
+
 void world_map::print_map(int data) {
     if (tile_map == NULL) {
         return;
@@ -343,4 +367,30 @@ void world_map::print_map(int data) {
     else {
         std::cout << "not a valid print type" << std::endl;
     }
+}
+
+void world_map::regen_map() {
+
+    tile_map = new world_map_tile * [width];
+
+    for (int x = 0; x < width; x++) {
+        tile_map[x] = new world_map_tile[height];
+    }
+
+    int debug_id = 0;
+    //create the map and debug ids the map is always referenced x y (x = width, y = height)
+    for (int y = 0; y < height; y++) {  
+    }
+
+    create_location_for_tiles();
+    create_map();
+    create_buffers_biomes();
+
+   // print_map(1);
+
+    //glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec2) * translations_amount, &translations[0], GL_STATIC_DRAW);
+   // glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 }

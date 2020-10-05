@@ -41,12 +41,16 @@ public:
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 
+	//misc functions
+	void regen_map();
+
 private:
 	
 	//sorts the map_tiles in to the buffer to get the different biome colors
 	void create_buffers_biomes();
 	void create_location_for_tiles();
 	void create_map();
+	void create_land_mass(int x, int y, int size);
 
 	void print_map(int data);
 
