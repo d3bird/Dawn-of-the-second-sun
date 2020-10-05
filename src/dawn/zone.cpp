@@ -9,7 +9,7 @@ zone::zone(type i, unsigned int id){
 	time_passed = 0;
 	if (i == FARM) {
 		grown_items = new std::vector<zone_loc*>;
-		grow_time = 10;
+		grow_time = 5;
 	}
 }
 

@@ -513,6 +513,7 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	switch (type) {
 	case LOG_T:
 		if (items[0]->amount >= items[0]->buffer_size) {
+			std::cout << "there are too many of these objects" << std::endl;
 			return NULL;
 		}
 		item_id = 0;

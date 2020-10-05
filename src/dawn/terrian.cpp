@@ -133,9 +133,11 @@ void terrian::update_zones(float deltaTime) {
 	if (items_to_add != NULL) {
 		for (int i = 0; i < items_to_add->size(); i++) {
 			//spawn the item in the world
-			spawn_item(LOG_T, items_to_add[0][i]->x, items_to_add[0][i]->z);
+			item_info*temp = spawn_item(LOG_T, items_to_add[0][i]->x, items_to_add[0][i]->z);
 			//then generate a work order for the object
-			gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, items_to_add[0][i]->x, 5, items_to_add[0][i]->z));
+			if (temp != NULL) {
+				gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, items_to_add[0][i]->x, 5, items_to_add[0][i]->z));
+			}
 		}
 		items_to_add->clear();
 	}
