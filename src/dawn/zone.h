@@ -13,7 +13,7 @@
 #include <random>
 #include <string>
 
-enum type { SPAWN, ALTER, STOCKPILE, GATHER };
+enum type { SPAWN, ALTER, STOCKPILE, GATHER, FARM };
 
 struct zone_loc { 
 	int x, y, z, ID; 
@@ -25,6 +25,9 @@ class zone {
 public:
 	zone(type i, unsigned int id);
 	~zone();
+
+	void update(float deltaTime);//returns a list of 
+	std::vector<zone_loc*>* get_grown_items() { return  grown_items; }
 
 	void add_spot(int x, int y, int z, bool blocked = false);
 	void remove_spot(int x, int y, int z);
@@ -51,6 +54,8 @@ public:
 
 private:
 
+	bool needs_update;
+
 	type current_type;
 	unsigned int ID;
 
@@ -60,5 +65,10 @@ private:
 	std::vector<zone_loc*> open_spots;//all spots that items could be sotred
 	std::vector<zone_loc*> blocked_spots;//spots blocked by objects not stored in the zone
 	std::vector<zone_loc*> filled_spots;
+
+	//farming data
+	std::vector<zone_loc*> *grown_items;//items that need to be added to the world that have spawned in this zone
+	float time_passed;
+	float grow_time;
 };
 

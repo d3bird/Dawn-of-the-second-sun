@@ -5,10 +5,49 @@ zone::zone(type i, unsigned int id){
 	current_type = i;
 	ID = id;
 	cube_offset = 2.0f;
+	grown_items = NULL;
+	time_passed = 0;
+	if (i == FARM) {
+		grown_items = new std::vector<zone_loc*>;
+		grow_time = 10;
+	}
 }
 
 zone::~zone(){
 
+}
+
+void zone::update(float deltaTime) {
+
+	if (!needs_update) {
+		std::cout << "this zone should not needto be updated" << std::endl;	
+		return;
+	}
+	time_passed += deltaTime;
+	if (time_passed >= grow_time) {
+		time_passed = 0;
+		std::cout << "grown an item" << std::endl;
+		if (open_spots.size() > 0) {
+			if (current_type == FARM) {
+				int temp = open_spots.size();
+				std::random_device rd;
+				std::mt19937 mt(rd());
+				std::uniform_real_distribution<double> distribution(0.0, open_spots.size());
+				int NumLines = int(distribution(mt));
+				srand(time(NULL) + 1);
+				int spots_slot = rand() % temp;
+
+				//std::cout << "spots_slot = " << NumLines << std::endl;
+				grown_items->push_back( open_spots[NumLines]);
+			}
+			else {
+				std::cout << "this is not a zone that can grow" << std::endl;
+			}
+		}
+		else {
+			std::cout << "this zone has no open spots" << std::endl;
+		}
+	}
 }
 
 //spots are in respect to the terrian map

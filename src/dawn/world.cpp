@@ -9,6 +9,7 @@ world::world() {
 	y = -3.0f;
 	z = 0.0f;
 	angle = 0;
+	gen_orders = NULL;
 }
 
 void world::draw() {
@@ -41,10 +42,21 @@ void world::draw_selection() {
 }
 
 void world::update(float deltaTime) {
+
 	//Terrian->update(deltaTime);
+	Terrian->update_zones(deltaTime);
+
+	if (gen_orders->size() > 0) {
+		for (int i = 0; i < gen_orders->size();i++) {
+			BM->create_tasks(gen_orders[0][i]);
+		}
+		gen_orders->clear();
+	}
+
 	Sky->update(deltaTime);
 	BM->update(deltaTime);
 	OBJM->update(deltaTime);
+
 }
 
 void world::process_mouse_action(float m_x, float m_y) {
@@ -77,7 +89,7 @@ void world::init() {
 	Terrian->set_cube_shader(lighting_in);
 	Terrian->set_object_manger(OBJM);
 	Terrian->cubes_init();
-
+	gen_orders = Terrian->get_gen_jobs_pointer();
 	Terrian->print_map_zoned();
 	//while (true);
 

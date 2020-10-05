@@ -43,6 +43,9 @@ private:
 	object_manger* OBJM;
 	sky* Sky;
 
+	//auto generated work orders
+	std::vector< work_order*>* gen_orders;
+
 	//lighting test
 	Model* moon;
 	Model* cube;

@@ -11,6 +11,9 @@ terrian::terrian() {
 	cube_shader = NULL;
 	draw_selected = false;
 	closedList = NULL;
+
+	gen_orders = new std::vector< work_order*>;
+
 }
 
 void terrian::draw() {
@@ -123,6 +126,22 @@ void terrian::update_cubes(float delta_time) {
             x = 0;
         }
     }
+}
+
+void terrian::update_zones(float deltaTime) {
+	farm_zone->update(deltaTime);
+	if (items_to_add != NULL) {
+		for (int i = 0; i < items_to_add->size(); i++) {
+			//spawn the item in the world
+			spawn_item(LOG_T, items_to_add[0][i]->x, items_to_add[0][i]->z);
+			//then generate a work order for the object
+			gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, items_to_add[0][i]->x, 5, items_to_add[0][i]->z));
+		}
+		items_to_add->clear();
+	}
+	else {
+		std::cout << "the was a problem getting a list of grown items" << std::endl;
+	}
 }
 
 void terrian::draw_cubes() {
@@ -338,14 +357,6 @@ void terrian::cubes_init() {
 	int z2 = 17;
 	alter_zone = zone_land(ALTER,1, x1, y1, z1, x2, y2, z2);
 
-	//x1 = int(get_x_width()) - 5;
-	//y1 = 0;
-	//z1 = 0;
-
-	//x2 = int(get_x_width());
-	//y2 = 0;
-	//z2 = 4;
-	//gather_zone =	zone_land(GATHER,2, x1, y1, z1, x2, y2, z2);
 
 	x1 = 0;
 	y1 = 0;
@@ -365,6 +376,16 @@ void terrian::cubes_init() {
 	y2 = 0;
 	z2 = 2;
 	stockpile_zone = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
+
+	x1 = int(get_x_width() - 5);
+	y1 = 0;
+	z1 = 5;
+
+	x2 = int(get_x_width());;
+	y2 = 0;
+	z2 = 7;
+	farm_zone = zone_land(FARM, 5, x1, y1, z1, x2, y2, z2);
+	items_to_add = farm_zone->get_grown_items();
 
 	print_map_zoned();
 	//print_map_blocked_zones();
@@ -587,6 +608,9 @@ void terrian::print_map_zoned() {
 					case STOCKPILE:
 						std::cout << "4 ";
 						break;
+					case FARM:
+						std::cout << "5 ";
+						break;
 					default:
 						std::cout << "* ";
 						break;
@@ -678,6 +702,9 @@ void terrian::print_map_blocked_zones() {
 								break;
 							case STOCKPILE:
 								std::cout << "4 ";
+								break;
+							case FARM:
+								std::cout << "5 ";
 								break;
 							default:
 								std::cout << ". ";
@@ -822,6 +849,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq[0] = PICK_UP;
 		//temp->action_rq[1] = MOVE;
 		temp->action_rq[1] = DROP;
+		temp->job_t = DUMB;
 		break;
 	case SACRIFICE_OBJ:
 		action_numbers = 2;
@@ -842,6 +870,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq[0] = PICK_UP;
 		//temp->action_rq[1] = MOVE;
 		temp->action_rq[1] = SAC_OBJ;
+		temp->job_t = RELIGION;
 		break;
 	case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
 		action_numbers = 1;
@@ -854,6 +883,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->destination[0].z = z1;
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = START_SAC;
+		temp->job_t = RELIGION;
 		break;
 	case MOVE_C:
 		action_numbers = 1;
@@ -866,6 +896,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->destination->z = z1;
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = MOVE;
+		temp->job_t = NONE;
 		break;
 	default:
 		break;
@@ -1036,10 +1067,11 @@ void terrian::return_zone_loc(zone_loc* i) {
 
 }
 
-void terrian::spawn_item(item_type type, int x, int z) {
+item_info* terrian::spawn_item(item_type type, int x, int z) {
 	item_info* output = OBJM->spawn_item(type,x,z);
 	terrian_map[z][x].item_on_top = output;
 	//print_map_items();
+	return output;
 }
 
 //path finding functions

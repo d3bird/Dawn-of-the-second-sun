@@ -54,10 +54,12 @@ struct selection_buffer {
 //the two objects that needed to generate tasks
 //the job 
 enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, MOVE_C };//overall
+enum job_type { AGRICULTURE, RELIGION, DUMB, NONE};//determins who can do these activities
 enum action { PICK_UP, DROP, SAC_OBJ,START_SAC, MOVE };//the action required
 //job and item that needs to be interacted with
 struct work_order {
 	work_jobs job;
+	job_type job_t;
 	action *action_rq;
 	unsigned int currently_on;
 	unsigned int action_numbers;
@@ -98,17 +100,19 @@ public:
 	bool is_alter_ready() { return  OBJM->is_alter_ready(); }
 	bool is_alter_about_to_start(){ return  OBJM->is_alter_about_to_start(); }
 	void toggle_alter_about_to_start() { OBJM->toggle_alter_about_to_start(); }
-	void spawn_item(item_type type, int x, int z);
+	item_info* spawn_item(item_type type, int x, int z);
 
 	//zoning function
 	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
 	void return_zone_loc(zone_loc* i);
+	void update_zones(float deltaTime);
 
 	//task creation function
 	void print_work_order(work_order* wo);
 	work_order* generate_work_order(work_jobs work_job, int x1, int y1, int z1);
 	std::vector<work_order*> generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 	void delete_work_order(work_order* work_job);
+	std::vector< work_order*>* get_gen_jobs_pointer() { return gen_orders; }
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -206,10 +210,15 @@ private:
 	bool** closedList;
 
 
-	//zoning data
+	//zoning data for testing
 	std::vector<zone*> zones;
 	zone* spawn_zone;
 	zone* alter_zone;
 	zone* gather_zone;
 	zone* stockpile_zone;
+
+	//farming data
+	zone* farm_zone;
+	std::vector<zone_loc*>* items_to_add;
+	std::vector< work_order*>* gen_orders;
 };
