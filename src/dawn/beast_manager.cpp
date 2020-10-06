@@ -469,7 +469,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         std::cout << "harvesting plant" << std::endl;
         map->harvest_farm_tile(Job->farm_t);
         Job->farm_t->needs_tendning = true;
-        Job->farm_t->work_order_given = true;
+        Job->farm_t->work_order_given = false;
         Job->farm_t->needs_harvest = false;
         Job->farm_t->halted_growth = false;
         Job->farm_t->grow_time = 0;
