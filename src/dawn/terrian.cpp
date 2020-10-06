@@ -34,106 +34,137 @@ void terrian::draw() {
 void terrian::draw_selection(Shader* shade) {
 	updateBuffer_ter();
 	
-	shade->use();
-	shade->setMat4("projection", projection);
-	shade->setMat4("view", view);
-	shade->setInt("texture_diffuse1", 0);
-	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, cube->textures_loaded[0].id);
-	shade->setBool("u_color1", true);
-	shade->setBool("u_color2", false);
-	shade->setBool("u_color2", false);
-	if (cube_amount - 255 <= 0) {
+shade->use();
+shade->setMat4("projection", projection);
+shade->setMat4("view", view);
+shade->setInt("texture_diffuse1", 0);
+glActiveTexture(GL_TEXTURE0);
+glBindTexture(GL_TEXTURE_2D, cube->textures_loaded[0].id);
+shade->setBool("u_color1", true);
+shade->setBool("u_color2", false);
+shade->setBool("u_color2", false);
+if (cube_amount - 255 <= 0) {
+	for (unsigned int i = 0; i < cube->meshes.size(); i++)
+	{
+		glBindVertexArray(cube->meshes[i].VAO);
+		glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, cube_amount);
+		glBindVertexArray(0);
+	}
+}
+else {
+	int start = 0;
+	int render = 254;
+	int total = 254;
+	int increment = total;
+	int remaining = cube_amount;
+
+
+	while (remaining > 0) {
+
+		glBindBuffer(GL_ARRAY_BUFFER, buffer);
+		glBufferData(GL_ARRAY_BUFFER, total * sizeof(glm::mat4), &cube_matrices[start], GL_STATIC_DRAW);
+
 		for (unsigned int i = 0; i < cube->meshes.size(); i++)
 		{
 			glBindVertexArray(cube->meshes[i].VAO);
-			glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, cube_amount);
+			glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, render);
 			glBindVertexArray(0);
 		}
-	}
-	else {
-		int start = 0;
-		int render = 254;
-		int total = 254;
-		int increment = total;
-		int remaining = cube_amount;
 
-
-		while (remaining > 0) {
-
-			glBindBuffer(GL_ARRAY_BUFFER, buffer);
-			glBufferData(GL_ARRAY_BUFFER, total * sizeof(glm::mat4), &cube_matrices[start], GL_STATIC_DRAW);
-
-			for (unsigned int i = 0; i < cube->meshes.size(); i++)
-			{
-				glBindVertexArray(cube->meshes[i].VAO);
-				glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, render);
-				glBindVertexArray(0);
-			}
-
-			start += render;
-			remaining -= render;
-			if (remaining < 255) {
-				render = remaining;
-				total = remaining;
-			}
-			//std::cout << remaining << std::endl;
-			shade->setBool("u_color2", true);
+		start += render;
+		remaining -= render;
+		if (remaining < 255) {
+			render = remaining;
+			total = remaining;
 		}
-		//std::cout << "out of loop" << std::endl;
-	
+		//std::cout << remaining << std::endl;
+		shade->setBool("u_color2", true);
 	}
+	//std::cout << "out of loop" << std::endl;
+
+}
 }
 
 void terrian::update(float delta_time) {
-    switch (draw_mode)
-    {
+	switch (draw_mode)
+	{
 
-    case 1:
-        update_cubes( delta_time);
-        break;
-    default:
-        std::cout << "no update for this type type init" << std::endl;
-        break;
-    }
+	case 1:
+		update_cubes(delta_time);
+		break;
+	default:
+		std::cout << "no update for this type type init" << std::endl;
+		break;
+	}
 }
 
 void terrian::update_cubes(float delta_time) {
-    static float pasted_time = 0;
-    static float y = 0;
-    pasted_time += delta_time;
+	static float pasted_time = 0;
+	static float y = 0;
+	pasted_time += delta_time;
 
-    if (pasted_time >= (3.14159 * 15)) {
-         y = 0;
-         pasted_time = 0;
-    }
-    else {
-        y += delta_time;
-    }
-    float x = 0;
-    float z = 0;
+	if (pasted_time >= (3.14159 * 15)) {
+		y = 0;
+		pasted_time = 0;
+	}
+	else {
+		y += delta_time;
+	}
+	float x = 0;
+	float z = 0;
 
-    for (unsigned int i = 0; i < cube_amount; i++) {
-        glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::translate(model, glm::vec3(x, sin((x+ pasted_time)), z));
-       // model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x)), z));
-        model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x) - (pasted_time / z)), z));
-        cube_matrices[i] = model;
-        x += cube_offset;
+	for (unsigned int i = 0; i < cube_amount; i++) {
+		glm::mat4 model = glm::mat4(1.0f);
+		// model = glm::translate(model, glm::vec3(x, sin((x+ pasted_time)), z));
+	   // model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x)), z));
+		model = glm::translate(model, glm::vec3(x, sin(pasted_time - (pasted_time / x) - (pasted_time / z)), z));
+		cube_matrices[i] = model;
+		x += cube_offset;
 
-        if (x == (cube_offset * x_width)) {
-            z += cube_offset;
-            x = 0;
-        }
-    }
+		if (x == (cube_offset * x_width)) {
+			z += cube_offset;
+			x = 0;
+		}
+	}
 }
 
 void terrian::update_zones(float deltaTime) {
 	farm_zone->update(deltaTime);
+
 	if (items_to_add != NULL) {
+		//generate agriculture work orders
+		for (int i = 0; i < farm_tiles_need_work->size(); i++) {
+			work_jobs job_to_do;
+			if (!farm_tiles_need_work[0][i]->tilled) {
+				job_to_do = TILL_SOIL;
+			}
+			else {
+				switch (farm_tiles_need_work[0][i]->tending_action) {
+				case 2:
+					job_to_do = TEND_PLANT;
+					break;
+				case 3:
+					job_to_do = HARVEST_PLANT;
+					break;
+				default:
+					break;
+				}
+				
+			}
+			gen_orders->push_back(generate_work_order(job_to_do,
+				farm_tiles_need_work[0][i]->loc->x, 5, farm_tiles_need_work[0][i]->loc->z, farm_tiles_need_work[0][i]));
+		}
+		farm_tiles_need_work->clear();
+	}
+	else {
+		std::cout << "the was a problem getting a list of farm tiles" << std::endl;
+	}
+
+	if (items_to_add != NULL) {
+		//see if it has to spawn in any items from a farm
 		for (int i = 0; i < items_to_add->size(); i++) {
 			//spawn the item in the world
-			item_info*temp = spawn_item(LOG_T, items_to_add[0][i]->x, items_to_add[0][i]->z);
+			item_info* temp = spawn_item(LOG_T, items_to_add[0][i]->x, items_to_add[0][i]->z);
 			//then generate a work order for the object
 			if (temp != NULL) {
 				gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, items_to_add[0][i]->x, 5, items_to_add[0][i]->z));
@@ -346,7 +377,6 @@ void terrian::cubes_init() {
 	}
 
 	//print_map_blocked();
-
 	//add in the items
 	import_items();
 	//test out the map zoning 
@@ -359,7 +389,7 @@ void terrian::cubes_init() {
 	int z2 = 17;
 	alter_zone = zone_land(ALTER,1, x1, y1, z1, x2, y2, z2);
 
-
+	
 	x1 = 0;
 	y1 = 0;
 	z1 = int(get_z_width()) - 5;
@@ -382,12 +412,17 @@ void terrian::cubes_init() {
 	x1 = int(get_x_width() - 5);
 	y1 = 0;
 	z1 = 5;
+	std::cout << "before the new farm info " << std::endl;
 
 	x2 = int(get_x_width());;
 	y2 = 0;
 	z2 = 7;
 	farm_zone = zone_land(FARM, 5, x1, y1, z1, x2, y2, z2);
+
 	items_to_add = farm_zone->get_grown_items();
+	farm_tiles_need_work = farm_zone->get_farm_tiles_need_work();
+	std::cout << "after the new farm info "<< std::endl;
+
 
 	print_map_zoned();
 	//print_map_blocked_zones();
@@ -728,6 +763,15 @@ void terrian::print_map_blocked_zones() {
 
 }
 
+void terrian::harvest_farm_tile(farm_tile* tile) {
+	
+	item_info* temp = spawn_item(LOG_T, tile->loc->x, tile->loc->z);
+	//then generate a work order for the object
+	if (temp != NULL) {
+		gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, tile->loc->x, 5, tile->loc->z));
+	}
+}
+
 //task creation function
 void terrian::print_work_order(work_order* wo) {
 	std::cout << "printing a work order" << std::endl;
@@ -802,7 +846,7 @@ void terrian::print_work_order(work_order* wo) {
 	}
 }
 
-work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1) {
+work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1, farm_tile* f_tile) {
 	//std::cout << "creating work order" << std::endl;
 	work_order* temp;
 
@@ -831,6 +875,9 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 	unsigned int action_numbers;
 	unsigned int location_amount;
 	zone_loc* store;
+
+	temp->farm_t = f_tile;//should def to NULL 
+
 	switch (work_job) {
 	case STOCK_OBJ:
 		action_numbers = 2;
@@ -899,6 +946,45 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = MOVE;
 		temp->job_t = NONE;
+		break;
+	case  TILL_SOIL:
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = TILL;
+		temp->job_t = AGRICULTURE;
+		break;
+	case TEND_PLANT:
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = TEND;
+		temp->job_t = AGRICULTURE;
+		break;
+	case HARVEST_PLANT:
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		temp->destination[0].x = x1;
+		temp->destination[0].y = y1;
+		temp->destination[0].z = z1;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = HARVEST;
+		temp->job_t = AGRICULTURE;
 		break;
 	default:
 		break;
@@ -1080,6 +1166,7 @@ item_info* terrian::spawn_item(item_type type, int x, int z) {
 
 //makesure to swap the input of x and z due to the implementtion of the function
 std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float height) {
+
     vector<glm::vec3*> output;
 
 	Pair src = make_pair(x1, z1);
@@ -1129,7 +1216,12 @@ std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float 
 	}
 	else {
 		std::cout << "cellDetails was NULL" << std::endl;
-		output.push_back(new glm::vec3(-4, -4, -4));// placed so the program does not crash
+		if (x1 == x2 && z1 == z2) {//already at the same destination
+			output.push_back(new glm::vec3(z1 * cube_offset, height, x1 * cube_offset));
+		}
+		else {
+			output.push_back(new glm::vec3(-4, -4, -4));// placed so the program does not crash
+		}
 	}
     return output;
 }

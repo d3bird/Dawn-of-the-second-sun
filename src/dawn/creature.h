@@ -13,7 +13,7 @@
 #include <string>
 
 //sub jobs that break up the main job
-enum sub_job { PICKUP_OBJECT, GATHER_OBJECT, DROP_OBJECT, SACRIFICE };
+enum sub_job { PICKUP_OBJECT, GATHER_OBJECT, DROP_OBJECT, SACRIFICE, TILL_P, TEND_P };
 
 struct task {
 	sub_job Job;

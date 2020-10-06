@@ -21,13 +21,23 @@ struct zone_loc {
 		int  i) { x = x1; y = y1; z = z1; ID = i; }
 };
 
+struct farm_tile {
+	zone_loc* loc;
+	bool tilled;
+	bool needs_tendning;
+	bool halted_growth;
+	bool needs_harvest;
+	int tending_action;//1 tilling 2 watering 3 harvest
+	float grow_time;
+	float needed_grow_time;
+	int grown_item;
+	bool work_order_given;
+};
+
 class zone {
 public:
 	zone(type i, unsigned int id);
 	~zone();
-
-	void update(float deltaTime);//returns a list of 
-	std::vector<zone_loc*>* get_grown_items() { return  grown_items; }
 
 	void add_spot(int x, int y, int z, bool blocked = false);
 	void remove_spot(int x, int y, int z);
@@ -52,6 +62,12 @@ public:
 
 	void print_info();
 
+
+	//farm function
+	void update(float deltaTime);//returns a list of 
+	std::vector<zone_loc*>* get_grown_items() { return  grown_items; }
+	std::vector<farm_tile*>* get_farm_tiles_need_work() { return farm_tiles_need_work; }
+
 private:
 
 	bool needs_update;
@@ -70,5 +86,7 @@ private:
 	std::vector<zone_loc*> *grown_items;//items that need to be added to the world that have spawned in this zone
 	float time_passed;
 	float grow_time;
+	std::vector<farm_tile*>* farm_tiles;
+	std::vector<farm_tile*>* farm_tiles_need_work;
 };
 

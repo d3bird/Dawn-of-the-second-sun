@@ -122,7 +122,7 @@ void object_manger::create_log_objects() {
 	std::string* item_name_t = new std::string("log object");
 	//creating the log item
 	buffer = 0;
-	buffer_size = 10;
+	buffer_size = 50;
 	amount = 2;
 	modelMatrices = new glm::mat4[buffer_size];
 	custom_shader = NULL;

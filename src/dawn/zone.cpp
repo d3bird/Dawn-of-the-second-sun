@@ -6,10 +6,15 @@ zone::zone(type i, unsigned int id){
 	ID = id;
 	cube_offset = 2.0f;
 	grown_items = NULL;
+	farm_tiles_need_work = NULL;
+	farm_tiles = NULL;
 	time_passed = 0;
 	if (i == FARM) {
 		grown_items = new std::vector<zone_loc*>;
 		grow_time = 5;
+		farm_tiles = new std::vector<farm_tile*>;
+		farm_tiles_need_work = new std::vector<farm_tile*>;
+
 	}
 }
 
@@ -20,10 +25,40 @@ zone::~zone(){
 void zone::update(float deltaTime) {
 
 	if (!needs_update) {
-		std::cout << "this zone should not needto be updated" << std::endl;	
+		std::cout << "this zone should not need to be updated" << std::endl;	
 		return;
 	}
-	time_passed += deltaTime;
+
+	for (int i = 0; i < farm_tiles->size(); i++){
+		if (!farm_tiles[0][i]->work_order_given) {
+			if (farm_tiles[0][i]->tilled) {//needs to be tilled
+				if (!farm_tiles[0][i]->halted_growth && !farm_tiles[0][i]->needs_harvest) {
+					farm_tiles[0][i]->grow_time += deltaTime;
+				}
+				//std::cout << "plant tending time: "<< farm_tiles[0][i]->grow_time << std::endl;
+				if (farm_tiles[0][i]->needs_tendning && //need tending
+					farm_tiles[0][i]->grow_time >= farm_tiles[0][i]->needed_grow_time / 2 ) {
+					
+					farm_tiles[0][i]->work_order_given = true;
+					farm_tiles[0][i]->tending_action = 2;
+					farm_tiles_need_work->push_back(farm_tiles[0][i]);
+				}
+				else if (farm_tiles[0][i]->grow_time >= farm_tiles[0][i]->needed_grow_time) {//the thing to harvestible
+					farm_tiles[0][i]->work_order_given = true;
+					farm_tiles[0][i]->tending_action = 3;
+					farm_tiles_need_work->push_back(farm_tiles[0][i]);
+					farm_tiles[0][i]->needs_harvest = true;
+				}
+			}
+			else {
+				farm_tiles[0][i]->work_order_given = true;
+				farm_tiles[0][i]->tending_action = 1;
+				farm_tiles_need_work->push_back(farm_tiles[0][i]);
+			}
+		}
+	}
+
+	/*time_passed += deltaTime;
 	if (time_passed >= grow_time) {
 		time_passed = 0;
 		std::cout << "grown an item" << std::endl;
@@ -47,7 +82,7 @@ void zone::update(float deltaTime) {
 		else {
 			std::cout << "this zone has no open spots" << std::endl;
 		}
-	}
+	}*/
 }
 
 //spots are in respect to the terrian map
@@ -57,6 +92,20 @@ void zone::add_spot(int x, int y, int z, bool blocked) {
 	if (!blocked) {
 		storeing_que.push(temp);
 		open_spots.push_back(temp);
+		if (current_type == FARM) {
+			farm_tile* temp_f = new farm_tile;
+			temp_f->loc = temp;
+			temp_f->tilled = false;
+			temp_f->needs_tendning = true;
+			temp_f->tending_action = 0;
+			temp_f->grow_time = 0;
+			temp_f->needed_grow_time = 5;
+			temp_f->grown_item = 1;
+			temp_f->work_order_given = false;
+			temp_f->halted_growth = false;
+			temp_f->needs_harvest = false;
+			farm_tiles->push_back(temp_f);
+		}
 	} else{
 		blocked_spots.push_back(temp);
 	}
@@ -118,7 +167,8 @@ zone_loc* zone::get_spawn_loc() {
 	else {
 		std::cout << "this zone has no open spots" << std::endl;
 	}
-
+	print_info();
+	while (true);
 	return NULL;
 }
 
@@ -175,6 +225,9 @@ void zone::print_info() {
 		break;
 	case GATHER:
 		type_s = "GATHER";
+		break;
+	case FARM:
+		type_s = "FARM";
 		break;
 	default:
 		type_s = "DEF";

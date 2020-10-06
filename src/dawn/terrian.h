@@ -53,9 +53,9 @@ struct selection_buffer {
 
 //the two objects that needed to generate tasks
 //the job 
-enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, MOVE_C };//overall
+enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, TILL_SOIL,TEND_PLANT, HARVEST_PLANT, MOVE_C };//overall
 enum job_type { AGRICULTURE, RELIGION, DUMB, NONE};//determins who can do these activities
-enum action { PICK_UP, DROP, SAC_OBJ,START_SAC, MOVE };//the action required
+enum action { PICK_UP, DROP, SAC_OBJ, START_SAC, MOVE, TILL, TEND, HARVEST };//the action required
 //job and item that needs to be interacted with
 struct work_order {
 	work_jobs job;
@@ -70,6 +70,7 @@ struct work_order {
 	zone_loc* zone_location;
 	map_loc* destination;//where the object needs to go (if it needs to be moved 
 	bool arrived;
+	farm_tile* farm_t;
 };
 
 
@@ -106,10 +107,11 @@ public:
 	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
 	void return_zone_loc(zone_loc* i);
 	void update_zones(float deltaTime);
+	void harvest_farm_tile(farm_tile* tile);
 
 	//task creation function
 	void print_work_order(work_order* wo);
-	work_order* generate_work_order(work_jobs work_job, int x1, int y1, int z1);
+	work_order* generate_work_order(work_jobs work_job, int x1, int y1, int z1, farm_tile* f_tile = NULL);
 	std::vector<work_order*> generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 	void delete_work_order(work_order* work_job);
 	std::vector< work_order*>* get_gen_jobs_pointer() { return gen_orders; }
@@ -220,5 +222,6 @@ private:
 	//farming data
 	zone* farm_zone;
 	std::vector<zone_loc*>* items_to_add;
+	std::vector<farm_tile*>* farm_tiles_need_work;//agriculture orders
 	std::vector< work_order*>* gen_orders;
 };

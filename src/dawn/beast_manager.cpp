@@ -380,7 +380,7 @@ void beast_manager::create_tasks(work_order* Job) {
         //std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
           //  << x2 << " " << z2 << std::endl;
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
-        std::cout << "adahukjk" << std::endl;
+       // std::cout << "adahukjk" << std::endl;
         if (nav_points.size() > 0) {
             std::cout << "adding points to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
@@ -453,6 +453,28 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
     case START_SAC:
         std::cout << "starting sacrifice" << std::endl;
         map->start_sac();
+        break;
+    case TILL:
+        std::cout << "tilling soil" << std::endl;
+        Job->farm_t->tilled = true;
+        Job->farm_t->work_order_given = false;
+        break;
+    case TEND:
+        std::cout << "tending plant" << std::endl;
+        Job->farm_t->needs_tendning = false;
+        Job->farm_t->work_order_given = false;
+        Job->farm_t->halted_growth = false;
+        break;
+    case HARVEST:
+        std::cout << "harvesting plant" << std::endl;
+        map->harvest_farm_tile(Job->farm_t);
+        Job->farm_t->needs_tendning = true;
+        Job->farm_t->work_order_given = true;
+        Job->farm_t->needs_harvest = false;
+        Job->farm_t->halted_growth = false;
+        Job->farm_t->grow_time = 0;
+        std::cout << "harvesting plant at " << Job->farm_t->loc->x << " " << Job->farm_t->loc->z << std::endl;
+       // while (true);
         break;
     default:
         std::cout << "nothing needs to be done here" << std::endl;
