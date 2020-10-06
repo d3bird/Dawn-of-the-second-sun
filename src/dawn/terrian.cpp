@@ -765,7 +765,7 @@ void terrian::print_map_blocked_zones() {
 
 void terrian::harvest_farm_tile(farm_tile* tile) {
 	
-	item_info* temp = spawn_item(LOG_T, tile->loc->x, tile->loc->z);
+	item_info* temp = spawn_item(FRUIT_T, tile->loc->x, tile->loc->z);
 	//then generate a work order for the object
 	if (temp != NULL) {
 		gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, tile->loc->x, 5, tile->loc->z));
