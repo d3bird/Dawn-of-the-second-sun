@@ -1,10 +1,5 @@
 #include "model.h"
-
-#ifndef STB_IMAGE_IMPLEMENTATION
-#define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
-#endif
-
 
 unsigned int TextureFromFile(const char* path, const string& directory, bool gamma)
 {
