@@ -1215,7 +1215,7 @@ std::vector<glm::vec3*> terrian::find_path(int x1, int z1, int x2,int z2, float 
 		delete[]  cellDetails;
 	}
 	else {
-		std::cout << "cellDetails was NULL" << std::endl;
+		//std::cout << "cellDetails was NULL" << std::endl;
 		if (x1 == x2 && z1 == z2) {//already at the same destination
 			output.push_back(new glm::vec3(z1 * cube_offset, height, x1 * cube_offset));
 		}
@@ -1316,7 +1316,7 @@ cell** terrian::aStarSearch(Pair src, Pair dest)
 
 	if (isDestination(src.first, src.second, dest) == true)
 	{
-		printf("We are already at the destination\n");
+		//printf("We are already at the destination\n");
 		return NULL;
 	}
 

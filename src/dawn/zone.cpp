@@ -173,8 +173,8 @@ zone_loc* zone::get_spawn_loc() {
 }
 
 zone_loc* zone::get_alter_loc() {
-	std::cout << "getting open spot in alter zone" << std::endl;
-	print_info();
+	//std::cout << "getting open spot in alter zone" << std::endl;
+	
 	if (current_type == ALTER) {
 		if (storeing_que.size() > 0) {
 			zone_loc* output =storeing_que.front();
@@ -189,13 +189,13 @@ zone_loc* zone::get_alter_loc() {
 	else {
 		std::cout << "not a alter zone" << std::endl;
 	}
-
+	//print_info();
 	//while (true);
 	return NULL;
 }
 
 zone_loc* zone::get_stockpile_loc() {
-	print_info();
+	//print_info();
 	if (current_type == STOCKPILE) {
 		if (storeing_que.size() > 0) {
 			zone_loc* output = storeing_que.front();

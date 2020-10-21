@@ -382,7 +382,7 @@ void beast_manager::create_tasks(work_order* Job) {
         std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
        // std::cout << "adahukjk" << std::endl;
         if (nav_points.size() > 0) {
-            std::cout << "adding points to creature" << std::endl;
+          //  std::cout << "adding points to creature" << std::endl;
             for (size_t i = 0; i < nav_points.size(); i++)
             {
                 glm::vec3* temp2 = nav_points[i];
@@ -413,7 +413,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
 
     switch (Job->action_rq[Job->currently_on]) {
     case PICK_UP:
-        std::cout << "picking up item" << std::endl;
+      //  std::cout << "picking up item" << std::endl;
         if (Job->object->zone_location != NULL) {//if the object is being picked up from a zone
 
         }
@@ -425,7 +425,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         npc->hold_item(Job->object);
         break;
     case DROP:
-        std::cout << "dropping item" << std::endl;
+        //std::cout << "dropping item" << std::endl;
         Job->object->x_m = npc->get_loc_map_x_d();
         //  Job->object->y_m = npc->get_loc_map_y_d();
         Job->object->z_m = npc->get_loc_map_z_d();
@@ -434,13 +434,13 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         //map->print_map_items();
         break;
     case SAC_OBJ:
-        std::cout << "sacrificing item" << std::endl;
+       // std::cout << "sacrificing item" << std::endl;
         Job->object->x_m = npc->get_loc_map_x_d();
         // Job->object->y_m = npc->get_loc_map_y_d();
         Job->object->z_m = npc->get_loc_map_z_d();
         map->add_item_to_alter(Job->object);
         if (!map->start_sac()) {//needs to create a latter job to be compleated
-            std::cout << "need to wait to start sacrifice, creating a conditional job" << std::endl;
+           // std::cout << "need to wait to start sacrifice, creating a conditional job" << std::endl;
             work_order_C* temp = new work_order_C;
             temp->cond = START_ALTER;
             temp->wo = map->generate_work_order(START_SACRIFICE,
@@ -451,30 +451,30 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         //map->print_map_items();
         break;
     case START_SAC:
-        std::cout << "starting sacrifice" << std::endl;
+        //std::cout << "starting sacrifice" << std::endl;
         map->start_sac();
         break;
     case TILL:
-        std::cout << "tilling soil" << std::endl;
+       // std::cout << "tilling soil" << std::endl;
         Job->farm_t->tilled = true;
         Job->farm_t->work_order_given = false;
         break;
     case TEND:
-        std::cout << "tending plant" << std::endl;
+      //  std::cout << "tending plant" << std::endl;
         Job->farm_t->needs_tendning = false;
         Job->farm_t->work_order_given = false;
         Job->farm_t->halted_growth = false;
         break;
     case HARVEST:
-        std::cout << "harvesting plant" << std::endl;
+       // std::cout << "harvesting plant" << std::endl;
         map->harvest_farm_tile(Job->farm_t);
         Job->farm_t->needs_tendning = true;
         Job->farm_t->work_order_given = false;
         Job->farm_t->needs_harvest = false;
         Job->farm_t->halted_growth = false;
         Job->farm_t->grow_time = 0;
-        std::cout << "harvesting plant at " << Job->farm_t->loc->x << " " << Job->farm_t->loc->z << std::endl;
-       // while (true);
+      //  std::cout << "harvesting plant at " << Job->farm_t->loc->x << " " << Job->farm_t->loc->z << std::endl;
+
         break;
     default:
         std::cout << "nothing needs to be done here" << std::endl;

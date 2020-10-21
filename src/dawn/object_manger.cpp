@@ -687,7 +687,7 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 
 
 	glm::mat4 trans = glm::mat4(1.0f);
-	std::cout << "item at " << x_f << "," << y_f << "," << z_f << std::endl;
+	//std::cout << "item at " << x_f << "," << y_f << "," << z_f << std::endl;
 	trans = glm::translate(trans, glm::vec3(x_f, y_f, z_f));
 	items[item_id]->modelMatrices[buffer_loc] = trans;
 
