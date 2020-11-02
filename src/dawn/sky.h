@@ -14,6 +14,8 @@
 #include "shader.h"
 #include "time.h"
 
+#define PI 3.14159265
+
 class sky{
 public:
 	sky();
@@ -32,6 +34,8 @@ public:
 	void set_time(timing* i) { Time = i; }
 
 private:
+	bool toggled_day;
+	bool toggled_night;
 
 	glm::mat4 view;
 	glm::mat4 projection;
@@ -44,7 +48,7 @@ private:
 	float angle;
 	float radius;
 	float decrease;
-	float angle_incr = 0.05;
+	float angle_incr;
 	float x;
 	float z;
 	float y;

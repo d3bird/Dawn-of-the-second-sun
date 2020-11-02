@@ -92,7 +92,7 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
-    Time = new timing();
+    Time = new timing(false);
     deltaTime = Time->get_time_change();
 
     draw_world_info = false;//determins which part of the program to create
@@ -156,6 +156,8 @@ void processInput(GLFWwindow *window)
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, *deltaTime);
     //timimng changes
+    if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+        Time->set_time_multipler(0);
     if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
         Time->set_time_multipler(1);
     if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
@@ -164,6 +166,8 @@ void processInput(GLFWwindow *window)
         Time->set_time_multipler(3);
     if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
         Time->set_time_multipler(4);
+    if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+        Time->toggle_frame_rates();
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

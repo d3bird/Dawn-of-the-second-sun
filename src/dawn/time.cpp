@@ -8,6 +8,8 @@ timing::timing(bool frames) {
 	nbFrames = 0;
 	draw_frame_rate = frames;
 	time_state = 1;
+	daytime = true;
+	set_day();
 }
 
 timing::~timing() {
@@ -29,4 +31,14 @@ void timing::update_time() {
 		nbFrames = 0;
 		lastTime += 1.0;
 	}
+}
+
+void timing::set_day() {
+	daytime = true;
+	std::cout << "it is now day time" << std::endl;
+}
+
+void timing::set_night() {
+	daytime = false;
+	std::cout << "it is now night time" << std::endl;
 }

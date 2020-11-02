@@ -664,7 +664,7 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		break;
 	case FRUIT_T:
 		if (items[2]->amount >= items[2]->buffer_size) {
-			std::cout << "there are too many fruits" << std::endl;
+			//std::cout << "there are too many fruits" << std::endl;
 			return NULL;
 		}
 		item_id = 2;

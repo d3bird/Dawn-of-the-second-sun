@@ -6,6 +6,9 @@ sky::sky(){
 	angle = 0;
 	Time = NULL;
 	deltatime = NULL;
+	angle_incr = 2;
+	toggled_day = true;
+	toggled_night = false;
 }
 
 sky::~sky(){
@@ -27,14 +30,25 @@ void sky::draw() {
 
 void sky::update() {
 
-	x = center_x + radius * cos(angle);
-	y = center_y + radius * sin(angle);
+	x = center_x + radius * cos(angle*(PI /180));
+	y = center_y + radius * sin(angle*(PI /180));
+
+	if (!toggled_day && angle >= 0 && angle < 180) {
+		Time->set_day();
+		toggled_day = true;
+		toggled_night = false;
+	}
+	else if(!toggled_night && angle >= 180 && angle <= 360) {
+		Time->set_night();
+		toggled_day = false;
+		toggled_night = true;
+	}
 
 	angle += (angle_incr * (*deltatime));
+	//std::cout << "angle of the moon "<< angle << std::endl;
 	if (angle >= 360) {
 		angle = 0;
 	}
-	
 }
 
 void sky::init() {
