@@ -12,6 +12,7 @@
 
 #include "model.h"
 #include "shader.h"
+#include "time.h"
 
 class sky{
 public:
@@ -19,7 +20,7 @@ public:
 	~sky();
 
 	void draw();
-	void update(float deltaTime);
+	void update();
 	void init();
 
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -28,6 +29,7 @@ public:
 	void set_width(unsigned int x, unsigned int y, unsigned int z) { x_width = x; center_y = y; z_width = z; }
 
 	glm::vec3 get_light_loc() { return glm::vec3(x, y, z); }
+	void set_time(timing* i) { Time = i; }
 
 private:
 
@@ -52,5 +54,7 @@ private:
 	Model* moon;
 	Shader* space;
 
+	timing* Time;
+	float* deltatime;
 };
 

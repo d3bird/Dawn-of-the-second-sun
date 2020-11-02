@@ -11,6 +11,7 @@
 #include "beast_manager.h"
 #include "object_manger.h"
 #include "sky.h"
+#include "time.h"
 
 class world{
 public:
@@ -19,13 +20,14 @@ public:
 	void draw();
 	void draw_selection();
 
-	void update(float deltaTime);
+	void update();
 	void process_mouse_action(float m_x, float m_y);
 	void init();
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
+	void set_time(timing* i) { Time = i; }
 
 private:
 
@@ -37,6 +39,9 @@ private:
 	glm::mat4 projection;
 	bool update_projection;
 	bool update_cam;
+
+	timing* Time;
+	float* deltatime;
 
 	terrian* Terrian;
 	beast_manager* BM;

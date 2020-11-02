@@ -9,6 +9,7 @@
 #include "shader.h"
 #include "model.h"
 #include "creature.h"
+#include "time.h"
 
 //work order that need a condition to met 
 enum condition{ START_ALTER };
@@ -23,7 +24,7 @@ public:
 	~beast_manager();
 	
 	void draw();
-	void update(float deltaTime);
+	void update();
 
 	void spawn_creature(zone* spawn_zone);
 
@@ -39,6 +40,8 @@ public:
 
 	void create_tasks(work_order* Job);
 	void assign_backlog_task(work_order* Job);
+
+	void set_time(timing* i) { Time = i; }
 
 private:
 
@@ -61,6 +64,9 @@ private:
 
 	unsigned int x_width;
 	unsigned int z_width;
+
+	timing* Time;
+	float* deltatime;
 
 	std::vector<creature*> all_creatures;//all the creatures 
 	std::vector<creature*> need_jobs;

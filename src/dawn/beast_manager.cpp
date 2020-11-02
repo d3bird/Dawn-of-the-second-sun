@@ -47,12 +47,12 @@ bool beast_manager::determin_direction(float start, float end) {
     return false;//negative
 }
 
-void beast_manager::update(float deltaTime) {
+void beast_manager::update() {
     if (condional_jobs.size() > 0) {
         check_conditional_jobs();
     }
 
-    float speed = deltaTime * 30;
+    float speed = (*deltatime) * 30;
 
     glm::mat4 trans = glm::mat4(1.0f);
     glm::vec3* nav_point;
@@ -173,6 +173,14 @@ void beast_manager::update(float deltaTime) {
 void beast_manager::init() {
     std::cout << "creating the beast_manger class" << std::endl;
     
+    if (Time != NULL) {
+        deltatime = Time->get_time_change();
+    }
+    else {
+        std::cout << "there was a problem getting time in the sky" << std::endl;
+        while (true);
+    }
+
     if (beast_shader == NULL) {
         beast_shader = new Shader("shaders/asteroids.vs", "shaders/asteroids.fs");
     }

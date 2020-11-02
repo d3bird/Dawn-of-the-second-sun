@@ -4,6 +4,8 @@ sky::sky(){
 	update_projection = false;
 	update_cam = false;
 	angle = 0;
+	Time = NULL;
+	deltatime = NULL;
 }
 
 sky::~sky(){
@@ -23,12 +25,12 @@ void sky::draw() {
 	moon->Draw(space);
 }
 
-void sky::update(float deltaTime) {
+void sky::update() {
 
 	x = center_x + radius * cos(angle);
 	y = center_y + radius * sin(angle);
 
-	angle += (angle_incr * deltaTime);
+	angle += (angle_incr * (*deltatime));
 	if (angle >= 360) {
 		angle = 0;
 	}
@@ -45,4 +47,11 @@ void sky::init() {
 	space = new Shader("shaders/planet.vs", "shaders/planet.fs"); 
 	moon = new Model("resources/objects/planet/planet.obj");
 
+	if (Time != NULL) {
+		deltatime = Time->get_time_change();
+	}
+	else {
+		std::cout << "there was a problem getting time in the sky" << std::endl;
+		while (true);
+	}
 }

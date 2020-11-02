@@ -19,6 +19,8 @@ object_manger::object_manger() {
 	init_sac = false;
 	ready_to_sac = true;
 	alter_about = false;
+	Time = NULL;
+	deltatime = NULL;
 }
 
 object_manger::~object_manger() {
@@ -71,12 +73,21 @@ void object_manger::draw() {
 	}
 }
 
-void object_manger::update(float deltaTime) {
-	update_alter(deltaTime);
+void object_manger::update() {
+	update_alter();
 }
 
 void object_manger::init() {
 	std::cout << "creating the object manager" << std::endl;
+
+	if (Time != NULL) {
+		deltatime = Time->get_time_change();
+	}
+	else {
+		std::cout << "there was a problem getting time in the sky" << std::endl;
+		while (true);
+	}
+
 	//create the differnt objects
 	blocked_spots = new vector<block_loc*>();
 	create_log_objects();
@@ -539,14 +550,14 @@ bool determin_direction(float start, float end) {
 	return false;//negative
 }
 
-void object_manger::update_alter(float deltatTime) {
+void object_manger::update_alter() {
 	if (init_sac) {
 		if (items_to_sac.size() > 0) {
 
 			item_info* sac_item = items_to_sac.front();
 			glm::mat4 trans = glm::mat4(1.0f);
 			if (in_possition) {
-				sac_time += deltatTime;
+				sac_time += (*deltatime);
 				if (sac_time >= max_time) {
 					sac_time = 0;
 				}
@@ -559,7 +570,7 @@ void object_manger::update_alter(float deltatTime) {
 			}
 			else {
 				float dist_diff;
-				float move_amount = deltatTime * 2;
+				float move_amount = (*deltatime) * 2;
 				if (!same_x) {
 					dist_diff = diff_btwn_pnt(sac_item->x, alter->x);
 					if (dist_diff <= move_amount) {

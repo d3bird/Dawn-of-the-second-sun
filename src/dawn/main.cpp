@@ -98,6 +98,7 @@ int main() {
     draw_world_info = false;//determins which part of the program to create
     if (!draw_world_info) {
         World = new world();
+        World->set_time(Time);
         World->set_projection(projection);
         World->init();
     }
@@ -122,7 +123,7 @@ int main() {
             World->set_cam(view);
             World->draw();
             // World->draw_selection();
-            World->update(*deltaTime);
+            World->update();
         }
         else {
             world_data->set_cam(view);

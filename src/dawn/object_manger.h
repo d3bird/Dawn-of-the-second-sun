@@ -14,6 +14,7 @@
 #include "model.h"
 #include "shader.h"
 #include "zone.h"
+#include "time.h"
 
 /*
 * this class maganges the information about the workshops, items, and misc furniture 
@@ -88,12 +89,12 @@ public:
 	~object_manger();
 
 	void draw();
-	void update(float deltaTime);
+	void update();
 	void init();
 
 	void update_item_matrix(update_pak* data);
 	//item_info* get_item_info();
-	void update_alter(float deltatTime);
+	void update_alter();
 
 	item_info* spawn_item(item_type type,int x, int z);
 
@@ -116,6 +117,8 @@ public:
 	//places the items on the world map after each object has been created
 	std::vector< item_loc> place_items_init();
 
+	void set_time(timing* i) { Time = i; }
+
 private:
 	
 	void delete_item_from_buffer(item_info* it);
@@ -125,6 +128,10 @@ private:
 	void create_log_objects();
 	void create_alter_objects();
 	void craete_fruit_object();
+	//timing
+	timing* Time;
+	float* deltatime;
+
 	//common vars
 	bool update_projection;
 	bool update_cam;

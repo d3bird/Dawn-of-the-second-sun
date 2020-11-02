@@ -15,7 +15,7 @@
 
 #include "model.h"
 #include "shader.h"
-
+#include "time.h"
 #include "object_manger.h"
 
 using namespace std;
@@ -81,7 +81,7 @@ public:
 
 	void draw();
 	void draw_selection(Shader* shade);
-	void update(float delta_time);
+	void update();
 
 	void select(unsigned char PixelColor[3]);
 
@@ -106,7 +106,7 @@ public:
 	//zoning function
 	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
 	void return_zone_loc(zone_loc* i);
-	void update_zones(float deltaTime);
+	void update_zones();
 	void harvest_farm_tile(farm_tile* tile);
 
 	//task creation function
@@ -130,6 +130,8 @@ public:
 	void set_cube_shader(Shader* i) { cube_shader = i; }
 	void set_object_manger(object_manger* i) { OBJM = i; }
 
+	void set_time(timing* i) { Time = i; }
+
 	//temp functions to get the three zone types for testing
 	zone* get_spawn_zone() { return spawn_zone; }
 	zone* get_alter_zone() { return alter_zone; }
@@ -146,7 +148,7 @@ private:
 	void draw_space();
 	void draw_cubes();
 
-	void update_cubes(float delta_time);
+	void update_cubes();
 
 	void print_map();
 	
@@ -169,6 +171,9 @@ private:
 	bool update_projection;
 	bool update_cam;
 	int draw_mode;
+
+	timing* Time;
+	float* deltatime;
 
 	//common vars
 	unsigned int buffer;

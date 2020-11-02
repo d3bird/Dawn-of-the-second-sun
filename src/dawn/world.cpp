@@ -10,6 +10,7 @@ world::world() {
 	z = 0.0f;
 	angle = 0;
 	gen_orders = NULL;
+	Time = NULL;
 }
 
 void world::draw() {
@@ -41,10 +42,10 @@ void world::draw_selection() {
 	glFlush();
 }
 
-void world::update(float deltaTime) {
+void world::update() {
 
 	//Terrian->update(deltaTime);
-	Terrian->update_zones(deltaTime);
+	Terrian->update_zones();
 
 	if (gen_orders->size() > 0) {
 		for (int i = 0; i < gen_orders->size();i++) {
@@ -53,9 +54,9 @@ void world::update(float deltaTime) {
 		gen_orders->clear();
 	}
 
-	Sky->update(deltaTime);
-	BM->update(deltaTime);
-	OBJM->update(deltaTime);
+	Sky->update();
+	BM->update();
+	OBJM->update();
 
 }
 
@@ -72,6 +73,14 @@ void world::process_mouse_action(float m_x, float m_y) {
 
 void world::init() {
 
+	if (Time != NULL) {
+		deltatime = Time->get_time_change();
+	}
+	else {
+		std::cout << "there was a problem getting time" << std::endl;
+		while (true);
+	}
+
 	//the lighting shader for instanced objects
 	lighting_in = new Shader("shaders/lighting_instance.vs", "shaders/lighting_instance.fs");
 	selection = new Shader("shaders/selection.vs", "shaders/selection.fs");
@@ -80,6 +89,7 @@ void world::init() {
 	OBJM->set_projection(projection);
 	OBJM->set_cam(view);
 	OBJM->set_standered_shader(lighting_in);
+	OBJM->set_time(Time);
 	OBJM->init();
 	std::cout << std::endl;
 
@@ -88,6 +98,7 @@ void world::init() {
 	Terrian->set_cam(view);
 	Terrian->set_cube_shader(lighting_in);
 	Terrian->set_object_manger(OBJM);
+	Terrian->set_time(Time);
 	Terrian->cubes_init();
 	gen_orders = Terrian->get_gen_jobs_pointer();
 	Terrian->print_map_zoned();
@@ -112,6 +123,7 @@ void world::init() {
 	BM->set_map_size(Terrian->get_x_width(), Terrian->get_z_width());
 	BM->set_def_shader(lighting_in);
 	BM->set_object_manger(OBJM);
+	BM->set_time(Time);
 	BM->init();
 	std::cout << std::endl;
 
@@ -119,6 +131,7 @@ void world::init() {
 	Sky->set_projection(projection);
 	Sky->set_cam(view);
 	Sky->set_width(Terrian->get_x_width(), Terrian->get_y_width(), Terrian->get_z_width());
+	Sky->set_time(Time);
 	Sky->init();
 	std::cout << std::endl;
 

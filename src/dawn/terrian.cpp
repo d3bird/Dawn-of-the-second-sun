@@ -13,7 +13,8 @@ terrian::terrian() {
 	closedList = NULL;
 
 	gen_orders = new std::vector< work_order*>;
-
+	Time = NULL;
+	deltatime = NULL;
 }
 
 void terrian::draw() {
@@ -33,64 +34,64 @@ void terrian::draw() {
 
 void terrian::draw_selection(Shader* shade) {
 	updateBuffer_ter();
-	
-shade->use();
-shade->setMat4("projection", projection);
-shade->setMat4("view", view);
-shade->setInt("texture_diffuse1", 0);
-glActiveTexture(GL_TEXTURE0);
-glBindTexture(GL_TEXTURE_2D, cube->textures_loaded[0].id);
-shade->setBool("u_color1", true);
-shade->setBool("u_color2", false);
-shade->setBool("u_color2", false);
-if (cube_amount - 255 <= 0) {
-	for (unsigned int i = 0; i < cube->meshes.size(); i++)
-	{
-		glBindVertexArray(cube->meshes[i].VAO);
-		glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, cube_amount);
-		glBindVertexArray(0);
-	}
-}
-else {
-	int start = 0;
-	int render = 254;
-	int total = 254;
-	int increment = total;
-	int remaining = cube_amount;
 
-
-	while (remaining > 0) {
-
-		glBindBuffer(GL_ARRAY_BUFFER, buffer);
-		glBufferData(GL_ARRAY_BUFFER, total * sizeof(glm::mat4), &cube_matrices[start], GL_STATIC_DRAW);
-
+	shade->use();
+	shade->setMat4("projection", projection);
+	shade->setMat4("view", view);
+	shade->setInt("texture_diffuse1", 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, cube->textures_loaded[0].id);
+	shade->setBool("u_color1", true);
+	shade->setBool("u_color2", false);
+	shade->setBool("u_color2", false);
+	if (cube_amount - 255 <= 0) {
 		for (unsigned int i = 0; i < cube->meshes.size(); i++)
 		{
 			glBindVertexArray(cube->meshes[i].VAO);
-			glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, render);
+			glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, cube_amount);
 			glBindVertexArray(0);
 		}
-
-		start += render;
-		remaining -= render;
-		if (remaining < 255) {
-			render = remaining;
-			total = remaining;
-		}
-		//std::cout << remaining << std::endl;
-		shade->setBool("u_color2", true);
 	}
-	//std::cout << "out of loop" << std::endl;
+	else {
+		int start = 0;
+		int render = 254;
+		int total = 254;
+		int increment = total;
+		int remaining = cube_amount;
 
-}
+
+		while (remaining > 0) {
+
+			glBindBuffer(GL_ARRAY_BUFFER, buffer);
+			glBufferData(GL_ARRAY_BUFFER, total * sizeof(glm::mat4), &cube_matrices[start], GL_STATIC_DRAW);
+
+			for (unsigned int i = 0; i < cube->meshes.size(); i++)
+			{
+				glBindVertexArray(cube->meshes[i].VAO);
+				glDrawElementsInstanced(GL_TRIANGLES, cube->meshes[i].indices.size(), GL_UNSIGNED_INT, 0, render);
+				glBindVertexArray(0);
+			}
+
+			start += render;
+			remaining -= render;
+			if (remaining < 255) {
+				render = remaining;
+				total = remaining;
+			}
+			//std::cout << remaining << std::endl;
+			shade->setBool("u_color2", true);
+		}
+		//std::cout << "out of loop" << std::endl;
+
+	}
 }
 
-void terrian::update(float delta_time) {
+void terrian::update() {
 	switch (draw_mode)
 	{
 
 	case 1:
-		update_cubes(delta_time);
+		update_cubes();
 		break;
 	default:
 		std::cout << "no update for this type type init" << std::endl;
@@ -98,17 +99,17 @@ void terrian::update(float delta_time) {
 	}
 }
 
-void terrian::update_cubes(float delta_time) {
+void terrian::update_cubes() {
 	static float pasted_time = 0;
 	static float y = 0;
-	pasted_time += delta_time;
+	pasted_time += (*deltatime);
 
 	if (pasted_time >= (3.14159 * 15)) {
 		y = 0;
 		pasted_time = 0;
 	}
 	else {
-		y += delta_time;
+		y += (*deltatime);
 	}
 	float x = 0;
 	float z = 0;
@@ -128,8 +129,8 @@ void terrian::update_cubes(float delta_time) {
 	}
 }
 
-void terrian::update_zones(float deltaTime) {
-	farm_zone->update(deltaTime);
+void terrian::update_zones() {
+	farm_zone->update(*deltatime);
 
 	if (items_to_add != NULL) {
 		//generate agriculture work orders
@@ -228,6 +229,13 @@ void terrian::draw_space() {
 
 void terrian::cubes_init() {
 	std::cout << "creating the terrian class (cubes)" << std::endl;
+	if (Time != NULL) {
+		deltatime = Time->get_time_change();
+	}
+	else {
+		std::cout << "there was a problem getting time in the sky" << std::endl;
+		while (true);
+	}
 	draw_mode = 1;
 	cube_amount_selected = 0;
 
@@ -499,6 +507,13 @@ void terrian::select(unsigned char PixelColor[3]) {
 
 void terrian::space_init() {
 	std::cout << "creating the terrian class (space)" << std::endl;
+	if (Time != NULL) {
+		deltatime = Time->get_time_change();
+	}
+	else {
+		std::cout << "there was a problem getting time in the sky" << std::endl;
+		while (true);
+	}
     draw_mode = 0;
 	asteroidShader = new Shader("shaders/asteroids.vs", "shaders/asteroids.fs");
 	planetShader = new Shader("shaders/planet.vs", "shaders/planet.fs");
