@@ -14,6 +14,7 @@
 #include "camera.h"
 #include "model.h"
 #include "world.h"
+#include "time.h"
 #include "history/world_info.h"
 #include <iostream>
 
@@ -43,12 +44,10 @@ float current_mouse_y = lastY;
 
 bool firstMouse = true;
 
-// timing
-float deltaTime = 0.0f;
-float lastFrame = 0.0f;
-
 world* World;
 world_info* world_data;
+timing* Time;
+float* deltaTime;
 
 int main() {
 
@@ -93,6 +92,9 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
+    Time = new timing();
+    deltaTime = Time->get_time_change();
+
     draw_world_info = false;//determins which part of the program to create
     if (!draw_world_info) {
         World = new world();
@@ -104,36 +106,23 @@ int main() {
         world_data->set_projection(projection);
         world_data->init();
     }
-    double lastTime = glfwGetTime();
-    int nbFrames = 0;
+
 
     while (!glfwWindowShouldClose(window))
     {
-
-        float currentFrame = glfwGetTime();
-        deltaTime = currentFrame - lastFrame;
-        lastFrame = currentFrame;
-
-        nbFrames++;
-        if (currentFrame - lastTime >= 1.0) {
-           // printf("%f ms/frame\n", 1000.0 / double(nbFrames));//the number of milliseconds needed to reder the frame
-            nbFrames = 0;
-            lastTime += 1.0;
-        }
-
+        Time->update_time();
         processInput(window);
-
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-
+        
         view = camera.GetViewMatrix();
         if (!draw_world_info) {
             glEnable(GL_CULL_FACE);
             World->set_cam(view);
             World->draw();
             // World->draw_selection();
-            World->update(deltaTime);
+            World->update(*deltaTime);
         }
         else {
             world_data->set_cam(view);
@@ -158,13 +147,13 @@ void processInput(GLFWwindow *window)
         // camera.print_stats();
         world_data->regen_map();
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.ProcessKeyboard(FORWARD, deltaTime);
+        camera.ProcessKeyboard(FORWARD, *deltaTime);
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.ProcessKeyboard(BACKWARD, deltaTime);
+        camera.ProcessKeyboard(BACKWARD, *deltaTime);
     if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.ProcessKeyboard(LEFT, deltaTime);
+        camera.ProcessKeyboard(LEFT, *deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.ProcessKeyboard(RIGHT, deltaTime);
+        camera.ProcessKeyboard(RIGHT, *deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes
