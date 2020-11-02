@@ -14,9 +14,10 @@ public:
 	float* get_time_change() { return deltaTime; }
 
 	void toggle_frame_rates() { draw_frame_rate = !draw_frame_rate; }
+	void set_time_multipler(int i) { time_state = i; }
 
 private:
-
+	int time_state;
 	//timing between frames
 	double lastTime;
 	float currentFrame;

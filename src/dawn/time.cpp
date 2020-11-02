@@ -7,6 +7,7 @@ timing::timing(bool frames) {
 	lastTime = glfwGetTime();
 	nbFrames = 0;
 	draw_frame_rate = frames;
+	time_state = 1;
 }
 
 timing::~timing() {
@@ -17,7 +18,7 @@ timing::~timing() {
 
 void timing::update_time() {
 	currentFrame = glfwGetTime();
-	*deltaTime = currentFrame - lastFrame;
+	*deltaTime = (currentFrame - lastFrame)* time_state;
 	lastFrame = currentFrame;
 
 	nbFrames++;
