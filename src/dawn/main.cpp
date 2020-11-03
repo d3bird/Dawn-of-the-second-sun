@@ -93,7 +93,7 @@ int main() {
     glm::mat4 view = camera.GetViewMatrix();
 
     Time = new timing(false);
-    deltaTime = Time->get_time_change();
+    deltaTime = Time->get_time_change_static();
 
     draw_world_info = false;//determins which part of the program to create
     if (!draw_world_info) {

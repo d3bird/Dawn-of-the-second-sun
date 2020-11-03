@@ -13,6 +13,7 @@ public:
 
 	void update_time();
 	float* get_time_change() { return deltaTime; }
+	float* get_time_change_static() { return deltaTime_static; }
 
 	void toggle_frame_rates() { draw_frame_rate = !draw_frame_rate; }
 	void set_time_multipler(int i) { time_state = i; }
@@ -30,7 +31,8 @@ private:
 	double lastTime;
 	float currentFrame;
 	float lastFrame;
-	float* deltaTime;
+	float* deltaTime;//for time that can change with state
+	float* deltaTime_static;//just the time between rendering frames
 	int nbFrames;
 	bool draw_frame_rate;
 };

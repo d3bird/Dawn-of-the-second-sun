@@ -9,28 +9,38 @@ void Camera::print_stats() {
 }
 
 // returns the view matrix calculated using Euler Angles and the LookAt Matrix
-glm::mat4 Camera::GetViewMatrix()
-{
+glm::mat4 Camera::GetViewMatrix(){
     return glm::lookAt(Position, Position + Front, Up);
 }
 
 // processes input received from any keyboard-like input system. Accepts input parameter in the form of camera defined ENUM (to abstract it from windowing systems)
-void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime)
-{
+void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime){
     float velocity = MovementSpeed * deltaTime;
-    if (direction == FORWARD)
-        Position += Front * velocity;
-    if (direction == BACKWARD)
-        Position -= Front * velocity;
-    if (direction == LEFT)
-        Position -= Right * velocity;
-    if (direction == RIGHT)
-        Position += Right * velocity;
+    if (free_cam) {
+        if (direction == FORWARD)
+            Position += Front * velocity;
+        if (direction == BACKWARD)
+            Position -= Front * velocity;
+        if (direction == LEFT)
+            Position -= Right * velocity;
+        if (direction == RIGHT)
+            Position += Right * velocity;
+    }
+    else {
+        velocity *= 2;
+        if (direction == FORWARD)
+            Position.z -=  velocity;
+        if (direction == BACKWARD)
+            Position.z +=  velocity;
+        if (direction == LEFT)
+            Position.x -=  velocity;
+        if (direction == RIGHT)
+            Position.x +=  velocity;
+    }
 }
 
 // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
-void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch)
-{
+void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constrainPitch){
     xoffset *= MouseSensitivity;
     yoffset *= MouseSensitivity;
 
@@ -51,8 +61,7 @@ void Camera::ProcessMouseMovement(float xoffset, float yoffset, GLboolean constr
 }
 
 // processes input received from a mouse scroll-wheel event. Only requires input on the vertical wheel-axis
-void Camera::ProcessMouseScroll(float yoffset)
-{
+void Camera::ProcessMouseScroll(float yoffset){
     Zoom -= (float)yoffset;
     if (Zoom < 1.0f)
         Zoom = 1.0f;
@@ -61,8 +70,7 @@ void Camera::ProcessMouseScroll(float yoffset)
 }
 
     // calculates the front vector from the Camera's (updated) Euler Angles
-void Camera::updateCameraVectors()
-{
+void Camera::updateCameraVectors(){
     // calculate the new Front vector
     glm::vec3 front;
     front.x = cos(glm::radians(Yaw)) * cos(glm::radians(Pitch));

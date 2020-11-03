@@ -2,6 +2,7 @@
 
 timing::timing(bool frames) {
 	deltaTime = new float(0.0f);
+	deltaTime_static = new float(0.0f);
 	lastFrame = 0.0f;
 	currentFrame = 0.0f;
 	lastTime = glfwGetTime();
@@ -20,7 +21,8 @@ timing::~timing() {
 
 void timing::update_time() {
 	currentFrame = glfwGetTime();
-	*deltaTime = (currentFrame - lastFrame)* time_state;
+	*deltaTime_static = (currentFrame - lastFrame);
+	*deltaTime = (*deltaTime_static) * time_state;
 	lastFrame = currentFrame;
 
 	nbFrames++;
