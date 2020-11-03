@@ -25,9 +25,12 @@ public:
 	void init();
 
 	//settersand getters
+	//before the components are inited
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
 	void set_time(timing* i) { Time = i; }
+	//after the componets are inited
+	void change_projection(glm::mat4 i);
 
 private:
 

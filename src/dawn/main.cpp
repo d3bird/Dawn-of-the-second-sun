@@ -201,9 +201,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
 // ----------------------------------------------------------------------
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-    camera.ProcessMouseScroll(yoffset);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset){
+    if (World != NULL) {
+       float zoom = camera.ProcessMouseScroll(yoffset);
+       World->change_projection(glm::perspective(glm::radians(zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f));
+    }
 }
 
 // glfw: whenever the mouse buttons are clicked, this callback is called

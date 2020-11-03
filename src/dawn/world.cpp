@@ -223,3 +223,11 @@ void world::update_lighting_test(float deltaTime) {
 		angle = 0;
 	}
 }
+
+void world::change_projection(glm::mat4 i) {
+	projection = i;
+	Sky->set_projection(projection);
+	BM->set_projection(projection);
+	OBJM->set_projection(projection);
+	Terrian->set_projection(projection);
+}
