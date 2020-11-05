@@ -75,6 +75,7 @@ void object_manger::draw() {
 
 void object_manger::update() {
 	update_alter();
+	update_plants();
 }
 
 void object_manger::init() {
@@ -719,6 +720,33 @@ void object_manger::update_alter() {
 	}
 }
 
+void object_manger::update_plants() {
+
+	//updating the fruitplants
+	for (int i = 0; i < items[3]->amount; i++) {
+		if (items[3]->item_data[i]->grown_item != NULL) {
+			int item_id = items[3]->item_data[i]->grown_item->item_id;
+			int buffer_loc = items[3]->item_data[i]->grown_item->buffer_loc;
+			//update the fruit scale
+			float scale = items[3]->item_data[i]->farm_t->grow_time / items[3]->item_data[i]->farm_t->needed_grow_time;
+			items[3]->item_data[i]->grown_item->x_scale = scale;
+			items[3]->item_data[i]->grown_item->y_scale = scale;
+			items[3]->item_data[i]->grown_item->z_scale = scale;
+			//create the new matrix
+			glm::mat4 trans = glm::mat4(1.0f);
+			trans = glm::translate(trans, glm::vec3(items[3]->item_data[i]->grown_item->x
+				, items[3]->item_data[i]->grown_item->y
+				, items[3]->item_data[i]->grown_item->z));
+			trans = glm::scale(trans, glm::vec3(scale, scale, scale));
+			items[item_id]->modelMatrices[buffer_loc] = trans;
+		}
+		else {
+			//std::cout << "there was no plants to update" << std::endl;
+		}
+	}
+
+}
+
 void object_manger::delete_item_from_buffer(item_info* it) {
 	//std::cout << "buffer size " << items[it->item_id]->buffer_size << std::endl;
 	//std::cout << "buffer amount " << items[it->item_id]->amount << std::endl;
@@ -800,7 +828,7 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	float y_f = 7;
 	float z_f = z * 2;
 
-	if (type == FRUIT_PLANT) {
+	if (type == FRUIT_PLANT || type == FRUIT_T) {
 		y_f = 2;
 	}
 
@@ -826,9 +854,8 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	output->max_stack_size = max_stack_size;
 	object_id++;
 
-
-	glm::mat4 trans = glm::mat4(1.0f);
 	//std::cout << "item at " << x_f << "," << y_f << "," << z_f << std::endl;
+	glm::mat4 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x_f, y_f, z_f));
 	items[item_id]->modelMatrices[buffer_loc] = trans;
 

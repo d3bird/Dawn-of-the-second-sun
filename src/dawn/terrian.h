@@ -38,6 +38,7 @@ struct map_tile {
 	int g_cost;//move cost to move to this square
 	zone* zoned;
 	item_info* item_on_top;
+	item_info* plant_on_top;
 };
 
 struct map_loc {
@@ -164,6 +165,7 @@ public:
 	void print_map_items();
 	void print_map_items_stacks();
 	void print_map_blocked_zones();
+	void print_map_plants();
 
 private:
 	void import_items();

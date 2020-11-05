@@ -323,6 +323,7 @@ void terrian::cubes_init() {
 		temp.type = 1;
 		temp.zoned = NULL;
 		temp.item_on_top = NULL;
+		temp.plant_on_top = NULL;
 		terrian_map[xloc][zloc] = temp;
 		//create the buffer to map link
 		map_loc temp2;
@@ -778,22 +779,49 @@ void terrian::print_map_blocked_zones() {
 		else {
 			std::cout << "the terrian_map data structure was never created" << std::endl;
 		}
-	
-
 }
 
 void terrian::harvest_farm_tile(farm_tile* tile) {
 	
-	item_info* temp = spawn_item(FRUIT_T, tile->loc->x, tile->loc->z);
+	//item_info* temp = spawn_item(FRUIT_T, tile->loc->x, tile->loc->z);
 	//then generate a work order for the object
-	if (temp != NULL) {
+	if (terrian_map[tile->loc->z][tile->loc->x].item_on_top != NULL) {
 		gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, tile->loc->x, 5, tile->loc->z));
+	}
+	else {
+		std::cout << "no a plant product to harvest" << std::endl;
 	}
 }
 
 void terrian::plant(farm_tile* tile) {
 	std::cout << "planting a plant" << std::endl;
 	item_info* temp = spawn_item(FRUIT_PLANT, tile->loc->x, tile->loc->z);
+	item_info* temp2 = spawn_item(FRUIT_T, tile->loc->x, tile->loc->z);
+	temp->grown_item = temp2;
+	temp->farm_t = tile;
+	terrian_map[tile->loc->z][tile->loc->x].plant_on_top = temp;
+	//print_map_plants();
+}
+
+void terrian::print_map_plants() {
+
+	if (terrian_map != NULL) {
+		std::cout << "printing out internal terrian_map representation of zones and blocked points" << std::endl;
+		for (int x = 0; x < x_width; x++) {
+			for (int z = 0; z < z_width; z++) {
+				if (terrian_map[x][z].plant_on_top != NULL){ 
+						std::cout << "* ";
+				}
+				else {
+					std::cout << "0 ";
+				}
+			}
+			std::cout << std::endl;
+		}
+	}
+	else {
+		std::cout << "the terrian_map data structure was never created" << std::endl;
+	}
 }
 
 //task creation function
@@ -1169,7 +1197,12 @@ void terrian::remove_item_from_map(item_info* i) {
 	int x = i->x_m;
 	int y = i->y_m;
 	int z = i->z_m;
-	terrian_map[z][x].item_on_top = NULL;
+	if (terrian_map[z][x].plant_on_top != NULL) {
+		terrian_map[z][x].plant_on_top->grown_item = spawn_item(FRUIT_T, x, z);
+	}
+	else {
+		terrian_map[z][x].item_on_top = NULL;
+	}
 }
 void terrian::add_item_to_map(item_info* i) {
 	int x = i->x_m;
@@ -1184,7 +1217,7 @@ void terrian::add_item_to_map(item_info* i) {
 		terrian_map[z][x].item_on_top = i;
 	}
 
-	print_map_items_stacks();
+	//print_map_items_stacks();
 }
 
 void terrian::add_item_to_stock_pile(item_info* i) {

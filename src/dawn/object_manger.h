@@ -38,7 +38,10 @@ struct item_info {
 	int stack_size;
 	int max_stack_size;
 	bool stackable;
-	bool max_stack() { return stack_size == max_stack_size; }
+	bool max_stack() { return stack_size == max_stack_size; } 
+	//for plants that grow another object
+	farm_tile* farm_t =NULL;
+	item_info* grown_item = NULL;
 };
 
 //the data needed to render the objects in the world
@@ -99,6 +102,7 @@ public:
 	void update_item_matrix(update_pak* data);
 	//item_info* get_item_info();
 	void update_alter();
+	void update_plants();
 
 	item_info* spawn_item(item_type type,int x, int z);
 
@@ -130,8 +134,6 @@ public:
 
 private:
 	
-
-
 	void increase_buffer_size();
 
 	void create_log_objects();
