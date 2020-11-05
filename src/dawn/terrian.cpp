@@ -130,8 +130,9 @@ void terrian::update_cubes() {
 }
 
 void terrian::update_zones() {
-	farm_zone->update(*deltatime);
-
+	if (Time->is_day()) {
+		farm_zone->update(*deltatime);
+	}
 	if (items_to_add != NULL) {
 		//generate agriculture work orders
 		for (int i = 0; i < farm_tiles_need_work->size(); i++) {
@@ -789,7 +790,7 @@ void terrian::harvest_farm_tile(farm_tile* tile) {
 		gen_orders->push_back(generate_work_order(SACRIFICE_OBJ, tile->loc->x, 5, tile->loc->z));
 	}
 	else {
-		std::cout << "no a plant product to harvest" << std::endl;
+		//std::cout << "no a plant product to harvest" << std::endl;
 	}
 }
 

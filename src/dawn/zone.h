@@ -28,6 +28,8 @@ struct farm_tile {
 	float needed_grow_time;
 	int grown_item;
 	bool work_order_given;
+	bool grow_at_day;
+	bool grow_at_night;
 };
 
 class zone {

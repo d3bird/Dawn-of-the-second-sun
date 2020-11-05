@@ -99,11 +99,13 @@ void zone::add_spot(int x, int y, int z, bool blocked) {
 			temp_f->needs_tendning = true;
 			temp_f->tending_action = 0;
 			temp_f->grow_time = 0;
-			temp_f->needed_grow_time = 5;
+			temp_f->needed_grow_time = 20;
 			temp_f->grown_item = 1;
 			temp_f->work_order_given = false;
 			temp_f->halted_growth = false;
 			temp_f->needs_harvest = false;
+			temp_f->grow_at_day = true;
+			temp_f->grow_at_night = false;
 			farm_tiles->push_back(temp_f);
 		}
 	} else{

@@ -732,6 +732,7 @@ void object_manger::update_plants() {
 			items[3]->item_data[i]->grown_item->x_scale = scale;
 			items[3]->item_data[i]->grown_item->y_scale = scale;
 			items[3]->item_data[i]->grown_item->z_scale = scale;
+			
 			//create the new matrix
 			glm::mat4 trans = glm::mat4(1.0f);
 			trans = glm::translate(trans, glm::vec3(items[3]->item_data[i]->grown_item->x
@@ -778,6 +779,9 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	bool stackable;
 	int max_stack_size;
 	//check to see if the buffer is large enough
+	float x_f = x * 2;
+	float y_f = 7;
+	float z_f = z * 2;
 	switch (type) {
 	case LOG_T:
 		if (items[0]->amount >= items[0]->buffer_size) {
@@ -810,6 +814,8 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		items[2]->amount++;
 		max_stack_size = 9;
 		stackable = true;
+		y_f = 2.7;
+		x_f -= 0.1;
 		break;
 	case FRUIT_PLANT:
 		if (items[3]->amount >= items[3]->buffer_size) {
@@ -821,16 +827,10 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		items[3]->amount++;
 		max_stack_size = 1;
 		stackable = false;
+		y_f = 2;
 		break;
 	}
 
-	float x_f = x * 2;
-	float y_f = 7;
-	float z_f = z * 2;
-
-	if (type == FRUIT_PLANT || type == FRUIT_T) {
-		y_f = 2;
-	}
 
 	item_info* output = new item_info;
 	output->amount = 1;
