@@ -109,6 +109,7 @@ void zone::add_spot(int x, int y, int z, bool blocked) {
 	} else{
 		blocked_spots.push_back(temp);
 	}
+	ID++;
 }
 
 void zone::remove_spot(int x, int y, int z) {
@@ -201,6 +202,7 @@ zone_loc* zone::get_stockpile_loc() {
 			zone_loc* output = storeing_que.front();
 			remove_item_from_spot(output);
 			storeing_que.pop();
+			std::cout << "spaces left " << open_spots.size() << std::endl;
 			return output;
 		}
 		else {

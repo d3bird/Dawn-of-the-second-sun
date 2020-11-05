@@ -178,6 +178,9 @@ void world::init() {
 		BM->create_tasks(workOplaenty[i]);
 	}
 
+	//item stacks testing
+	Terrian->print_map_items_stacks();
+	//while (true);
 }
 
 void world::init_lighting_test() {

@@ -415,7 +415,7 @@ void terrian::cubes_init() {
 	x2 = int(get_x_width());;
 	y2 = 0;
 	z2 = 2;
-	stockpile_zone = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
+	stockpile_zone_old = zone_land(STOCKPILE,4, x1, y1, z1, x2, y2, z2);
 
 	x1 = int(get_x_width() - 5);
 	y1 = 0;
@@ -431,6 +431,10 @@ void terrian::cubes_init() {
 	farm_tiles_need_work = farm_zone->get_farm_tiles_need_work();
 	std::cout << "after the new farm info "<< std::endl;
 
+	stock_obj = new stockpile_zone;
+	stock_obj->zones = stockpile_zone_old;
+	stock_obj->used_spots = 0;
+	stock_obj->max_spots = stockpile_zone_old->get_max_spots();
 
 	print_map_zoned();
 	//print_map_blocked_zones();
@@ -905,7 +909,8 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->destination[0].x = x1;
 		temp->destination[0].y = y1;
 		temp->destination[0].z = z1;
-		store = stockpile_zone->get_stockpile_loc();
+		store = stockpile_zone_old->get_stockpile_loc();
+		store->origin = stockpile_zone_old;
 		temp->zone_location = store;
 		temp->destination[1].x = store->x;
 		temp->destination[1].y = store->y;
@@ -926,6 +931,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->destination[0].y = y1;
 		temp->destination[0].z = z1;
 		store = alter_zone->get_alter_loc();
+		store->origin = alter_zone;
 		temp->zone_location = store;
 		temp->destination[1].x = store->x;
 		temp->destination[1].y = store->y;
@@ -1115,6 +1121,27 @@ void terrian::print_map_items() {
 	}
 }
 
+void terrian::print_map_items_stacks() {
+
+	if (terrian_map != NULL) {
+		std::cout << "printing out internal terrian_map representation" << std::endl;
+		for (int x = 0; x < x_width; x++) {
+			for (int z = 0; z < z_width; z++) {
+				if (terrian_map[x][z].item_on_top != NULL) {
+					std::cout << terrian_map[x][z].item_on_top->stack_size << " ";
+				}
+				else {
+					std::cout << "* ";
+				}
+			}
+			std::cout << std::endl;
+		}
+	}
+	else {
+		std::cout << "the terrian_map data structure was never created" << std::endl;
+	}
+}
+
 void terrian::import_items() {
 	std::vector< item_loc> items_on_map = OBJM->place_items_init();
 
@@ -1137,13 +1164,128 @@ void terrian::remove_item_from_map(item_info* i) {
 	int x = i->x_m;
 	int y = i->y_m;
 	int z = i->z_m;
-	terrian_map[x][z].item_on_top = NULL;
+	terrian_map[z][x].item_on_top = NULL;
 }
 void terrian::add_item_to_map(item_info* i) {
 	int x = i->x_m;
 	int y = i->y_m;
 	int z = i->z_m;
-	terrian_map[x][z].item_on_top = i;
+
+	if (i->zone_location != NULL && i->zone_location->origin->get_type() == STOCKPILE) {
+		std::cout << "adding item to stockpile" << std::endl;
+		add_item_to_stock_pile(i);
+	}
+	else {
+		terrian_map[z][x].item_on_top = i;
+	}
+
+	print_map_items_stacks();
+}
+
+void terrian::add_item_to_stock_pile(item_info* i) {
+	//print_stockpile_zone();
+	int x = i->x_m;
+	int y = i->y_m;
+	int z = i->z_m;
+
+	if (stock_obj->partly_spots.empty()) {
+		std::cout << "no partly filled spots" << std::endl;
+
+		stock_zone_info* temp = new stock_zone_info;
+		temp->stored_item = i;
+		temp->loc = i->zone_location;
+		temp->zone_loc_ID= i->zone_location->ID;
+		temp->stack_number;
+		temp->max_stack = i->stack_size;
+		temp->origin = stock_obj;
+		if (i->max_stack()) {
+			stock_obj->filled_spots.push_back(temp);
+		}
+		else {
+			stock_obj->partly_spots.push_back(temp);
+		}
+		stock_obj->used_spots++;
+		terrian_map[z][x].item_on_top = i;
+	}
+	else {
+		std::cout << "there are partly filled spots" << std::endl;
+		bool found = false;
+		for (int q = 0; q < stock_obj->partly_spots.size(); q++) {
+			if (i->type == stock_obj->partly_spots[q]->stored_item->type) {
+				std::cout << "found matching type" << std::endl;
+				found = true;
+				int total = stock_obj->partly_spots[q]->stored_item->stack_size + i->stack_size;
+				if (stock_obj->partly_spots[q]->stored_item->max_stack_size >= total) {
+					stock_obj->partly_spots[q]->stored_item->stack_size += i->stack_size;
+					OBJM->delete_item_from_buffer(i);//destories the item so it is not drawn anymore 
+					break;
+				}
+				else {
+					int diff = total - stock_obj->partly_spots[q]->stored_item->max_stack_size;
+					//move the old pile to the filled_spots
+					stock_obj->partly_spots[q]->stored_item->stack_size = stock_obj->partly_spots[q]->stored_item->max_stack_size;
+					stock_obj->partly_spots[q]->stack_number = stock_obj->partly_spots[q]->max_stack;
+					stock_zone_info* temp_z = stock_obj->partly_spots[q];
+					stock_obj->partly_spots[q] = stock_obj->partly_spots[0];
+					stock_obj->partly_spots.erase(stock_obj->partly_spots.begin());
+					stock_obj->filled_spots.push_back(temp_z);
+
+					//creat the new pile
+					i->stack_size = diff;
+					stock_zone_info* temp = new stock_zone_info;
+					temp->stored_item = i;
+					temp->loc = i->zone_location;
+					temp->zone_loc_ID = i->zone_location->ID;
+					temp->stack_number;
+					temp->max_stack = i->stack_size;
+					temp->origin = stock_obj;
+					if (i->max_stack()) {
+						stock_obj->filled_spots.push_back(temp);
+					}
+					else {
+						stock_obj->partly_spots.push_back(temp);
+					}
+					stock_obj->used_spots++;
+					terrian_map[z][x].item_on_top = i;
+
+					terrian_map[z][x].item_on_top = i;
+					break;
+				}
+			}
+		}
+		if (!found) {
+			std::cout << "there are no partly filled spots for this item type" << std::endl;
+			stock_zone_info* temp = new stock_zone_info;
+			temp->stored_item = i;
+			temp->loc = i->zone_location;
+			temp->zone_loc_ID = i->zone_location->ID;
+			temp->stack_number;
+			temp->max_stack = i->stack_size;
+			temp->origin = stock_obj;
+			if (i->max_stack()) {
+				stock_obj->filled_spots.push_back(temp);
+			}
+			else {
+				stock_obj->partly_spots.push_back(temp);
+			}
+			stock_obj->used_spots++;
+			terrian_map[z][x].item_on_top = i;
+		}
+	}
+
+	print_stockpile_zone();
+}
+
+void terrian::remove_item_to_stock_pile(item_info* i) {
+
+}
+
+void terrian::print_stockpile_zone() {
+	std::cout << "sotckpile zone info" << std::endl;
+	std::cout << "max spots " << stock_obj->max_spots << std::endl;
+	std::cout << "used spots " << stock_obj->used_spots << std::endl;
+	std::cout << "filled spots (vector) " << stock_obj->filled_spots.size() << std::endl;
+	std::cout << "partly spots (vector) " << stock_obj->partly_spots.size() << std::endl;
 }
 
 void terrian::add_item_to_alter(item_info* i) {
@@ -1158,10 +1300,10 @@ void terrian::return_zone_loc(zone_loc* i) {
 	//case 2://gather
 	//	break;
 	case 3://stock
-		stockpile_zone->remove_item_from_spot(i);
+		stockpile_zone_old->remove_item_from_spot(i);
 		break;
 	//case 4://spawn
-	//	stockpile_zone->remove_item_from_spot(i);
+	//	stockpile_zone_old->remove_item_from_spot(i);
 	//	break;
 	default:
 		std::cout << "no zone with this ID" << std::endl;

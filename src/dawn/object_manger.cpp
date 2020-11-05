@@ -92,7 +92,7 @@ void object_manger::init() {
 	blocked_spots = new vector<block_loc*>();
 	create_log_objects();
 	create_alter_objects();
-	craete_fruit_object();
+	create_fruit_object();
 	std::cout << "finished creating the object manager" << std::endl;
 }
 
@@ -117,11 +117,6 @@ void object_manger::update_item_matrix(update_pak* data) {
 
 }
 
-//item_info* object_manger::get_item_info() {
-//	item_info* output;// = new item_info;
-//	output = items[0]->item_data[0];
-//	return output;
-//}
 
 void object_manger::create_log_objects() {
 
@@ -171,6 +166,9 @@ void object_manger::create_log_objects() {
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
 	temp_data->zone_location = NULL;
+	temp_data->stackable = true;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 3;
 	object_id++;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -233,6 +231,9 @@ void object_manger::create_log_objects() {
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
 	temp_data->zone_location = NULL;
+	temp_data->stackable = true;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 3;
 	object_id++;
 	 trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, z));
@@ -246,7 +247,7 @@ void object_manger::create_log_objects() {
 }
 
 
-void object_manger::craete_fruit_object() {
+void object_manger::create_fruit_object() {
 
 	unsigned int buffer;
 	unsigned int buffer_size;
@@ -294,6 +295,9 @@ void object_manger::craete_fruit_object() {
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
 	temp_data->zone_location = NULL;
+	temp_data->stackable = true;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 9;
 	object_id++;
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -356,6 +360,9 @@ void object_manger::craete_fruit_object() {
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
 	temp_data->zone_location = NULL;
+	temp_data->stackable = true;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 9;
 	object_id++;
 	trans = glm::mat4(1.0f);
 	trans = glm::translate(trans, glm::vec3(x, y, z));
@@ -438,8 +445,12 @@ void object_manger::create_alter_objects() {
 	temp_data->item_name = item_name_t;
 	temp_data->debug_id = object_id;
 	temp_data->zone_location = NULL;
+	temp_data->stackable = false;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 1;
 	object_id++;
 	alter = temp_data;
+
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
 	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
@@ -643,6 +654,8 @@ void object_manger::delete_item_from_buffer(item_info* it) {
 item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	unsigned int buffer_loc;
 	unsigned int item_id;
+	bool stackable;
+	int max_stack_size;
 	//check to see if the buffer is large enough
 	switch (type) {
 	case LOG_T:
@@ -653,6 +666,8 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		item_id = 0;
 		buffer_loc = items[0]->amount;
 		items[0]->amount++;
+		max_stack_size = 3;
+		stackable = true;
 		break;
 	case ALTER_T:
 		if (items[1]->amount >= items[1]->buffer_size) {
@@ -661,6 +676,8 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		item_id = 1;
 		buffer_loc = items[1]->amount;
 		items[1]->amount++;
+		max_stack_size = 1;
+		stackable = false;
 		break;
 	case FRUIT_T:
 		if (items[2]->amount >= items[2]->buffer_size) {
@@ -670,6 +687,8 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		item_id = 2;
 		buffer_loc = items[2]->amount;
 		items[2]->amount++;
+		max_stack_size = 9;
+		stackable = true;
 		break;
 	}
 
@@ -694,6 +713,9 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	output->item_id = item_id;
 	output->buffer_loc = buffer_loc;
 	output->debug_id = object_id;
+	output->stackable = stackable;
+	output->stack_size = 1;
+	output->max_stack_size = max_stack_size;
 	object_id++;
 
 
@@ -706,3 +728,28 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 	return output;
 }
 
+void object_manger::merge_item_stacks(item_info* keep, item_info* rm) {
+	int total = keep->stack_size + rm->stack_size;
+	int diff = keep->max_stack_size - total;
+	if (diff >= 0) {
+		std::cout << "clean merge" << std::endl;
+		//delete_item_from_buffer(rm);
+		//delete rm;
+		//rm = NULL;
+	}
+	else {
+		std::cout << "not clean merge" << std::endl;
+		std::cout << diff*-1<< " left over" << std::endl;
+		keep->stack_size = keep->max_stack_size;
+		rm->stack_size = diff * -1;
+	}
+}
+
+void object_manger::split_merge_item_stacks(item_info* keep, item_info* rm) {
+
+}
+
+item_info* object_manger::split_item_stacks(item_info* keep, int amount) {
+
+	return NULL;
+}

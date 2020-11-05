@@ -35,6 +35,10 @@ struct item_info {
 	std::string* item_name;
 	item_type type;
 	zone_loc* zone_location;//needed for when an object leaves a zone
+	int stack_size;
+	int max_stack_size;
+	bool stackable;
+	bool max_stack() { return stack_size == max_stack_size; }
 };
 
 //the data needed to render the objects in the world
@@ -98,6 +102,10 @@ public:
 
 	item_info* spawn_item(item_type type,int x, int z);
 
+	void merge_item_stacks(item_info* keep, item_info* rm);
+	void split_merge_item_stacks(item_info* keep, item_info* rm);
+	item_info* split_item_stacks(item_info* keep, int amount);
+
 	//alter functions
 	item_info* get_alter_info() { return alter; }
 	void preform_sacrifice(item_info* sac);
@@ -118,16 +126,17 @@ public:
 	std::vector< item_loc> place_items_init();
 
 	void set_time(timing* i) { Time = i; }
+	void delete_item_from_buffer(item_info* it);
 
 private:
 	
-	void delete_item_from_buffer(item_info* it);
+
 
 	void increase_buffer_size();
 
 	void create_log_objects();
 	void create_alter_objects();
-	void craete_fruit_object();
+	void create_fruit_object();
 	//timing
 	timing* Time;
 	float* deltatime;

@@ -73,6 +73,23 @@ struct work_order {
 	farm_tile* farm_t;
 };
 
+struct stockpile_zone;
+struct stock_zone_info {
+	item_info* stored_item;
+	zone_loc* loc;
+	int zone_loc_ID;
+	int stack_number;
+	int max_stack;
+	stockpile_zone* origin;
+};
+
+struct stockpile_zone {
+	zone* zones;
+	std::vector<stock_zone_info*> filled_spots;
+	std::vector<stock_zone_info*> partly_spots;
+	int max_spots;
+	int used_spots;
+};
 
 class terrian{
 public:
@@ -108,6 +125,9 @@ public:
 	void return_zone_loc(zone_loc* i);
 	void update_zones();
 	void harvest_farm_tile(farm_tile* tile);
+	void add_item_to_stock_pile(item_info* i);
+	void remove_item_to_stock_pile(item_info* i);
+	void print_stockpile_zone();
 
 	//task creation function
 	void print_work_order(work_order* wo);
@@ -141,6 +161,7 @@ public:
 	void print_map_blocked();
 	void print_map_zoned();
 	void print_map_items();
+	void print_map_items_stacks();
 	void print_map_blocked_zones();
 
 private:
@@ -222,7 +243,8 @@ private:
 	zone* spawn_zone;
 	zone* alter_zone;
 	zone* gather_zone;
-	zone* stockpile_zone;
+	zone* stockpile_zone_old;
+	stockpile_zone* stock_obj;
 
 	//farming data
 	zone* farm_zone;

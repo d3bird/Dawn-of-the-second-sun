@@ -15,11 +15,7 @@
 
 enum type { SPAWN, ALTER, STOCKPILE, GATHER, FARM };
 
-struct zone_loc { 
-	int x, y, z, ID; 
-	zone_loc(int x1, int y1, int z1, unsigned 
-		int  i) { x = x1; y = y1; z = z1; ID = i; }
-};
+struct zone_loc;//at the bottom of this file because it needs to have a pointer to the zone class
 
 struct farm_tile {
 	zone_loc* loc;
@@ -61,7 +57,7 @@ public:
 	zone_loc* get_stockpile_loc();
 
 	void print_info();
-
+	int get_max_spots() { return storeing_que.size(); }
 
 	//farm function
 	void update(float deltaTime);//returns a list of 
@@ -79,8 +75,10 @@ private:
 	
 	std::queue<zone_loc*> storeing_que;//should really be stored as a heap, where the unblocked are at the top
 	std::vector<zone_loc*> open_spots;//all spots that items could be sotred
-	std::vector<zone_loc*> blocked_spots;//spots blocked by objects not stored in the zone
+	std::vector<zone_loc*> partly_filled_spots;
 	std::vector<zone_loc*> filled_spots;
+	std::vector<zone_loc*> blocked_spots;//spots blocked by objects not stored in the zone
+	
 
 	//farming data
 	std::vector<zone_loc*> *grown_items;//items that need to be added to the world that have spawned in this zone
@@ -90,3 +88,12 @@ private:
 	std::vector<farm_tile*>* farm_tiles_need_work;
 };
 
+struct zone_loc {
+	int x, y, z, ID;
+	zone* origin;//where the zone loc came from
+	zone_loc(int x1, int y1, int z1, unsigned
+		int  i) {
+		x = x1; y = y1; z = z1; ID = i;
+		origin = NULL;
+	}
+};

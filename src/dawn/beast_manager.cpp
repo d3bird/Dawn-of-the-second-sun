@@ -485,7 +485,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
 
         break;
     default:
-        std::cout << "nothing needs to be done here" << std::endl;
+       // std::cout << "nothing needs to be done here" << std::endl;
         break;
     }
 }
