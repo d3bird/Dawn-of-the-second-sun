@@ -9,6 +9,7 @@ sky::sky(){
 	angle_incr = 2;
 	toggled_day = true;
 	toggled_night = false;
+	paused = false;
 }
 
 sky::~sky(){
@@ -30,24 +31,26 @@ void sky::draw() {
 
 void sky::update() {
 
-	x = center_x + radius * cos(angle*(PI /180));
-	y = center_y + radius * sin(angle*(PI /180));
+	if (!paused) {
+		x = center_x + radius * cos(angle * (PI / 180));
+		y = center_y + radius * sin(angle * (PI / 180));
 
-	if (!toggled_day && angle >= 0 && angle < 180) {
-		Time->set_day();
-		toggled_day = true;
-		toggled_night = false;
-	}
-	else if(!toggled_night && angle >= 180 && angle <= 360) {
-		Time->set_night();
-		toggled_day = false;
-		toggled_night = true;
-	}
+		if (!toggled_day && angle >= 0 && angle < 180) {
+			Time->set_day();
+			toggled_day = true;
+			toggled_night = false;
+		}
+		else if (!toggled_night && angle >= 180 && angle <= 360) {
+			Time->set_night();
+			toggled_day = false;
+			toggled_night = true;
+		}
 
-	angle += (angle_incr * (*deltatime));
-	//std::cout << "angle of the moon "<< angle << std::endl;
-	if (angle >= 360) {
-		angle = 0;
+		angle += (angle_incr * (*deltatime));
+		//std::cout << "angle of the moon "<< angle << std::endl;
+		if (angle >= 360) {
+			angle = 0;
+		}
 	}
 }
 
@@ -68,4 +71,14 @@ void sky::init() {
 		std::cout << "there was a problem getting time in the sky" << std::endl;
 		while (true);
 	}
+}
+
+void sky::pause_time_at_noon() {
+	angle = 90;
+	paused = true;
+	Time->set_day();
+	toggled_day = true;
+	toggled_night = false;
+	x = center_x + radius * cos(angle * (PI / 180));
+	y = center_y + radius * sin(angle * (PI / 180));
 }

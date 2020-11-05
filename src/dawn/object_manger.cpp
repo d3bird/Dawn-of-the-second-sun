@@ -93,6 +93,7 @@ void object_manger::init() {
 	create_log_objects();
 	create_alter_objects();
 	create_fruit_object();
+	create_fruit_plant_object();
 	std::cout << "finished creating the object manager" << std::endl;
 }
 
@@ -116,7 +117,6 @@ void object_manger::update_item_matrix(update_pak* data) {
 	}
 
 }
-
 
 void object_manger::create_log_objects() {
 
@@ -246,7 +246,6 @@ void object_manger::create_log_objects() {
 
 }
 
-
 void object_manger::create_fruit_object() {
 
 	unsigned int buffer;
@@ -370,6 +369,100 @@ void object_manger::create_fruit_object() {
 
 
 	temp->item_data.push_back(temp_data);//add the data for the object
+
+	items.push_back(temp);
+
+}
+
+void object_manger::create_fruit_plant_object() {
+
+	unsigned int buffer;
+	unsigned int buffer_size;
+	unsigned int amount;
+	glm::mat4* modelMatrices;
+	Shader* custom_shader;
+	Model* model;
+	std::string* item_name_t = new std::string("fruit_plant object");
+
+	buffer = 0;
+	buffer_size = 50;
+	amount = 1;
+	modelMatrices = new glm::mat4[buffer_size];
+	custom_shader = NULL;
+	model = new Model("resources/objects/fruit/fruit_plant.obj");
+
+	int int_x_loc = 10;
+	int int_y_loc = 2;
+	int int_z_loc = 10;
+
+	float x = int_x_loc * 2;
+	float y = int_y_loc;
+	float z = int_z_loc * 2;
+
+	float x_scale = 1;
+	float y_scale = 1;
+	float z_scale = 1;
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, glm::vec3(x, y, z));
+	modelMatrices[0] = trans;
+
+	item_info* temp_data = new item_info;
+	temp_data->type = FRUIT_PLANT;
+	temp_data->x = x;
+	temp_data->y = y;
+	temp_data->z = z;
+	temp_data->x_m = int_x_loc;
+	temp_data->y_m = int_y_loc;
+	temp_data->z_m = int_z_loc;
+	temp_data->x_scale = x_scale;
+	temp_data->y_scale = y_scale;
+	temp_data->z_scale = z_scale;
+	temp_data->item_id = 0;
+	temp_data->buffer_loc = 0;
+	temp_data->item_name = item_name_t;
+	temp_data->debug_id = object_id;
+	temp_data->zone_location = NULL;
+	temp_data->stackable = false;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 1;
+	object_id++;
+
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	for (unsigned int i = 0; i < model->meshes.size(); i++)
+	{
+		unsigned int VAO = model->meshes[i].VAO;
+		glBindVertexArray(VAO);
+		// set attribute pointers for matrix (4 times vec4)
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
+	}
+
+	item* temp = new item;
+	temp->buffer_size = buffer_size;
+	temp->buffer = buffer;
+	temp->amount = amount;
+	temp->model = model;
+	temp->modelMatrices = modelMatrices;
+	temp->custom_shader = custom_shader;
+	temp->item_name = item_name_t;
+	temp->item_data.push_back(temp_data);//add the data for the object
+
 
 	items.push_back(temp);
 
@@ -690,11 +783,26 @@ item_info* object_manger::spawn_item(item_type type, int x, int z) {
 		max_stack_size = 9;
 		stackable = true;
 		break;
+	case FRUIT_PLANT:
+		if (items[3]->amount >= items[3]->buffer_size) {
+			std::cout << "there are too many fruits_plants" << std::endl;
+			return NULL;
+		}
+		item_id = 3;
+		buffer_loc = items[3]->amount;
+		items[3]->amount++;
+		max_stack_size = 1;
+		stackable = false;
+		break;
 	}
 
 	float x_f = x * 2;
 	float y_f = 7;
 	float z_f = z * 2;
+
+	if (type == FRUIT_PLANT) {
+		y_f = 2;
+	}
 
 	item_info* output = new item_info;
 	output->amount = 1;

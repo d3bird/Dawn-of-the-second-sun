@@ -33,10 +33,12 @@ public:
 	glm::vec3 get_light_loc() { return glm::vec3(x, y, z); }
 	void set_time(timing* i) { Time = i; }
 
+	void pause_time_at_noon();
+	void unpause() { paused = false; }
 private:
 	bool toggled_day;
 	bool toggled_night;
-
+	bool paused;
 	glm::mat4 view;
 	glm::mat4 projection;
 	bool update_projection;

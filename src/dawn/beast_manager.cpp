@@ -463,12 +463,13 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         map->start_sac();
         break;
     case TILL:
-       // std::cout << "tilling soil" << std::endl;
+        std::cout << "tilling soil" << std::endl;
         Job->farm_t->tilled = true;
         Job->farm_t->work_order_given = false;
+        map->plant(Job->farm_t);
         break;
     case TEND:
-      //  std::cout << "tending plant" << std::endl;
+       // std::cout << "tending plant" << std::endl;
         Job->farm_t->needs_tendning = false;
         Job->farm_t->work_order_given = false;
         Job->farm_t->halted_growth = false;

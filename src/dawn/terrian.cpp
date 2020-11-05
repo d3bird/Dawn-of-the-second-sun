@@ -791,6 +791,11 @@ void terrian::harvest_farm_tile(farm_tile* tile) {
 	}
 }
 
+void terrian::plant(farm_tile* tile) {
+	std::cout << "planting a plant" << std::endl;
+	item_info* temp = spawn_item(FRUIT_PLANT, tile->loc->x, tile->loc->z);
+}
+
 //task creation function
 void terrian::print_work_order(work_order* wo) {
 	std::cout << "printing a work order" << std::endl;

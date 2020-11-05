@@ -180,6 +180,7 @@ void world::init() {
 
 	//item stacks testing
 	Terrian->print_map_items_stacks();
+	Sky->pause_time_at_noon();
 	//while (true);
 }
 

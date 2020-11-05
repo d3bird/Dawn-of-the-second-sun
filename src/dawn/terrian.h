@@ -124,6 +124,7 @@ public:
 	zone* zone_land(type tp, unsigned int id, int x1, int y1, int z1, int x2, int y2, int z2);
 	void return_zone_loc(zone_loc* i);
 	void update_zones();
+	void plant(farm_tile* tile);
 	void harvest_farm_tile(farm_tile* tile);
 	void add_item_to_stock_pile(item_info* i);
 	void remove_item_to_stock_pile(item_info* i);
