@@ -20,7 +20,7 @@
 * this class maganges the information about the workshops, items, and misc furniture 
 */
 
-enum item_type {LOG_T, ALTER_T, FRUIT_T, FRUIT_PLANT};
+enum item_type {LOG_T, ALTER_T, FRUIT_T, FRUIT_PLANT, CAMP_FIRE};
 //the information on each unique object
 struct item_info {
 	unsigned int debug_id;
@@ -140,6 +140,7 @@ private:
 	void create_alter_objects();
 	void create_fruit_object();
 	void create_fruit_plant_object();
+	void create_camp_fire();
 	//timing
 	timing* Time;
 	float* deltatime;

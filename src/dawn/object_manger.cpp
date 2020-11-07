@@ -95,6 +95,7 @@ void object_manger::init() {
 	create_alter_objects();
 	create_fruit_object();
 	create_fruit_plant_object();
+	create_camp_fire();
 	std::cout << "finished creating the object manager" << std::endl;
 }
 
@@ -409,6 +410,101 @@ void object_manger::create_fruit_plant_object() {
 
 	item_info* temp_data = new item_info;
 	temp_data->type = FRUIT_PLANT;
+	temp_data->x = x;
+	temp_data->y = y;
+	temp_data->z = z;
+	temp_data->x_m = int_x_loc;
+	temp_data->y_m = int_y_loc;
+	temp_data->z_m = int_z_loc;
+	temp_data->x_scale = x_scale;
+	temp_data->y_scale = y_scale;
+	temp_data->z_scale = z_scale;
+	temp_data->item_id = 0;
+	temp_data->buffer_loc = 0;
+	temp_data->item_name = item_name_t;
+	temp_data->debug_id = object_id;
+	temp_data->zone_location = NULL;
+	temp_data->stackable = false;
+	temp_data->stack_size = 1;
+	temp_data->max_stack_size = 1;
+	object_id++;
+
+	glGenBuffers(1, &buffer);
+	glBindBuffer(GL_ARRAY_BUFFER, buffer);
+	glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &modelMatrices[0], GL_STATIC_DRAW);
+
+	for (unsigned int i = 0; i < model->meshes.size(); i++)
+	{
+		unsigned int VAO = model->meshes[i].VAO;
+		glBindVertexArray(VAO);
+		// set attribute pointers for matrix (4 times vec4)
+		glEnableVertexAttribArray(3);
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)0);
+		glEnableVertexAttribArray(4);
+		glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(sizeof(glm::vec4)));
+		glEnableVertexAttribArray(5);
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(2 * sizeof(glm::vec4)));
+		glEnableVertexAttribArray(6);
+		glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, sizeof(glm::mat4), (void*)(3 * sizeof(glm::vec4)));
+
+		glVertexAttribDivisor(3, 1);
+		glVertexAttribDivisor(4, 1);
+		glVertexAttribDivisor(5, 1);
+		glVertexAttribDivisor(6, 1);
+
+		glBindVertexArray(0);
+	}
+
+	item* temp = new item;
+	temp->buffer_size = buffer_size;
+	temp->buffer = buffer;
+	temp->amount = amount;
+	temp->model = model;
+	temp->modelMatrices = modelMatrices;
+	temp->custom_shader = custom_shader;
+	temp->item_name = item_name_t;
+	temp->item_data.push_back(temp_data);//add the data for the object
+
+
+	items.push_back(temp);
+
+}
+
+
+void object_manger::create_camp_fire() {
+
+	unsigned int buffer;
+	unsigned int buffer_size;
+	unsigned int amount;
+	glm::mat4* modelMatrices;
+	Shader* custom_shader;
+	Model* model;
+	std::string* item_name_t = new std::string("campfire object");
+
+	buffer = 0;
+	buffer_size = 10;
+	amount = 1;
+	modelMatrices = new glm::mat4[buffer_size];
+	custom_shader = NULL;
+	model = new Model("resources/objects/camp_fire/camp_fire.obj");
+
+	int int_x_loc = 11;
+	int int_y_loc = 2;
+	int int_z_loc = 11;
+
+	float x = int_x_loc * 2;
+	float y = int_y_loc;
+	float z = int_z_loc * 2;
+
+	float x_scale = 1;
+	float y_scale = 1;
+	float z_scale = 1;
+	glm::mat4 trans = glm::mat4(1.0f);
+	trans = glm::translate(trans, glm::vec3(x, y, z));
+	modelMatrices[0] = trans;
+
+	item_info* temp_data = new item_info;
+	temp_data->type = CAMP_FIRE;
 	temp_data->x = x;
 	temp_data->y = y;
 	temp_data->z = z;
