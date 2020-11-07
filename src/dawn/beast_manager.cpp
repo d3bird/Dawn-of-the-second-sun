@@ -159,7 +159,7 @@ void beast_manager::update() {
                 }
             }
         }
-        else {//for debuggin only
+        else {//if they do not have a job/point to move to 
             if (jobs_backlog.size() > 0) {
                 assign_backlog_task(jobs_backlog.front());
                 jobs_backlog.pop();

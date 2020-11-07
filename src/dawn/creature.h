@@ -26,33 +26,10 @@ public:
 	creature();
 	~creature();
 
-	void add_nav_point(glm::vec3* i) { travel_que.push(i); }
-	void clear_travel();
-
-	unsigned int get_buffer_loc() { return buffer_loc; }
-	void set_buffer_loc(unsigned int i) { buffer_loc = i; }
-
-	void add_next_nav_point(glm::vec3* i);
-	glm::vec3* get_next_nav_point();
-	void pop_nav_point(){ travel_que.pop(); }
-	int get_travel_que_size() { return travel_que.size(); }
-
-	glm::vec3* get_loc() { return loc; }//returns the location in regards to screen cords
-	void set_loc(glm::vec3* i) { loc = i; }
-	glm::vec3* get_loc_map() { return loc_map; }//returns the location in regards to map
-	void set_loc_map(glm::vec3* i) { loc_map = i; }
-
 	bool is_wandering() { return wandering; }
 	void set_wandering(bool i) { wandering = i; }
 
-	bool need_new_point() { return new_point; }
-
-	void hold_item(item_info* i) { held_item = i; holding_item = true; }
-	void drop_item() { held_item = NULL; holding_item = false; }
-	bool is_holding_item() { return holding_item; }
-
-	update_pak* generate_item_update();
-	void set_scale(int i) { scale_factor = i; }
+	//job & work order functions 
 
 	void set_current_job(task*i) { current_job = i; }
 	task* get_current_job() { return current_job; }
@@ -60,6 +37,32 @@ public:
 	void set_current_work_order(work_order* i) { work_or = i; }
 	work_order* get_current_work_order() { return work_or; }
 
+	void set_has_job_buffer_loc(unsigned int i) { has_job_buffer_loc = i; }
+	unsigned int get_has_job_buffer_loc() { return has_job_buffer_loc; }
+
+	//fucntions for object interaction
+
+	void hold_item(item_info* i) { held_item = i; holding_item = true; }
+	void drop_item() { held_item = NULL; holding_item = false; }
+	bool is_holding_item() { return holding_item; }
+	update_pak* generate_item_update();
+
+	//fucntions for navigation/map location
+
+	void add_nav_point(glm::vec3* i) { travel_que.push(i); }
+	void add_next_nav_point(glm::vec3* i);
+	glm::vec3* get_next_nav_point();
+	void pop_nav_point() { travel_que.pop(); }
+	void clear_travel();
+	
+	int get_travel_que_size() { return travel_que.size(); }
+	bool need_new_point() { return new_point; }
+
+	glm::vec3* get_loc() { return loc; }//returns the location in regards to screen cords
+	void set_loc(glm::vec3* i) { loc = i; }
+
+	glm::vec3* get_loc_map() { return loc_map; }//returns the location in regards to map
+	void set_loc_map(glm::vec3* i) { loc_map = i; }
 
 	void set_loc_map_int(int x1, int y1, int z1) { x = x1; y = y1; z = z1; }
 	void set_loc_map_x(int xi) { x = xi; }
@@ -81,8 +84,12 @@ public:
 	void swap_dest_loc();
 	void map_loc_check();
 
-	void set_has_job_buffer_loc(unsigned int i) { has_job_buffer_loc = i; }
-	unsigned int get_has_job_buffer_loc() { return has_job_buffer_loc; }
+
+	//misc get functions functions
+	unsigned int get_buffer_loc() { return buffer_loc; }
+	void set_buffer_loc(unsigned int i) { buffer_loc = i; }
+	void set_scale(int i) { scale_factor = i; }
+
 
 	//not implemented yet
 	unsigned int get_id() { return id; }

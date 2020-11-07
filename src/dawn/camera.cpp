@@ -37,6 +37,7 @@ void Camera::ProcessKeyboard(Camera_Movement direction, float deltaTime){
         if (direction == RIGHT)
             Position.x +=  velocity;
     }
+
     if (direction == UP)
         Position.y += velocity;
     if (direction == DOWN)
