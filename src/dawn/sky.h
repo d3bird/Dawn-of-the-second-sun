@@ -24,6 +24,7 @@ public:
 	void draw();
 	void update();
 	void init();
+	void weather_init();
 
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
 	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
@@ -62,5 +63,11 @@ private:
 
 	timing* Time;
 	float* deltatime;
+
+	//weather data
+	Shader* rain;
+	float* rain_points;
+	unsigned int rain_VBO, rain_VAO;
+	bool raining;
 };
 
