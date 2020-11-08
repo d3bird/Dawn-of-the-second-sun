@@ -1257,7 +1257,27 @@ void terrian::import_items() {
 				int x = items_on_map[i].x;
 				int z = items_on_map[i].z;
 				terrian_map[items_on_map[i].z][items_on_map[i].x].blocked = true;
-				meeting_zone = zone_land(MEETING_Z, 5, x-2, 7, z-2, x+3, 7, z+3);
+				int m_x1 = x - 2;
+				int m_x2 = x + 2;
+				int m_z1 = z - 3;
+				int m_z2 = z + 3;
+
+				if (m_x1 < 0) {
+					m_x1 = 0;
+				}
+				if (m_z1 < 0) {
+					m_z1 = 0;
+				}
+
+				if (m_x2 >= x_width) {
+					m_x2 = x_width - 1;
+				}
+
+				if (m_z2 >= z_width) {
+					m_z2 = z_width - 1;
+				}
+
+				meeting_zone = zone_land(MEETING_Z, 5, m_x1, 7, m_z1, m_x2, 7, m_z2);
 				//print_map_zoned();
 				//print_map_blocked_zones();
 				//while (true);
@@ -1432,6 +1452,33 @@ item_info* terrian::spawn_item(item_type type, int x, int z) {
 	item_info* output = OBJM->spawn_item(type,x,z);
 	terrian_map[z][x].item_on_top = output;
 	//print_map_items();
+
+	if (type == CAMP_FIRE) {
+		std::cout << "campfire was placed, creating meeting zone" << std::endl;
+
+		terrian_map[z][x].blocked = true;
+		int m_x1 = x - 2;
+		int m_x2 = x + 2;
+		int m_z1 = z - 3;
+		int m_z2 = z + 3;
+
+		if (m_x1 < 0) {
+			m_x1 = 0;
+		}
+		if (m_z1 < 0) {
+			m_z1 = 0;
+		}
+
+		if (m_x2 >= x_width) {
+			m_x2 = x_width - 1;
+		}
+
+		if (m_z2 >= z_width) {
+			m_z2 = z_width - 1;
+		}
+
+		meeting_zone = zone_land(MEETING_Z, 5, m_x1, 7, m_z1, m_x2, 7, m_z2);
+	}
 	return output;
 }
 
