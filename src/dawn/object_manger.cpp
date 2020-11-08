@@ -388,7 +388,7 @@ void object_manger::create_fruit_plant_object() {
 
 	buffer = 0;
 	buffer_size = 50;
-	amount = 1;
+	amount = 0;
 	modelMatrices = new glm::mat4[buffer_size];
 	custom_shader = NULL;
 	model = new Model("resources/objects/fruit/fruit_plant.obj");
@@ -408,7 +408,7 @@ void object_manger::create_fruit_plant_object() {
 	trans = glm::translate(trans, glm::vec3(x, y, z));
 	modelMatrices[0] = trans;
 
-	item_info* temp_data = new item_info;
+	/*item_info* temp_data = new item_info;
 	temp_data->type = FRUIT_PLANT;
 	temp_data->x = x;
 	temp_data->y = y;
@@ -427,7 +427,7 @@ void object_manger::create_fruit_plant_object() {
 	temp_data->stackable = false;
 	temp_data->stack_size = 1;
 	temp_data->max_stack_size = 1;
-	object_id++;
+	object_id++;*/
 
 	glGenBuffers(1, &buffer);
 	glBindBuffer(GL_ARRAY_BUFFER, buffer);
@@ -463,13 +463,12 @@ void object_manger::create_fruit_plant_object() {
 	temp->modelMatrices = modelMatrices;
 	temp->custom_shader = custom_shader;
 	temp->item_name = item_name_t;
-	temp->item_data.push_back(temp_data);//add the data for the object
+	//temp->item_data.push_back(temp_data);//add the data for the object
 
 
 	items.push_back(temp);
 
 }
-
 
 void object_manger::create_camp_fire() {
 

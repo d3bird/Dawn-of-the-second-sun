@@ -13,7 +13,7 @@
 #include <random>
 #include <string>
 
-enum type { SPAWN, ALTER, STOCKPILE, GATHER, FARM };
+enum type { SPAWN, ALTER, STOCKPILE, GATHER, FARM, RELAXATION, MEETING_Z };
 
 struct zone_loc;//at the bottom of this file because it needs to have a pointer to the zone class
 
@@ -57,6 +57,7 @@ public:
 	zone_loc* get_spawn_loc();
 	zone_loc* get_alter_loc();
 	zone_loc* get_stockpile_loc();
+	zone_loc* get_meeting_loc();
 
 	void print_info();
 	int get_max_spots() { return storeing_que.size(); }

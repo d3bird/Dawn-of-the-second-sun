@@ -7,6 +7,7 @@ creature::creature(){
 	loc = NULL;
 	held_item = NULL;
 	scale_factor = 1;
+	real_job = true;
 }
 
 creature::~creature(){

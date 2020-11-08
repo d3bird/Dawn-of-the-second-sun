@@ -128,8 +128,10 @@ void beast_manager::update() {
                       //  std::cout << "jobs done" << std::endl;
                         map->delete_work_order(current_job);
                         all_creatures[i]->set_current_work_order(NULL);
-                        need_jobs.push_back(all_creatures[i]);
-                        remove_from_has_jobs(all_creatures[i]);
+                        if (all_creatures[i]->is_real_job()) {
+                            need_jobs.push_back(all_creatures[i]);
+                            remove_from_has_jobs(all_creatures[i]);
+                        }
                       //  std::cout << "have_jobs  = " << have_jobs.size() << std::endl;
                       //  std::cout << "need_jobs  = " << need_jobs.size() << std::endl;
                     }
@@ -163,6 +165,12 @@ void beast_manager::update() {
             if (jobs_backlog.size() > 0) {
                 assign_backlog_task(jobs_backlog.front());
                 jobs_backlog.pop();
+            }
+            else {
+               // std::cout << "creature needs to relax" << std::endl;
+                work_order* relax_job = map->generate_work_order(RELAX,
+                    all_creatures[i]->get_loc_map_x(), all_creatures[i]->get_loc_map_y(), all_creatures[i]->get_loc_map_z());
+                create_tasks_for_creature(relax_job, all_creatures[i]);
             }
         }
 
@@ -276,7 +284,7 @@ void beast_manager::init() {
         glBindVertexArray(0);
     }
 
-    std::cout << "finished creating the beast_manger class" << std::endl;
+std::cout << "finished creating the beast_manger class" << std::endl;
 }
 
 void beast_manager::spawn_creature(zone* spawn_zone) {
@@ -285,7 +293,7 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 
         zone_loc* spawn_loc = spawn_zone->get_spawn_loc();
 
-       // std::cout << "spawning creature" << std::endl;
+        // std::cout << "spawning creature" << std::endl;
 
         if (spawn_zone == NULL) {
             std::cout << "failed to spawn a creature" << std::endl;
@@ -340,6 +348,7 @@ void beast_manager::spawn_creature(zone* spawn_zone) {
 
 void beast_manager::assign_backlog_task(work_order* Job) {
     creature* Creature = need_jobs[need_jobs.size() - 1];
+    //if(Creature->)
     //Creature->map_loc_check();
     Creature->set_has_job_buffer_loc(have_jobs.size());
     have_jobs.push_back(Creature);
@@ -351,8 +360,8 @@ void beast_manager::assign_backlog_task(work_order* Job) {
     int z2 = Job->destination[0].z;
     Creature->set_loc_map_x_d(x2);
     Creature->set_loc_map_z_d(z2);
-   // std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
-     //   << x2 << " " << z2 << std::endl;
+    // std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+      //   << x2 << " " << z2 << std::endl;
     std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
 
     if (nav_points.size() > 0) {
@@ -367,14 +376,19 @@ void beast_manager::assign_backlog_task(work_order* Job) {
     Creature->set_current_work_order(Job);
 
 
-   // std::cout << "need_jobs = " << need_jobs.size() << std::endl;
-   // std::cout << "have_jobs = " << have_jobs.size() << std::endl;
+    // std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+    // std::cout << "have_jobs = " << have_jobs.size() << std::endl;
 }
 
 void beast_manager::create_tasks(work_order* Job) {
     //std::cout << "creating task" << std::endl;
     if (need_jobs.size() > 0) {
         creature* Creature = need_jobs[need_jobs.size() - 1];
+        if (Creature->get_current_job() == NULL || Creature->get_current_job() == NULL) {
+            std::cout << "creature alread has a job/task" << std::endl;
+            //while (true);
+        }
+        Creature->set_real_job(true);
         Creature->set_has_job_buffer_loc(have_jobs.size());
         have_jobs.push_back(Creature);
         need_jobs.pop_back();
@@ -417,8 +431,50 @@ void beast_manager::create_tasks(work_order* Job) {
    // std::cout << "finished creating task" << std::endl;
 }
 
-void beast_manager::preform_action(work_order* Job, creature* npc) {
+//for creating recreation tasks like wandering/relaxing
+void beast_manager::create_tasks_for_creature(work_order* Job, creature* Creature) {
+    //std::cout << "creating task for a creature" << std::endl;
+        if (Creature->get_current_job() == NULL || Creature->get_current_job() == NULL) {
+      //      std::cout << "creature alread has a job/task" << std::endl;
+            //while (true);
+        }
+        Creature->set_real_job(false);
+        // std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << std::endl;
+        int x1 = Creature->get_loc_map_x();
+        int z1 = Creature->get_loc_map_z();
+        int x2 = Job->destination[0].x;
+        int z2 = Job->destination[0].z;
+        Creature->set_loc_map_x_d(x2);
+        Creature->set_loc_map_z_d(z2);
+        //std::cout << Creature->get_loc_map_x() << " " << Creature->get_loc_map_z() << " going to "
+          //  << x2 << " " << z2 << std::endl;
+        std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
+        // std::cout << "adahukjk" << std::endl;
+        if (nav_points.size() > 0) {
+            //  std::cout << "adding points to creature" << std::endl;
+            for (size_t i = 0; i < nav_points.size(); i++)
+            {
+                glm::vec3* temp2 = nav_points[i];
+                temp2->x *= 4;// compensate for the cubes scale
+                temp2->z *= 4;
+                Creature->add_nav_point(nav_points[i]);
+            }
+            //Creature->set_current_work_order(Job);
+        }
+        else {
+            glm::vec3* temp2 = new glm::vec3(x1 * 8, 3, z1 * 8);
+            Creature->add_nav_point(temp2);
+        }
+        Creature->set_current_work_order(Job);
 
+        // std::cout << "need_jobs = " << need_jobs.size() << std::endl;
+        //std::cout << "have_jobs = " << have_jobs.size() << std::endl;
+
+ //    std::cout << "finished creating task" << std::endl;
+}
+
+void beast_manager::preform_action(work_order* Job, creature* npc) {
+   // std::cout << "preforming an action" << std::endl;
     switch (Job->action_rq[Job->currently_on]) {
     case PICK_UP:
       //  std::cout << "picking up item" << std::endl;
@@ -463,7 +519,7 @@ void beast_manager::preform_action(work_order* Job, creature* npc) {
         map->start_sac();
         break;
     case TILL:
-        std::cout << "tilling soil" << std::endl;
+       // std::cout << "tilling soil" << std::endl;
         Job->farm_t->tilled = true;
         Job->farm_t->work_order_given = false;
         map->plant(Job->farm_t);

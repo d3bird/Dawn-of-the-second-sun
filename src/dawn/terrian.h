@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <set>
+#include <random>
 
 #include "model.h"
 #include "shader.h"
@@ -54,8 +55,11 @@ struct selection_buffer {
 
 //the two objects that needed to generate tasks
 //the job 
-enum work_jobs { STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, TILL_SOIL,TEND_PLANT, HARVEST_PLANT, MOVE_C };//overall
-enum job_type { AGRICULTURE, RELIGION, DUMB, NONE};//determins who can do these activities
+enum work_jobs {STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, TILL_SOIL, TEND_PLANT, HARVEST_PLANT, MOVE_C, //overall
+	WANDER, RELAX //personal
+};
+
+enum job_type { AGRICULTURE, RELIGION, DUMB, PERSONAL, NONE};//determins who can do these activities
 enum action { PICK_UP, DROP, SAC_OBJ, START_SAC, MOVE, TILL, TEND, HARVEST };//the action required
 //job and item that needs to be interacted with
 struct work_order {
@@ -137,6 +141,7 @@ public:
 	std::vector<work_order*> generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 	void delete_work_order(work_order* work_job);
 	std::vector< work_order*>* get_gen_jobs_pointer() { return gen_orders; }
+	int* get_random_map_loc(int s_x, int s_y, int s_z, int dist);
 
 	//settersand getters
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
@@ -248,6 +253,7 @@ private:
 	zone* gather_zone;
 	zone* stockpile_zone_old;
 	stockpile_zone* stock_obj;
+	zone* meeting_zone;
 
 	//farming data
 	zone* farm_zone;

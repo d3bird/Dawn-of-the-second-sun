@@ -39,6 +39,7 @@ public:
 	void set_def_shader(Shader* i) { beast_shader = i; }
 
 	void create_tasks(work_order* Job);
+	void create_tasks_for_creature(work_order* Job, creature* Creature);
 	void assign_backlog_task(work_order* Job);
 
 	void set_time(timing* i) { Time = i; }
@@ -56,6 +57,7 @@ private:
 		glBindBuffer(GL_ARRAY_BUFFER, buffer);
 		glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &beast_matrices[0], GL_STATIC_DRAW);
 	}
+
 	bool determin_direction(float start, float end);
 
 	glm::mat4 view;

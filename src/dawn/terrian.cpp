@@ -15,6 +15,8 @@ terrian::terrian() {
 	gen_orders = new std::vector< work_order*>;
 	Time = NULL;
 	deltatime = NULL;
+
+	meeting_zone = NULL;
 }
 
 void terrian::draw() {
@@ -438,7 +440,7 @@ void terrian::cubes_init() {
 	stock_obj->used_spots = 0;
 	stock_obj->max_spots = stockpile_zone_old->get_max_spots();
 
-	print_map_zoned();
+	//print_map_zoned();
 	//print_map_blocked_zones();
 	//while (true);
 	//block off the land from the objects that take up space
@@ -669,6 +671,12 @@ void terrian::print_map_zoned() {
 					case FARM:
 						std::cout << "5 ";
 						break;
+					case RELAXATION:
+						std::cout << "6 ";
+						break;
+					case MEETING_Z:
+						std::cout << "7 ";
+						break;
 					default:
 						std::cout << "* ";
 						break;
@@ -763,6 +771,12 @@ void terrian::print_map_blocked_zones() {
 								break;
 							case FARM:
 								std::cout << "5 ";
+								break;
+							case RELAXATION:
+								std::cout << "6 ";
+								break;
+							case MEETING_Z:
+								std::cout << "7 ";
 								break;
 							default:
 								std::cout << ". ";
@@ -899,6 +913,39 @@ void terrian::print_work_order(work_order* wo) {
 	}
 }
 
+//TODO: fix function to get random location to move to
+int* terrian::get_random_map_loc(int s_x, int s_y, int s_z, int dist) {
+	int* output = new int[3];
+	output[0] = s_x;
+	output[1] = s_y;
+	output[2] = s_z;
+	std::random_device rd;
+	int seed = rd();
+	std::mt19937 mt(seed);
+	std::uniform_real_distribution<double> distribution(0, 6);
+	int selection = distribution(mt);
+	int start = selection;
+	bool unblocked = false;
+
+	switch (selection) {
+	case 0:
+		break;
+	case 1:
+		break;
+	case 2:
+		break;
+	case 3:
+		break;
+	case 4:
+		break;
+	case 5:
+	default:
+
+		break;
+	}
+	return output;
+}
+
 work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1, farm_tile* f_tile) {
 	//std::cout << "creating work order" << std::endl;
 	work_order* temp;
@@ -988,6 +1035,26 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = START_SAC;
 		temp->job_t = RELIGION;
+		break;
+	case WANDER:
+	case RELAX:
+		//std::cout << "creating a relax/wander order" << std::endl;
+		action_numbers = 1;
+		location_amount = 1;
+		temp->action_numbers = action_numbers;
+		temp->location_amount = location_amount;
+		temp->destination = new map_loc[location_amount];
+		store = meeting_zone->get_meeting_loc();
+	/*	if (store == NULL) {
+			std::cout << "found error" << std::endl;
+			while (true);
+		}*/
+		temp->destination->x = store->x;
+		temp->destination->y = store->y;
+		temp->destination->z = store->z;
+		temp->action_rq = new action[action_numbers];
+		temp->action_rq[0] = MOVE;
+		temp->job_t = NONE;
 		break;
 	case MOVE_C:
 		action_numbers = 1;
@@ -1184,6 +1251,16 @@ void terrian::import_items() {
 			terrian_map[items_on_map[i].z][items_on_map[i].x].item_on_top = items_on_map[i].object;
 			if (items_on_map[i].object->type == ALTER_T) {
 				terrian_map[items_on_map[i].z][items_on_map[i].x].blocked = true;
+			}
+			if (items_on_map[i].object->type == CAMP_FIRE) {
+				std::cout << "campfire was placed, creating meeting zone" << std::endl;
+				int x = items_on_map[i].x;
+				int z = items_on_map[i].z;
+				terrian_map[items_on_map[i].z][items_on_map[i].x].blocked = true;
+				meeting_zone = zone_land(MEETING_Z, 5, x-2, 7, z-2, x+3, 7, z+3);
+				//print_map_zoned();
+				//print_map_blocked_zones();
+				//while (true);
 			}
 		}
 	}

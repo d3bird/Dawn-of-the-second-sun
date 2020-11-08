@@ -13,7 +13,8 @@
 #include <string>
 
 //sub jobs that break up the main job
-enum sub_job { PICKUP_OBJECT, GATHER_OBJECT, DROP_OBJECT, SACRIFICE, TILL_P, TEND_P };
+enum sub_job { PICKUP_OBJECT, GATHER_OBJECT, DROP_OBJECT, SACRIFICE, TILL_P, TEND_P,    //work jobs
+	RELAX_S, WANDER_S, EAT_S};//personal jobs
 
 struct task {
 	sub_job Job;
@@ -39,7 +40,8 @@ public:
 
 	void set_has_job_buffer_loc(unsigned int i) { has_job_buffer_loc = i; }
 	unsigned int get_has_job_buffer_loc() { return has_job_buffer_loc; }
-
+	bool is_real_job() { return real_job; }
+	void set_real_job(bool i) { real_job = i; }
 	//fucntions for object interaction
 
 	void hold_item(item_info* i) { held_item = i; holding_item = true; }
@@ -96,6 +98,8 @@ public:
 	void set_id(unsigned int i) { id = i; }
 
 private:
+
+	bool real_job;//for jobs such as wandering/relaxing that can and should be interupted for real job
 
 	int x, y, z;
 	int dx, dy, dz;

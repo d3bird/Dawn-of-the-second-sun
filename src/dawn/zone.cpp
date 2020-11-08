@@ -217,6 +217,21 @@ zone_loc* zone::get_stockpile_loc() {
 	return NULL;
 }
 
+zone_loc* zone::get_meeting_loc() {
+	zone_loc* output = NULL;
+	if (current_type == MEETING_Z) {
+		std::random_device rd;
+		std::mt19937 mt(rd());
+		std::uniform_real_distribution<double> distribution(0, open_spots.size());
+		int sel = distribution(mt);
+		output = open_spots[sel];
+	}
+	else {
+		std::cout << "zone is not a meeting spot" << std::endl;
+	}
+	return output;
+}
+
 void zone::print_info() {
 	std::string type_s;
 	switch (current_type)
