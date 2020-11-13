@@ -32,6 +32,7 @@ void world::draw() {
 
 	OBJM->set_cam(view);
 	OBJM->draw();
+
 }
 
 void world::draw_selection() {

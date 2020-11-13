@@ -11,6 +11,7 @@
 #include "beast_manager.h"
 #include "object_manger.h"
 #include "sky.h"
+#include "skymap.h"
 #include "time.h"
 
 class world{
@@ -27,7 +28,7 @@ public:
 	//settersand getters
 	//before the components are inited
 	void set_projection(glm::mat4 i) { projection = i; update_projection = true; }
-	void set_cam(glm::mat4 i) { view = i; update_cam = true; }
+	void set_cam(glm::mat4 i) { view = i;  }
 	void set_time(timing* i) { Time = i; }
 	//after the componets are inited
 	void change_projection(glm::mat4 i);
@@ -50,6 +51,7 @@ private:
 	beast_manager* BM;
 	object_manger* OBJM;
 	sky* Sky;
+	skymap* Skymap;
 
 	//auto generated work orders
 	std::vector< work_order*>* gen_orders;

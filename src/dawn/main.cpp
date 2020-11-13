@@ -15,6 +15,7 @@
 #include "model.h"
 #include "world.h"
 #include "time.h"
+#include "skymap.h"
 #include "history/world_info.h"
 #include <iostream>
 
@@ -24,6 +25,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow *window);
 void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
 
+unsigned int loadTexture(const char* path);
+unsigned int loadCubemap(std::vector<std::string> faces);
+
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
@@ -32,6 +36,7 @@ const unsigned int SCR_HEIGHT = 600;
 //Camera camera(glm::vec3(0.0f, 6.0f, 5.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 60.0f));//LIGHTING test
+//Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));//skybox test
 Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole World
 
 bool draw_world_info;
@@ -47,11 +52,12 @@ bool firstMouse = true;
 world* World;
 world_info* world_data;
 timing* Time;
+skymap* sky;
 float* deltaTime;
 
 int main() {
 
-    std::cout << "For those who wish for the dawn of the second sun, would also shatter a risen moon."<< std::endl;
+    std::cout << "For those who wish for the dawn of the second sun, would also shatter a risen moon." << std::endl;
 
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -78,7 +84,7 @@ int main() {
 
     glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
@@ -92,8 +98,21 @@ int main() {
     glm::mat4 projection = glm::perspective(glm::radians(45.0f), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 1000.0f);
     glm::mat4 view = camera.GetViewMatrix();
 
-    Time = new timing(false);
+    Time = new timing(true);
     deltaTime = Time->get_time_change_static();
+
+    bool drawsky = true;
+    unsigned int cubeVAO, cubeVBO;
+    unsigned int skyboxVAO, skyboxVBO;
+    unsigned int cubemapTexture;
+    unsigned int cubeTexture;
+    Shader shader("cubemaps.vs", "cubemaps.fs");
+    Shader skyboxShader("skybox.vs", "skybox.fs");
+
+    sky = new skymap();
+    sky->set_cam(view);
+    sky->set_projection(projection);
+    sky->init();
 
     draw_world_info = false;//determins which part of the program to create
     if (!draw_world_info) {
@@ -116,22 +135,31 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        
+
         view = camera.GetViewMatrix();
+
+
         if (!draw_world_info) {
             glEnable(GL_CULL_FACE);
             World->set_cam(view);
             World->draw();
             // World->draw_selection();
+
+            if (drawsky) {
+                sky->set_cam(view);
+                sky->set_projection(projection);
+                sky->draw();
+            }
+
             World->update();
         }
         else {
             world_data->set_cam(view);
             world_data->draw();
         }
+
+
         glfwSwapBuffers(window);
-
-
         glfwPollEvents();
     }
 
