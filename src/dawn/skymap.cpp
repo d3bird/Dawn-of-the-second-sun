@@ -34,51 +34,6 @@ void skymap::init() {
     shader = new Shader("cubemaps.vs", "cubemaps.fs");
     skyboxShader = new Shader("skybox.vs", "skybox.fs");
 
-
-    //float cubeVertices[] = {
-    //    // positions          // texture Coords
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    //    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-
-    //    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    //     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    //    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    //    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-    //};
     float skyboxVertices[] = {
         // positions          
         -1.0f,  1.0f, -1.0f,
@@ -124,7 +79,6 @@ void skymap::init() {
          1.0f, -1.0f,  1.0f
     };
 
-
     glGenVertexArrays(1, &skyboxVAO);
     glGenBuffers(1, &skyboxVBO);
     glBindVertexArray(skyboxVAO);
@@ -133,18 +87,16 @@ void skymap::init() {
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
-    std::string tempa = "resources/textures/container.jpg";
-    //cubeTexture = loadTexture(tempa.c_str());
-
     std::vector<std::string> faces
     {
-       ("resources/textures/skybox/right.jpg"),
-       ("resources/textures/skybox/left.jpg"),
-       ("resources/textures/skybox/top.jpg"),
-       ("resources/textures/skybox/bottom.jpg"),
-       ("resources/textures/skybox/front.jpg"),
-       ("resources/textures/skybox/back.jpg")
+       "resources/textures/skybox/right.jpg",
+       "resources/textures/skybox/left.jpg",
+       "resources/textures/skybox/top.jpg",
+       "resources/textures/skybox/bottom.jpg",
+       "resources/textures/skybox/front.jpg",
+       "resources/textures/skybox/back.jpg"
     };
+
     cubemapTexture = loadCubemap(faces);
 
     shader->use();

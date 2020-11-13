@@ -36,7 +36,6 @@ const unsigned int SCR_HEIGHT = 600;
 //Camera camera(glm::vec3(0.0f, 6.0f, 5.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 155.0f));
 //Camera camera(glm::vec3(0.0f, 0.0f, 60.0f));//LIGHTING test
-//Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));//skybox test
 Camera camera(glm::vec3(7.9019, 29.3491, 18.9233), glm::vec3(0.0f, 1.0f, 0.0f), -89.2999, -71.7001);//looking at the whole World
 
 bool draw_world_info;
@@ -102,12 +101,6 @@ int main() {
     deltaTime = Time->get_time_change_static();
 
     bool drawsky = true;
-    unsigned int cubeVAO, cubeVBO;
-    unsigned int skyboxVAO, skyboxVBO;
-    unsigned int cubemapTexture;
-    unsigned int cubeTexture;
-    Shader shader("cubemaps.vs", "cubemaps.fs");
-    Shader skyboxShader("skybox.vs", "skybox.fs");
 
     sky = new skymap();
     sky->set_cam(view);
