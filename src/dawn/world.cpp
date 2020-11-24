@@ -136,6 +136,12 @@ void world::init() {
 	Sky->init();
 	std::cout << std::endl;
 
+	EVM = new event_manager();
+	EVM->set_projection(projection);
+	EVM->set_cam(view);
+	EVM->set_time(Time);
+	EVM->init();
+
 	//std::cout << "printing info" << std::endl;
 	//Terrian->get_spawn_zone()->print_info();
 
@@ -148,6 +154,7 @@ void world::init() {
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	BM->spawn_creature(Terrian->get_spawn_zone());
 	std::cout << std::endl;
+
 
 	//spawn the tasks
 	work_order* new_task = Terrian->generate_work_order(SACRIFICE_OBJ, 0, 5, 0);

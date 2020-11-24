@@ -116,47 +116,65 @@ void beast_manager::update() {
             }
 
             if (reached_z && reached_x) {
-                all_creatures[i]->pop_nav_point();
-                if (all_creatures[i]->get_travel_que_size() == 0) {
-                   // std::cout << "out of travel points" << std::endl;
+                //actions can only be preformed/ worked on if the unit is still moving to the point
+                //so we do not pop the last one untill the action is preformed
+                if (all_creatures[i]->get_travel_que_size() != 1) {
+                    all_creatures[i]->pop_nav_point();
+                }
+                if (all_creatures[i]->get_travel_que_size()-1 == 0) {
+                    // std::cout << "out of travel points" << std::endl;
                     work_order* current_job = all_creatures[i]->get_current_work_order();
-                    all_creatures[i]->swap_dest_loc();
-                    preform_action(current_job, all_creatures[i]);
 
-                    current_job->currently_on++;
-                    if (current_job->currently_on >= current_job->action_numbers) {// no more actions for this job
-                      //  std::cout << "jobs done" << std::endl;
-                        map->delete_work_order(current_job);
-                        all_creatures[i]->set_current_work_order(NULL);
-                        if (all_creatures[i]->is_real_job()) {
-                            need_jobs.push_back(all_creatures[i]);
-                            remove_from_has_jobs(all_creatures[i]);
-                        }
-                      //  std::cout << "have_jobs  = " << have_jobs.size() << std::endl;
-                      //  std::cout << "need_jobs  = " << need_jobs.size() << std::endl;
+                    bool can_preform = false;
+                    if (map->action_requires_time(current_job) && current_job->time_spent< current_job->time_length) {
+                        //map->print_currently_on(current_job);
+                        current_job->time_spent += (*deltatime);
+                        //std::cout << "time spent " << current_job->time_spent << " out of " << current_job->time_length << std::endl;
                     }
-                    else {// move to the next destination
-                     
-                        int x1 = all_creatures[i]->get_loc_map_x();
-                        int z1 = all_creatures[i]->get_loc_map_z();
-                        int x2 = current_job->destination[1].x;
-                        int z2 = current_job->destination[1].z;
-                        all_creatures[i]->set_loc_map_x_d(x2);
-                        all_creatures[i]->set_loc_map_z_d(z2);
-                      //  std::cout << "x1 = " << x1 << " z1 = " << z1 << " x2 = " << x2 << " z2 = " << z2 << std::endl;
-                  
-                        std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
+                    else {
+                        can_preform = true;
+                        all_creatures[i]->pop_nav_point();
+                    }
 
-                        if (nav_points.size() > 0) {
-                            for (size_t q = 0; q < nav_points.size(); q++)
-                            {
-                                glm::vec3* temp2 = nav_points[q];
-                                temp2->x *= 4;// compensate for the cubes scale
-                                temp2->z *= 4;
-                                all_creatures[i]->add_nav_point(nav_points[q]);
+                    if (can_preform) {
+                        all_creatures[i]->swap_dest_loc();
+                        preform_action(current_job, all_creatures[i]);
+
+                        current_job->currently_on++;
+                        if (current_job->currently_on >= current_job->action_numbers) {// no more actions for this job
+                          //  std::cout << "jobs done" << std::endl;
+                            map->delete_work_order(current_job);
+                            all_creatures[i]->set_current_work_order(NULL);
+                            if (all_creatures[i]->is_real_job()) {
+                                need_jobs.push_back(all_creatures[i]);
+                                remove_from_has_jobs(all_creatures[i]);
                             }
+                            //  std::cout << "have_jobs  = " << have_jobs.size() << std::endl;
+                            //  std::cout << "need_jobs  = " << need_jobs.size() << std::endl;
                         }
+                        else {// move to the next destination
 
+                            int x1 = all_creatures[i]->get_loc_map_x();
+                            int z1 = all_creatures[i]->get_loc_map_z();
+                            int x2 = current_job->destination[1].x;
+                            int z2 = current_job->destination[1].z;
+                            all_creatures[i]->set_loc_map_x_d(x2);
+                            all_creatures[i]->set_loc_map_z_d(z2);
+                            //  std::cout << "x1 = " << x1 << " z1 = " << z1 << " x2 = " << x2 << " z2 = " << z2 << std::endl;
+
+                            std::vector<glm::vec3*> nav_points = map->find_path(z1, x1, z2, x2, 3);
+
+                            if (nav_points.size() > 0) {
+                                for (size_t q = 0; q < nav_points.size(); q++)
+                                {
+                                    glm::vec3* temp2 = nav_points[q];
+                                    temp2->x *= 4;// compensate for the cubes scale
+                                    temp2->z *= 4;
+                                    all_creatures[i]->add_nav_point(nav_points[q]);
+                                }
+                            }
+
+                        }
                     }
                 }
             }

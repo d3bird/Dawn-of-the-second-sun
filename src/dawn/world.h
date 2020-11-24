@@ -10,6 +10,7 @@
 #include "terrian.h"
 #include "beast_manager.h"
 #include "object_manger.h"
+#include "event_manager.h"
 #include "sky.h"
 #include "skymap.h"
 #include "time.h"
@@ -46,10 +47,12 @@ private:
 
 	timing* Time;
 	float* deltatime;
+	bool* draw_events;
 
 	terrian* Terrian;
 	beast_manager* BM;
 	object_manger* OBJM;
+	event_manager* EVM;
 	sky* Sky;
 	skymap* Skymap;
 

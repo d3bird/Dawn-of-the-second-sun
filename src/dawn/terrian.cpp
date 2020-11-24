@@ -946,6 +946,56 @@ int* terrian::get_random_map_loc(int s_x, int s_y, int s_z, int dist) {
 	return output;
 }
 
+void terrian::print_currently_on(work_order* wo) {
+	std::cout << "action: ";
+	switch (wo->action_rq[wo->currently_on]) {
+	case PICK_UP:
+		  std::cout << "picking up item" << std::endl;
+		
+		break;
+	case DROP:
+		std::cout << "dropping item" << std::endl;
+
+		break;
+	case SAC_OBJ:
+		 std::cout << "sacrificing item" << std::endl;
+
+		break;
+	case START_SAC:
+		std::cout << "starting sacrifice" << std::endl;
+
+		break;
+	case TILL:
+		 std::cout << "tilling soil" << std::endl;
+
+		break;
+	case TEND:
+		 std::cout << "tending plant" << std::endl;
+
+		break;
+	case HARVEST:
+		 std::cout << "harvesting plant" << std::endl;
+
+		break;
+	default:
+		 std::cout << "unkown action" << std::endl;
+		break;
+	}
+
+}
+
+bool terrian::action_requires_time(work_order* wo) {
+	switch (wo->action_rq[wo->currently_on]) {
+	case SAC_OBJ:
+	case START_SAC:
+	case TILL:
+	case TEND:
+	case HARVEST:
+		return true;
+	}
+	return false;
+}
+
 work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int z1, farm_tile* f_tile) {
 	//std::cout << "creating work order" << std::endl;
 	work_order* temp;
@@ -970,7 +1020,8 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		//std::cout << "0 item on top" << std::endl;
 		obj_dest = NULL;
 	}
-
+	temp->time_length = 0;
+	temp->time_spent = 0;
 	temp->object = obj_dest;
 	unsigned int action_numbers;
 	unsigned int location_amount;
@@ -1022,6 +1073,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		//temp->action_rq[1] = MOVE;
 		temp->action_rq[1] = SAC_OBJ;
 		temp->job_t = RELIGION;
+		temp->time_length = Time->get_sacrifice_time();
 		break;
 	case START_SACRIFICE://if there is queue of things to be sacrificed then this work order will be created
 		action_numbers = 1;
@@ -1055,6 +1107,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = MOVE;
 		temp->job_t = NONE;
+		temp->time_length = Time->get_relax_time();
 		break;
 	case MOVE_C:
 		action_numbers = 1;
@@ -1081,6 +1134,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = TILL;
 		temp->job_t = AGRICULTURE;
+		temp->time_length = Time->get_till_soil_time();
 		break;
 	case TEND_PLANT:
 		action_numbers = 1;
@@ -1094,6 +1148,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = TEND;
 		temp->job_t = AGRICULTURE;
+		temp->time_length = Time->get_tend_plant_time();
 		break;
 	case HARVEST_PLANT:
 		action_numbers = 1;
@@ -1107,6 +1162,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->action_rq = new action[action_numbers];
 		temp->action_rq[0] = HARVEST;
 		temp->job_t = AGRICULTURE;
+		temp->time_length = Time->get_harvest_plant_time();
 		break;
 	default:
 		break;

@@ -11,6 +11,8 @@ timing::timing(bool frames) {
 	time_state = 1;
 	daytime = true;
 	set_day();
+
+	set_timings();
 }
 
 timing::~timing() {
@@ -43,4 +45,14 @@ void timing::set_day() {
 void timing::set_night() {
 	daytime = false;
 	std::cout << "it is now night time" << std::endl;
+}
+
+void timing::set_timings() {
+
+	 harvest_plant =1;
+	 till_soil = 5;
+	 tend_plant = 2;
+	 relax = 5;;
+	 sacrifice = 2;
+	 sleep = 10;
 }

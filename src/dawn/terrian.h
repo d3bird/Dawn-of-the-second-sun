@@ -71,6 +71,8 @@ struct work_order {
 	unsigned int act_currently_on;
 	unsigned int location_amount;
 	unsigned int loc_currently_on;
+	float time_length; //how much time is needed for this action
+	float time_spent;//how much time has been spent on this work order
 	item_info* object;//the object that needs the interaction (also usally the start point
 	zone_loc* zone_location;
 	map_loc* destination;//where the object needs to go (if it needs to be moved 
@@ -137,6 +139,8 @@ public:
 
 	//task creation function
 	void print_work_order(work_order* wo);
+	void print_currently_on(work_order* wo);
+	bool action_requires_time(work_order* wo);
 	work_order* generate_work_order(work_jobs work_job, int x1, int y1, int z1, farm_tile* f_tile = NULL);
 	std::vector<work_order*> generate_work_order_m(work_jobs work_job, int x1, int y1, int z1, int x2 = -1, int y2 = -1, int z2 = -1);
 	void delete_work_order(work_order* work_job);
