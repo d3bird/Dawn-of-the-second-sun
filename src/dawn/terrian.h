@@ -60,7 +60,7 @@ enum work_jobs {STOCK_OBJ, SACRIFICE_OBJ, START_SACRIFICE, TILL_SOIL, TEND_PLANT
 };
 
 enum job_type { AGRICULTURE, RELIGION, DUMB, PERSONAL, NONE};//determins who can do these activities
-enum action { PICK_UP, DROP, SAC_OBJ, START_SAC, MOVE, TILL, TEND, HARVEST };//the action required
+enum action { PICK_UP, DROP, SAC_OBJ, START_SAC, MOVE, TILL, TEND, HARVEST, RELAXING};//the action required
 //job and item that needs to be interacted with
 struct work_order {
 	work_jobs job;

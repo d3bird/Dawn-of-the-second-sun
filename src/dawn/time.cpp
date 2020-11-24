@@ -52,7 +52,7 @@ void timing::set_timings() {
 	 harvest_plant =1;
 	 till_soil = 5;
 	 tend_plant = 2;
-	 relax = 5;;
+	 relax = 5;
 	 sacrifice = 2;
 	 sleep = 10;
 }

@@ -991,6 +991,7 @@ bool terrian::action_requires_time(work_order* wo) {
 	case TILL:
 	case TEND:
 	case HARVEST:
+	case RELAXING:
 		return true;
 	}
 	return false;
@@ -1105,7 +1106,7 @@ work_order* terrian::generate_work_order(work_jobs work_job, int x1, int y1, int
 		temp->destination->y = store->y;
 		temp->destination->z = store->z;
 		temp->action_rq = new action[action_numbers];
-		temp->action_rq[0] = MOVE;
+		temp->action_rq[0] = RELAXING;
 		temp->job_t = NONE;
 		temp->time_length = Time->get_relax_time();
 		break;
