@@ -731,6 +731,7 @@ void object_manger::create_table_object() {
 	temp->item_name = item_name_t;
 	temp->item_data.push_back(temp_data);//add the data for the object
 
+	open_tables.push_back(temp_data);
 
 	items.push_back(temp);
 
@@ -1180,4 +1181,30 @@ void object_manger::split_merge_item_stacks(item_info* keep, item_info* rm) {
 item_info* object_manger::split_item_stacks(item_info* keep, int amount) {
 
 	return NULL;
+}
+
+
+item_info* object_manger::get_open_table() {
+	item_info* output = NULL;
+
+	if (open_tables.size() >= 1) {
+		output = open_tables[open_tables.size()-1];
+		open_tables.pop_back();
+		used_tables.push_back(output);
+		output->table_in_use = true;
+		output->table_buffer_loc = used_tables.size() - 1;
+	}
+
+	return output;
+}
+
+void object_manger::return_table(item_info* i) {
+
+	if (i->table_in_use) {
+
+	}
+	else {
+		std::cout << "can not return table, was never in use" << std::endl;
+	}
+
 }

@@ -39,6 +39,9 @@ struct item_info {
 	int max_stack_size;
 	bool stackable;
 	bool max_stack() { return stack_size == max_stack_size; } 
+	bool edible =false;
+	bool table_in_use = false;
+	int table_buffer_loc =-1;
 	//for plants that grow another object
 	farm_tile* farm_t =NULL;
 	item_info* grown_item = NULL;
@@ -110,6 +113,9 @@ public:
 	void split_merge_item_stacks(item_info* keep, item_info* rm);
 	item_info* split_item_stacks(item_info* keep, int amount);
 
+	item_info* get_open_table();
+	void return_table(item_info*i);
+
 	//alter functions
 	item_info* get_alter_info() { return alter; }
 	void preform_sacrifice(item_info* sac);
@@ -161,6 +167,11 @@ private:
 
 	std::vector< item*> items;
 	std::vector<block_loc*>* blocked_spots;
+	
+	//eating spots
+
+	std::vector< item_info*> open_tables;
+	std::vector< item_info*> used_tables;
 
 	//the main alter info
 	item_info* alter;

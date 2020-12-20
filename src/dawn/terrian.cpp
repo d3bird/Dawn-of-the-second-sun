@@ -628,7 +628,7 @@ void terrian::print_map_blocked() {
                     std::cout << "1 ";
                 }
                 else {
-                    std::cout << "0 ";
+                    std::cout << ". ";
                 }
             }
             std::cout << std::endl;
@@ -1306,7 +1306,7 @@ void terrian::import_items() {
 	if (items_on_map.size() > 0) {
 		for (int i = 0; i < items_on_map.size(); i++) {
 			terrian_map[items_on_map[i].z][items_on_map[i].x].item_on_top = items_on_map[i].object;
-			if (items_on_map[i].object->type == ALTER_T) {
+			if (items_on_map[i].object->type == ALTER_T || items_on_map[i].object->type == BED || items_on_map[i].object->type == TABLE) {
 				terrian_map[items_on_map[i].z][items_on_map[i].x].blocked = true;
 			}
 			if (items_on_map[i].object->type == CAMP_FIRE) {
